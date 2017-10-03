@@ -1,12 +1,14 @@
 import java.util.ArrayList;
 
 public class Player {
-
+	
+	int orbCount;
 	int playerNumber;
 	String colour;
 	
 	public Player(int playerNumber, String colour)
 	{
+		this.orbCount = 0;
 		this.playerNumber = playerNumber;
 		this.colour = colour;
 	}

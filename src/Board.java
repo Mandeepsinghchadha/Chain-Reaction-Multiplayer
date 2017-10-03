@@ -115,38 +115,60 @@ public class Board {
 	
 	public static void main(String[] args)
 	{
-		Board b = new Board(8,6);
-		Player p1 = new Player(1,"RED");
-		Player p2 = new Player(2,"GREEN");
 		Scanner s = new Scanner(System.in);
-		System.out.println("Player 1: Enter x and y");
-		int x = s.nextInt();
-		int y = s.nextInt();
-		p1.move(b, x, y);
-		System.out.println("Player 2: Enter x and y");
-		x = s.nextInt();
-		y = s.nextInt();
-		p2.move(b, x, y);
-		while(b.playerCount(p1.playerNumber)>0 && b.playerCount(p2.playerNumber)>0)
+		System.out.println("Enter the dimensions of the board");
+		System.out.println("Enter the number of Rows");
+		int m = s.nextInt();
+		System.out.println("Enter the number of Columns");
+		int n = s.nextInt();
+		Board b = new Board(m,n);
+		System.out.println("Enter total number of Players (2 to 8)");
+		int numberOfPlayers = s.nextInt();
+		ArrayList<Player> allPlayers = new ArrayList<Player>();
+		for(int i=0;i<numberOfPlayers;i+=1)
 		{
-			System.out.println("Player 1: Enter x and y");
-			x = s.nextInt();
-			y = s.nextInt();
-			p1.move(b, x, y);
-			System.out.println("Player 2: Enter x and y");
-			x = s.nextInt();
-			y = s.nextInt();
-			p2.move(b, x, y);
+			System.out.println("Enter the colour of Player "+(i+1));
+			String colour = s.next();
+			Player p = new Player(i+1,colour);
+			allPlayers.add(p);
 		}
 		
-		if(b.playerCount(p1.playerNumber)==0)
+		for(int i=0;i<numberOfPlayers;i+=1)
 		{
-			System.out.println("Player 2 wins");
+			System.out.println("Enter the co-ordinates of Player "+(i+1));
+			int x = s.nextInt();
+			int y = s.nextInt();
+			allPlayers.get(i).move(b, x, y);
+			allPlayers.get(i).orbCount = 1;
+			b.displayBoard();
 		}
-		else if(b.playerCount(p2.playerNumber)==0)
+		
+		int currentPlayer = 0;
+		while(allPlayers.size()!=1)
 		{
-			System.out.println("Player 1 wins");
+			if(allPlayers.get(currentPlayer)!=null)
+			{
+				System.out.println("Enter the co-ordinates of Player "+(currentPlayer+1));
+				int x = s.nextInt();
+				int y = s.nextInt();
+				allPlayers.get(currentPlayer).move(b, x, y);
+				b.displayBoard();
+				
+				for(int i=0;i<numberOfPlayers;i+=1)
+				{
+					if(allPlayers.get(i)!=null)
+					{
+						allPlayers.get(i).orbCount = b.playerCount(i+1);
+						if(allPlayers.get(i).orbCount==0)
+						{
+							allPlayers.remove(allPlayers.get(i));
+						}
+					}
+				}
+			}
+			currentPlayer = (currentPlayer + 1) % numberOfPlayers;
 		}
-		b.displayBoard();
+		
+		System.out.println("The Winner is Player " + allPlayers.get(0).playerNumber+" "+allPlayers.get(0).colour);
 	}
 }
