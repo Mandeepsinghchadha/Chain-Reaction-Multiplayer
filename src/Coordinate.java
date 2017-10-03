@@ -7,18 +7,15 @@ public class Coordinate {
 	int xCoordinate;
 	int yCoordinate;
 	int playerStatus;
+	int value;
+	String color;
 	
 	public Coordinate(int x, int y)
 	{
 		this.xCoordinate = x;
 		this.yCoordinate = y;
 		this.playerStatus = 0;
-	}
-	
-	public Coordinate(int x, int y, int playerNumber)
-	{
-		this.xCoordinate = x;
-		this.yCoordinate = y;
-		this.playerStatus = playerNumber;
+		this.value = 0;
+		this.color = "default";
 	}
 }

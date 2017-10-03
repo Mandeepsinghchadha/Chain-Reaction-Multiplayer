@@ -1,16 +1,25 @@
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class Board {
 
 	int m;
 	int n;
-	int[][] board;
+	Coordinate[][] board;
 	
 	public Board(int numberOfRows, int numberOfColumns)
 	{
 		this.m = numberOfRows;
 		this.n = numberOfColumns;
-		board = new int[this.m][this.n];
+		this.board = new Coordinate[this.m][this.n];
+		
+		for(int i =0;i<this.m;i+=1)
+		{
+			for(int j=0;j<this.n;j+=1)
+			{
+				this.board[i][j] = new Coordinate(i,j);
+			}
+		}
 	}
 	
 	public boolean checkValidCoordinate(int i, int j)
@@ -31,30 +40,32 @@ public class Board {
 		{
 			for(int j=0;j<this.n;j+=1)
 			{
-				System.out.print(board[i][j]+" ");
+				System.out.print(""+board[i][j].value+board[i][j].color.charAt(0)+" ");
 			}
 			System.out.println();
 		}
 		System.out.println();
 	}
 	
-	public void setCoordinateOfBoard(Coordinate c, int value)
+	public void setCoordinateOfBoard(int i,int j,int value)
 	{
-		this.board[c.xCoordinate][c.yCoordinate] = value;
+		this.board[i][j].xCoordinate = i;
+		this.board[i][j].yCoordinate = j;
+		this.board[i][j].value = value;
 	}
 	
-	public int getValueAtCoordinate(Coordinate c)
+	public int getValueAtCoordinate(int i, int j)
 	{
-		return this.board[c.xCoordinate][c.yCoordinate];
+		return this.board[i][j].value;
 	}
 	
-	public int getCriticalMass(Coordinate c)
+	public int getCriticalMass(int i, int j)
 	{
-		if ((c.xCoordinate==0 && c.yCoordinate==0) || (c.xCoordinate==0 && c.yCoordinate==this.n-1) || (c.xCoordinate==this.m-1 && c.yCoordinate==0) || (c.xCoordinate==this.m-1 && c.yCoordinate==this.n-1))
+		if ((i==0 && j==0) || (i==0 && j==this.n-1) || (i==this.m-1 && j==0) || (i==this.m-1 && j==this.n-1))
 		{
 			return 2;
 		}
-		else if((c.xCoordinate==0) || (c.xCoordinate==this.m-1) || (c.yCoordinate==0) || (c.yCoordinate==this.n-1))
+		else if((i==0) || (i==this.m-1) || (j==0) || (j==this.n-1))
 		{
 			return 3;
 		}
@@ -64,24 +75,40 @@ public class Board {
 		}
 	}
 	
-	public ArrayList<Coordinate> getListOfNeighbours(Coordinate c)
+	public int playerCount(int playerStatus)
+	{
+		int count = 0;
+		for(int i=0;i<this.m;i+=1)
+		{
+			for(int j=0;j<this.n;j+=1)
+			{
+				if(this.board[i][j].playerStatus==playerStatus)
+				{
+					count+=1;
+				}
+			}
+		}
+		return count;
+	}
+	
+	public ArrayList<Coordinate> getListOfNeighbours(int i, int j)
 	{
 		ArrayList<Coordinate> allNeighbours = new ArrayList<Coordinate>();
-		if(this.checkValidCoordinate(c.xCoordinate, c.yCoordinate+1))
+		if(this.checkValidCoordinate(i, j+1))
 		{
-			allNeighbours.add(new Coordinate(c.xCoordinate, c.yCoordinate+1));
+			allNeighbours.add(this.board[i][j+1]);
 		}
-		if(this.checkValidCoordinate(c.xCoordinate, c.yCoordinate-1))
+		if(this.checkValidCoordinate(i, j-1))
 		{
-			allNeighbours.add(new Coordinate(c.xCoordinate, c.yCoordinate-1));
+			allNeighbours.add(this.board[i][j-1]);
 		}
-		if(this.checkValidCoordinate(c.xCoordinate+1, c.yCoordinate))
+		if(this.checkValidCoordinate(i+1, j))
 		{
-			allNeighbours.add(new Coordinate(c.xCoordinate+1, c.yCoordinate));
+			allNeighbours.add(this.board[i+1][j]);
 		}
-		if(this.checkValidCoordinate(c.xCoordinate-1, c.yCoordinate))
+		if(this.checkValidCoordinate(i-1, j))
 		{
-			allNeighbours.add(new Coordinate(c.xCoordinate-1, c.yCoordinate));
+			allNeighbours.add(this.board[i-1][j]);
 		}
 		return allNeighbours;
 	}
@@ -90,21 +117,36 @@ public class Board {
 	{
 		Board b = new Board(8,6);
 		Player p1 = new Player(1,"RED");
-		Player p2 = new Player(2,"BLUE");
+		Player p2 = new Player(2,"GREEN");
+		Scanner s = new Scanner(System.in);
+		System.out.println("Player 1: Enter x and y");
+		int x = s.nextInt();
+		int y = s.nextInt();
+		p1.move(b, x, y);
+		System.out.println("Player 2: Enter x and y");
+		x = s.nextInt();
+		y = s.nextInt();
+		p2.move(b, x, y);
+		while(b.playerCount(p1.playerNumber)>0 && b.playerCount(p2.playerNumber)>0)
+		{
+			System.out.println("Player 1: Enter x and y");
+			x = s.nextInt();
+			y = s.nextInt();
+			p1.move(b, x, y);
+			System.out.println("Player 2: Enter x and y");
+			x = s.nextInt();
+			y = s.nextInt();
+			p2.move(b, x, y);
+		}
 		
-		p1.move(b, new Coordinate(0,0));
-		b.displayBoard();
-		p1.move(b, new Coordinate(0,0));
-		b.displayBoard();
-		p1.move(b, new Coordinate(0,1));
-		b.displayBoard();
-		p1.move(b, new Coordinate(0,1));
-		b.displayBoard();
-		p1.move(b, new Coordinate(1,1));
-		b.displayBoard();
-		p1.move(b, new Coordinate(1,1));
-		b.displayBoard();
-		p1.move(b, new Coordinate(1,1));
+		if(b.playerCount(p1.playerNumber)==0)
+		{
+			System.out.println("Player 2 wins");
+		}
+		else if(b.playerCount(p2.playerNumber)==0)
+		{
+			System.out.println("Player 1 wins");
+		}
 		b.displayBoard();
 	}
 }
