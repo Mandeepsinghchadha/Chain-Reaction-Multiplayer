@@ -5,12 +5,14 @@ public class Player {
 	int orbCount;
 	int playerNumber;
 	String colour;
+	boolean active;
 	
 	public Player(int playerNumber, String colour)
 	{
 		this.orbCount = 0;
 		this.playerNumber = playerNumber;
 		this.colour = colour;
+		this.active = true;
 	}
 
 	public Board move(Board b, int x, int y)

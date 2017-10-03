@@ -113,6 +113,19 @@ public class Board {
 		return allNeighbours;
 	}
 	
+	public static int countAllActivePlayers(ArrayList<Player> allPlayers)
+	{
+		int count = 0;
+		for(int i=0;i<allPlayers.size();i+=1)
+		{
+			if(allPlayers.get(i).active)
+			{
+				count+=1;
+			}
+		}
+		return count;
+	}
+	
 	public static void main(String[] args)
 	{
 		Scanner s = new Scanner(System.in);
@@ -144,9 +157,9 @@ public class Board {
 		}
 		
 		int currentPlayer = 0;
-		while(allPlayers.size()!=1)
+		while(countAllActivePlayers(allPlayers)!=1)
 		{
-			if(allPlayers.get(currentPlayer)!=null)
+			if(allPlayers.get(currentPlayer).active)
 			{
 				System.out.println("Enter the co-ordinates of Player "+(currentPlayer+1));
 				int x = s.nextInt();
@@ -156,12 +169,12 @@ public class Board {
 				
 				for(int i=0;i<numberOfPlayers;i+=1)
 				{
-					if(allPlayers.get(i)!=null)
+					if(allPlayers.get(i).active)
 					{
 						allPlayers.get(i).orbCount = b.playerCount(i+1);
 						if(allPlayers.get(i).orbCount==0)
 						{
-							allPlayers.remove(allPlayers.get(i));
+							allPlayers.get(i).active=false;
 						}
 					}
 				}
@@ -169,6 +182,13 @@ public class Board {
 			currentPlayer = (currentPlayer + 1) % numberOfPlayers;
 		}
 		
-		System.out.println("The Winner is Player " + allPlayers.get(0).playerNumber+" "+allPlayers.get(0).colour);
+		for(int i=0;i<allPlayers.size();i+=1)
+		{
+			if(allPlayers.get(i).active)
+			{
+				System.out.println("The Winner is Player " + allPlayers.get(i).playerNumber+" "+allPlayers.get(i).colour);
+				break;
+			}
+		}
 	}
 }
