@@ -146,14 +146,23 @@ public class Board {
 			allPlayers.add(p);
 		}
 		
-		for(int i=0;i<numberOfPlayers;i+=1)
+		int i =0;
+		while(i<numberOfPlayers)
 		{
 			System.out.println("Enter the co-ordinates of Player "+(i+1));
 			int x = s.nextInt();
 			int y = s.nextInt();
 			allPlayers.get(i).move(b, x, y);
-			allPlayers.get(i).orbCount = 1;
+			if(b.playerCount(i+1)>0)
+			{
+				allPlayers.get(i).orbCount = 1;
+			}
+			else
+			{
+				i-=1;
+			}
 			b.displayBoard();
+			i+=1;
 		}
 		
 		int currentPlayer = 0;
@@ -165,16 +174,20 @@ public class Board {
 				int x = s.nextInt();
 				int y = s.nextInt();
 				allPlayers.get(currentPlayer).move(b, x, y);
+				if(b.playerCount(currentPlayer+1)<=allPlayers.get(currentPlayer).orbCount)
+				{
+					currentPlayer = (currentPlayer - 1) % numberOfPlayers;
+				}
 				b.displayBoard();
 				
-				for(int i=0;i<numberOfPlayers;i+=1)
+				for(int j=0;j<numberOfPlayers;j+=1)
 				{
-					if(allPlayers.get(i).active)
+					if(allPlayers.get(j).active)
 					{
-						allPlayers.get(i).orbCount = b.playerCount(i+1);
-						if(allPlayers.get(i).orbCount==0)
+						allPlayers.get(j).orbCount = b.playerCount(j+1);
+						if(allPlayers.get(j).orbCount==0)
 						{
-							allPlayers.get(i).active=false;
+							allPlayers.get(j).active=false;
 						}
 					}
 				}
@@ -182,11 +195,11 @@ public class Board {
 			currentPlayer = (currentPlayer + 1) % numberOfPlayers;
 		}
 		
-		for(int i=0;i<allPlayers.size();i+=1)
+		for(int j=0;j<allPlayers.size();j+=1)
 		{
-			if(allPlayers.get(i).active)
+			if(allPlayers.get(j).active)
 			{
-				System.out.println("The Winner is Player " + allPlayers.get(i).playerNumber+" "+allPlayers.get(i).colour);
+				System.out.println("The Winner is Player " + allPlayers.get(j).playerNumber+" "+allPlayers.get(j).colour);
 				break;
 			}
 		}
