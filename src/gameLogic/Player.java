@@ -1,3 +1,4 @@
+package gameLogic;
 import java.util.ArrayList;
 
 public class Player {
@@ -5,7 +6,7 @@ public class Player {
 	int orbCount;
 	int playerNumber;
 	String colour;
-	boolean active;
+	public boolean active;
 	
 	public Player(int playerNumber, String colour)
 	{

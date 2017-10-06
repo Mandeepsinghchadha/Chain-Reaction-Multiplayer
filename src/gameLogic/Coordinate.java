@@ -1,3 +1,4 @@
+package gameLogic;
 public class Coordinate {
 	
 	/* @param: playerNumber
