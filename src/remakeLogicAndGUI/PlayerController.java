@@ -42,6 +42,7 @@ public class PlayerController {
 					    n.setMaterial(material);
 					}
 					allNeighbours.get(i).drawSphere();
+					allNeighbours.get(i).rotateGroup.play();
 					b.board[x][y].value = 0;
 					b.board[x][y].allOrbs.getChildren().clear();
 					b.board[x][y].playerStatus = 0;

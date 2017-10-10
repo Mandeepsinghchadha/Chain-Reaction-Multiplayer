@@ -1,5 +1,10 @@
 package remakeLogicAndGUI;
 
+import java.util.Random;
+
+import javafx.animation.Interpolator;
+import javafx.animation.RotateTransition;
+import javafx.geometry.Point3D;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.layout.StackPane;
@@ -7,6 +12,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Sphere;
+import javafx.scene.transform.Rotate;
+import javafx.util.Duration;
 
 public class CoordinateTile extends StackPane {
 	
@@ -24,6 +31,8 @@ public class CoordinateTile extends StackPane {
 	int numberOfColumns;
 	Sphere orb;
 	Group allOrbs = new Group();
+	Point3D allAxes[] = {Rotate.X_AXIS,Rotate.Y_AXIS,Rotate.Z_AXIS};
+	RotateTransition rotateGroup;
 	
 	CoordinateTile(int x, int y, int m, int n, BoardGUI b)
 	{
@@ -36,6 +45,14 @@ public class CoordinateTile extends StackPane {
 		this.criticalMass = this.getCriticalMass(this.xCoordinate, this.yCoordinate);
 		this.colour = Color.WHITESMOKE;
 		this.b = b;
+		
+		rotateGroup = new RotateTransition(Duration.millis(1500+Math.random()*500), allOrbs);
+		rotateGroup.setFromAngle(0);
+		rotateGroup.setToAngle(360);
+		rotateGroup.setInterpolator(Interpolator.LINEAR);
+		rotateGroup.setCycleCount(RotateTransition.INDEFINITE);
+		rotateGroup.setAxis(allAxes[new Random().nextInt(allAxes.length)]);
+		rotateGroup.setAutoReverse(false);
 		
 		Rectangle border = new Rectangle(100,100);
 		border.setFill(null);
@@ -107,7 +124,9 @@ public class CoordinateTile extends StackPane {
 					init = false;
 				}
 			}
+			rotateGroup.play();
 		});
+		
 		getChildren().add(allOrbs);
 		
 	}
@@ -172,7 +191,7 @@ public class CoordinateTile extends StackPane {
 			}
 			else if((this.value+1)%this.criticalMass==3)
 			{
-				orb.setTranslateX(-12);
+				orb.setTranslateX(-8);
 				orb.setTranslateY(12);
 				allOrbs.getChildren().add(orb);
 				this.value+=1;
