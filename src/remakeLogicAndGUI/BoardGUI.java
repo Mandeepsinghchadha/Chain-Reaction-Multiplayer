@@ -86,6 +86,22 @@ public class BoardGUI {
 		return count;
 	}
 	
+	public int countEmptyCells()
+	{
+		int count = 0;
+		for(int i=0;i<this.numberOfRows;i+=1)
+		{
+			for(int j=0;j<this.numberOfColumns;j+=1)
+			{
+				if(this.board[i][j].value==0)
+				{
+					count+=1;
+				}
+			}
+		}
+		return count;
+	}
+	
 	public int countAllActivePlayers(ArrayList<PlayerController> allPlayers)
 	{
 		int count = 0;

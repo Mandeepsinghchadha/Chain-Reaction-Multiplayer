@@ -8,7 +8,7 @@ import javafx.stage.Stage;
 
 public class mainApp extends Application{
 	
-	static BoardGUI b = new BoardGUI(6,6,3);
+	static BoardGUI b = new BoardGUI(6,8,3);
 	
 	public Parent createContent()
 	{

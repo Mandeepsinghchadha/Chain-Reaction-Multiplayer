@@ -47,39 +47,65 @@ public class CoordinateTile extends StackPane {
 		setOnMouseClicked(event -> {
 			if(!init)
 			{
-				if(b.countAllActivePlayers(b.allPlayers)!=1)
+				if(this.b.countAllActivePlayers(this.b.allPlayers)!=1)
 				{
-					if(b.allPlayers.get(currentPlayer).active)
+					if(this.b.allPlayers.get(currentPlayer).active)
 					{
-						b.allPlayers.get(currentPlayer).move(b, this.xCoordinate, this.yCoordinate);
-						if(b.playerCount(currentPlayer+1)<=b.allPlayers.get(currentPlayer).orbCount)
+						try
 						{
-							currentPlayer = (currentPlayer - 1) % b.numberOfPlayers;
-						}
-						
-						for(int j=0;j<b.numberOfPlayers;j+=1)
-						{
-							if(b.allPlayers.get(j).active)
+							this.b=this.b.allPlayers.get(currentPlayer).move(this.b, this.xCoordinate, this.yCoordinate);
+							
+							for(int p=0;p<b.numberOfRows;p+=1)
 							{
-								b.allPlayers.get(j).orbCount = b.playerCount(j+1);
-								if(b.allPlayers.get(j).orbCount==0)
+								for(int q=0;q<b.numberOfColumns;q+=1)
 								{
-									b.allPlayers.get(j).active=false;
+									System.out.print("v"+b.board[p][q].value+"p"+b.board[p][q].playerStatus+" ");
+								}
+								System.out.println();
+							}
+							
+							System.out.println("Player "+this.b.allPlayers.get(currentPlayer).playerNumber+" moves");
+							System.out.println("Player "+this.b.allPlayers.get(currentPlayer).playerNumber+" count is "+this.b.playerCount(currentPlayer+1));
+							System.out.println("Player "+this.b.allPlayers.get(currentPlayer).playerNumber+" old count was "+this.b.allPlayers.get(currentPlayer).orbCount);
+							System.out.println("Player status of current tile after move is "+b.board[this.xCoordinate][this.yCoordinate].playerStatus);
+							System.out.println("Empty cells are "+this.b.countEmptyCells());
+							System.out.println("Active players are "+this.b.countAllActivePlayers(this.b.allPlayers));
+							for(int j=0;j<this.b.numberOfPlayers;j+=1)
+							{
+								if(this.b.allPlayers.get(j).active)
+								{
+									this.b.allPlayers.get(j).orbCount = this.b.playerCount(j+1);
+									if(this.b.allPlayers.get(j).orbCount==0)
+									{
+										this.b.allPlayers.get(j).active=false;
+									}
 								}
 							}
 						}
+						catch (IllegalMoveException e){
+							currentPlayer = (currentPlayer - 1) % this.b.numberOfPlayers;
+							System.out.println(e.getMessage());
+						}
 					}
-					currentPlayer = (currentPlayer + 1) % b.numberOfPlayers;
+					currentPlayer = (currentPlayer + 1) % this.b.numberOfPlayers;
 				}
 			}
 			else
 			{
-				if(i<b.numberOfPlayers)
+				if(i<this.b.numberOfPlayers)
 				{
-					b.allPlayers.get(i).move(b, x, y);
-					if(b.playerCount(i+1)>0)
+					System.out.println("Player "+this.b.allPlayers.get(i).playerNumber+" moves");
+					try
 					{
-						b.allPlayers.get(i).orbCount = 1;
+						this.b.allPlayers.get(i).move(this.b, this.xCoordinate, this.yCoordinate);
+					}
+					catch (IllegalMoveException e)
+					{
+						System.out.println(e.getMessage());
+					}
+					if(this.b.playerCount(i+1)>0)
+					{
+						this.b.allPlayers.get(i).orbCount = 1;
 					}
 					else
 					{
@@ -87,7 +113,7 @@ public class CoordinateTile extends StackPane {
 					}
 					i+=1;
 				}
-				if(i>=b.numberOfPlayers)
+				if(i>=this.b.numberOfPlayers)
 				{
 					init = false;
 				}
