@@ -48,11 +48,26 @@ public class PlayerController {
 				}
 				ArrayList<CoordinateTile> NeighbourCellsOfJustMovedCell = b.getListOfNeighbours(x,y);
 				ArrayList<CoordinateTile> NeighbourCellsWhichAreThemselvesUnstable = getAllUnstableNeighbourCells(NeighbourCellsOfJustMovedCell,b);
-
-				for(int p=0;p<NeighbourCellsWhichAreThemselvesUnstable.size();p+=1)
+				
+				for(int j=0;j<b.numberOfPlayers;j+=1)
+				{
+					if(b.allPlayers.get(j).active)
+					{
+						b.allPlayers.get(j).orbCount = b.playerCount(j+1);
+						if(b.allPlayers.get(j).orbCount==0)
+						{
+							b.allPlayers.get(j).active=false;
+						}
+					}
+				}
+				
+				if(b.countAllActivePlayers(b.allPlayers)!=1)
+				{
+					for(int p=0;p<NeighbourCellsWhichAreThemselvesUnstable.size();p+=1)
 					{
 						b = move(b,NeighbourCellsWhichAreThemselvesUnstable.get(p).xCoordinate,NeighbourCellsWhichAreThemselvesUnstable.get(p).yCoordinate);
 					}
+				}
 				b.board[x][y].colour = Color.WHITESMOKE; 
 				return b;
 			}

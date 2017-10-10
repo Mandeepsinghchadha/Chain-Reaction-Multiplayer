@@ -70,17 +70,6 @@ public class CoordinateTile extends StackPane {
 							System.out.println("Player status of current tile after move is "+b.board[this.xCoordinate][this.yCoordinate].playerStatus);
 							System.out.println("Empty cells are "+this.b.countEmptyCells());
 							System.out.println("Active players are "+this.b.countAllActivePlayers(this.b.allPlayers));
-							for(int j=0;j<this.b.numberOfPlayers;j+=1)
-							{
-								if(this.b.allPlayers.get(j).active)
-								{
-									this.b.allPlayers.get(j).orbCount = this.b.playerCount(j+1);
-									if(this.b.allPlayers.get(j).orbCount==0)
-									{
-										this.b.allPlayers.get(j).active=false;
-									}
-								}
-							}
 						}
 						catch (IllegalMoveException e){
 							currentPlayer = (currentPlayer - 1) % this.b.numberOfPlayers;
