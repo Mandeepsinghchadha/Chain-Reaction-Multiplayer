@@ -137,6 +137,7 @@ public class CoordinateTile extends StackPane {
 					else
 					{
 						i-=1;
+						k-=1;
 					}
 					i+=1;
 					
