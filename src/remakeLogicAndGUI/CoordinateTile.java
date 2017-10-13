@@ -18,9 +18,11 @@ import javafx.util.Duration;
 public class CoordinateTile extends StackPane {
 	
 	BoardGUI b;
+	Rectangle border;
 	static boolean init = true;
 	static int currentPlayer = 0;
 	static int i = 0;
+	static int k = 0;
 	int xCoordinate;
 	int yCoordinate;
 	int playerStatus;
@@ -54,9 +56,9 @@ public class CoordinateTile extends StackPane {
 		rotateGroup.setAxis(allAxes[new Random().nextInt(allAxes.length)]);
 		rotateGroup.setAutoReverse(false);
 		
-		Rectangle border = new Rectangle(100,100);
+		this.border = new Rectangle(100,100);
 		border.setFill(null);
-		border.setStroke(Color.BLACK);
+		border.setStroke(Color.RED);
 		
 		this.setAlignment(Pos.CENTER);
 		this.getChildren().addAll(border);
@@ -66,36 +68,55 @@ public class CoordinateTile extends StackPane {
 			{
 				if(this.b.countAllActivePlayers(this.b.allPlayers)!=1)
 				{
-					if(this.b.allPlayers.get(currentPlayer).active)
+					if(!b.allPlayers.get(currentPlayer).active)
 					{
-						try
+						while(!b.allPlayers.get(currentPlayer).active)
 						{
-							this.b=this.b.allPlayers.get(currentPlayer).move(this.b, this.xCoordinate, this.yCoordinate);
-							
-							for(int p=0;p<b.numberOfRows;p+=1)
-							{
-								for(int q=0;q<b.numberOfColumns;q+=1)
-								{
-									System.out.print("v"+b.board[p][q].value+"p"+b.board[p][q].playerStatus+" ");
-								}
-								System.out.println();
-							}
-							
-							System.out.println("Player "+this.b.allPlayers.get(currentPlayer).playerNumber+" moves");
-							System.out.println("Player "+this.b.allPlayers.get(currentPlayer).playerNumber+" count is "+this.b.playerCount(currentPlayer+1));
-							System.out.println("Player "+this.b.allPlayers.get(currentPlayer).playerNumber+" old count was "+this.b.allPlayers.get(currentPlayer).orbCount);
-							System.out.println("Player status of current tile after move is "+b.board[this.xCoordinate][this.yCoordinate].playerStatus);
-							System.out.println("Empty cells are "+this.b.countEmptyCells());
-							System.out.println("Active players are "+this.b.countAllActivePlayers(this.b.allPlayers));
-						}
-						catch (IllegalMoveException e){
-							currentPlayer = (currentPlayer - 1) % this.b.numberOfPlayers;
-							System.out.println(e.getMessage());
+							currentPlayer = (currentPlayer + 1) % this.b.numberOfPlayers;
 						}
 					}
-					currentPlayer = (currentPlayer + 1) % this.b.numberOfPlayers;
+					
+					try
+					{
+						this.b=this.b.allPlayers.get(currentPlayer).move(this.b, this.xCoordinate, this.yCoordinate);
+							
+						for(int p=0;p<b.numberOfRows;p+=1)
+						{
+							for(int q=0;q<b.numberOfColumns;q+=1)
+							{
+								System.out.print("v"+b.board[p][q].value+"p"+b.board[p][q].playerStatus+" ");
+							}
+							System.out.println();
+						}
+							
+						System.out.println("Player "+this.b.allPlayers.get(currentPlayer).playerNumber+" moves");
+						System.out.println("Player "+this.b.allPlayers.get(currentPlayer).playerNumber+" count is "+this.b.playerCount(currentPlayer+1));
+						System.out.println("Player "+this.b.allPlayers.get(currentPlayer).playerNumber+" old count was "+this.b.allPlayers.get(currentPlayer).orbCount);
+						System.out.println("Player status of current tile after move is "+b.board[this.xCoordinate][this.yCoordinate].playerStatus);
+						System.out.println("Empty cells are "+this.b.countEmptyCells());							System.out.println("Active players are "+this.b.countAllActivePlayers(this.b.allPlayers));
+					}
+					catch (IllegalMoveException e){
+						currentPlayer = (currentPlayer - 1) % this.b.numberOfPlayers;
+						System.out.println(e.getMessage());
+					}
 				}
-			}
+				currentPlayer = (currentPlayer + 1) % this.b.numberOfPlayers;
+				
+				int p = currentPlayer;
+				while(!b.allPlayers.get(p).active)
+				{
+					p = (p + 1) % this.b.numberOfPlayers;
+				}
+				
+				for(int q=0;q<b.numberOfRows;q+=1)
+				{
+					for(int r=0;r<b.numberOfColumns;r+=1)
+					{
+						b.board[q][r].border.setStroke(b.allPlayers.get(p).colour);
+					}
+				}
+				
+				}
 			else
 			{
 				if(i<this.b.numberOfPlayers)
@@ -118,6 +139,16 @@ public class CoordinateTile extends StackPane {
 						i-=1;
 					}
 					i+=1;
+					
+					for(int p=0;p<b.numberOfRows;p+=1)
+					{
+						for(int q=0;q<b.numberOfColumns;q+=1)
+						{
+							b.board[p][q].border.setStroke(b.allColours[(k+1)%b.allPlayers.size()]);
+						}
+					}
+					k+=1;
+					
 				}
 				if(i>=this.b.numberOfPlayers)
 				{
