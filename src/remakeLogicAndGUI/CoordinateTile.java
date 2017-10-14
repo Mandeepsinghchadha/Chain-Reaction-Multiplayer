@@ -2,13 +2,16 @@ package remakeLogicAndGUI;
 
 import java.util.ArrayList;
 import java.util.Random;
+import javafx.util.Duration;
 
 import javafx.animation.Interpolator;
 import javafx.animation.ParallelTransition;
 import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
+
 import javafx.geometry.Point3D;
 import javafx.geometry.Pos;
+
 import javafx.scene.Group;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -16,27 +19,31 @@ import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
-import javafx.util.Duration;
 
 public class CoordinateTile extends StackPane {
 	
-	BoardGUI b;
-	public PlayerController p;
+	BoardGUI boardContainer;
+	PlayerController playerContainer;
 	Rectangle border;
+	
 	static boolean init = true;
 	static int currentPlayer = 0;
-	static int i = 0;
-	static int k = 0;
+	static int counterForInitialGamePlay = 0;
+	static int counterForInitialBorder = 0;
+	
 	int xCoordinate;
 	int yCoordinate;
 	int playerStatus;
 	int value;
 	int criticalMass;
+	
 	Color colour;
 	int numberOfRows;
 	int numberOfColumns;
+	
 	Group allOrbs = new Group();
 	Point3D allAxes[] = {Rotate.X_AXIS,Rotate.Y_AXIS,Rotate.Z_AXIS};
+	
 	RotateTransition rotateGroup;
 
 	TranslateTransition transRight;
@@ -44,7 +51,7 @@ public class CoordinateTile extends StackPane {
 	TranslateTransition transAbove;
 	TranslateTransition transBelow;
 	
-	ParallelTransition pt;
+	ParallelTransition parallelSplit;
 
 	Sphere rightOrb;
 	Sphere leftOrb;
@@ -61,7 +68,7 @@ public class CoordinateTile extends StackPane {
 		this.value = 0;
 		this.criticalMass = this.getCriticalMass(this.xCoordinate, this.yCoordinate);
 		this.colour = Color.WHITESMOKE;
-		this.b = b;
+		this.boardContainer = b;
 
 		rotateGroup = new RotateTransition(Duration.millis(1500+Math.random()*500), allOrbs);
 		rotateGroup.setFromAngle(0);
@@ -103,34 +110,29 @@ public class CoordinateTile extends StackPane {
 			this.getChildren().remove(this.aboveOrb);
 		});
 
-		pt = new ParallelTransition();
-		pt.setOnFinished(e->{
-			this.getChildren().remove(this.aboveOrb);
-			this.getChildren().remove(this.belowOrb);
-			this.getChildren().remove(this.leftOrb);
-			this.getChildren().remove(this.rightOrb);
+		parallelSplit = new ParallelTransition();
+		parallelSplit.setOnFinished(e->{
 			
-			ArrayList<CoordinateTile> allNeighbours = b.getListOfNeighbours(x, y);
+			ArrayList<CoordinateTile> allNeighbours = b.getListOfNeighbours(this.xCoordinate, this.yCoordinate);
 			for(int i=0;i<allNeighbours.size();i+=1)
 			{
-				allNeighbours.get(i).playerStatus = p.playerNumber;
-				allNeighbours.get(i).colour = p.colour;
+				allNeighbours.get(i).playerStatus = this.playerContainer.playerNumber;
+				allNeighbours.get(i).colour = this.playerContainer.colour;
+				
+				allNeighbours.get(i).getChildren().remove(allNeighbours.get(i).leftOrb);
+				allNeighbours.get(i).getChildren().remove(allNeighbours.get(i).rightOrb);
+				allNeighbours.get(i).getChildren().remove(allNeighbours.get(i).aboveOrb);
+				allNeighbours.get(i).getChildren().remove(allNeighbours.get(i).belowOrb);
 				
 				Sphere[] allNeighbourSpheres = allNeighbours.get(i).allOrbs.getChildren().toArray(new Sphere[allNeighbours.get(i).allOrbs.getChildren().size()]);
 				for(int a=0;a<allNeighbourSpheres.length;a+=1)
 				{
 					PhongMaterial material = new PhongMaterial();
-				    material.setDiffuseColor(p.colour);
+				    material.setDiffuseColor(this.playerContainer.colour);
 				    material.setSpecularColor(Color.BLACK);
 				    allNeighbourSpheres[a].setMaterial(material);
 				}
-//				for(Sphere n : allNeighbours.get(i).allOrbs.getChildren().toArray(new Sphere[allNeighbours.get(i).allOrbs.getChildren().size()]))
-//				{
-//					PhongMaterial material = new PhongMaterial();
-//				    material.setDiffuseColor(p.colour);
-//				    material.setSpecularColor(Color.BLACK);
-//				    n.setMaterial(material);
-//				}
+
 				allNeighbours.get(i).drawSphere();
 				allNeighbours.get(i).rotateGroup.play();
 			}
@@ -147,20 +149,36 @@ public class CoordinateTile extends StackPane {
 				}
 			}
 			
-			ArrayList<CoordinateTile> NeighbourCellsOfJustMovedCell = b.getListOfNeighbours(x,y);
-			ArrayList<CoordinateTile> NeighbourCellsWhichAreThemselvesUnstable = p.getAllUnstableNeighbourCells(NeighbourCellsOfJustMovedCell,b);
+			for(int p=0;p<b.numberOfRows;p+=1)
+			{
+				for(int q=0;q<b.numberOfColumns;q+=1)
+				{
+					System.out.print("v"+b.board[p][q].value+"p"+b.board[p][q].playerStatus+" ");
+				}
+				System.out.println();
+			}
+
+			System.out.println("Player "+this.boardContainer.allPlayers.get(currentPlayer).playerNumber+" moves");
+			System.out.println("Player "+this.boardContainer.allPlayers.get(currentPlayer).playerNumber+" count is "+this.boardContainer.playerCount(currentPlayer+1));
+			System.out.println("Player "+this.boardContainer.allPlayers.get(currentPlayer).playerNumber+" old count was "+this.boardContainer.allPlayers.get(currentPlayer).orbCount);
+			System.out.println("Player status of current tile after move is "+b.board[this.xCoordinate][this.yCoordinate].playerStatus);
+			System.out.println("Empty cells are "+this.boardContainer.countEmptyCells());							
+			System.out.println("Active players are "+this.boardContainer.countAllActivePlayers(this.boardContainer.allPlayers));
 			
-			b.board[x][y].pt.getChildren().clear();
+			ArrayList<CoordinateTile> NeighbourCellsOfJustMovedCell = b.getListOfNeighbours(x,y);
+			ArrayList<CoordinateTile> NeighbourCellsWhichAreThemselvesUnstable = this.playerContainer.getAllUnstableNeighbourCells(NeighbourCellsOfJustMovedCell,b);
+			
+			b.board[x][y].parallelSplit.getChildren().clear();
 			
 			if(b.countAllActivePlayers(b.allPlayers)!=1)
 			{
 				for(int a=0;a<NeighbourCellsWhichAreThemselvesUnstable.size();a+=1)
 				{
 					 try {
-						p.move(b,NeighbourCellsWhichAreThemselvesUnstable.get(a).xCoordinate,NeighbourCellsWhichAreThemselvesUnstable.get(a).yCoordinate);
+						this.playerContainer.move(b,NeighbourCellsWhichAreThemselvesUnstable.get(a).xCoordinate,NeighbourCellsWhichAreThemselvesUnstable.get(a).yCoordinate);
 					} catch (IllegalMoveException e1) {
 						// TODO Auto-generated catch block
-						e1.printStackTrace();
+						System.out.println(e1.getMessage());
 					}
 				}
 			}
@@ -170,7 +188,7 @@ public class CoordinateTile extends StackPane {
 			int p = currentPlayer;
 			while(!b.allPlayers.get(p).active)
 			{
-				p = (p + 1) % this.b.numberOfPlayers;
+				p = (p + 1) % this.boardContainer.numberOfPlayers;
 			}
 
 			for(int q=0;q<b.numberOfRows;q+=1)
@@ -193,46 +211,31 @@ public class CoordinateTile extends StackPane {
 		setOnMouseClicked(event -> {
 			if(!init)
 			{
-				if(this.b.countAllActivePlayers(this.b.allPlayers)!=1)
+				if(this.boardContainer.countAllActivePlayers(this.boardContainer.allPlayers)!=1)
 				{
 					if(!b.allPlayers.get(currentPlayer).active)
 					{
 						while(!b.allPlayers.get(currentPlayer).active)
 						{
-							currentPlayer = (currentPlayer + 1) % this.b.numberOfPlayers;
+							currentPlayer = (currentPlayer + 1) % this.boardContainer.numberOfPlayers;
 						}
 					}
 
 					try
 					{
-						this.b=this.b.allPlayers.get(currentPlayer).move(this.b, this.xCoordinate, this.yCoordinate);
-
-						for(int p=0;p<b.numberOfRows;p+=1)
-						{
-							for(int q=0;q<b.numberOfColumns;q+=1)
-							{
-								System.out.print("v"+b.board[p][q].value+"p"+b.board[p][q].playerStatus+" ");
-							}
-							System.out.println();
-						}
-
-						System.out.println("Player "+this.b.allPlayers.get(currentPlayer).playerNumber+" moves");
-						System.out.println("Player "+this.b.allPlayers.get(currentPlayer).playerNumber+" count is "+this.b.playerCount(currentPlayer+1));
-						System.out.println("Player "+this.b.allPlayers.get(currentPlayer).playerNumber+" old count was "+this.b.allPlayers.get(currentPlayer).orbCount);
-						System.out.println("Player status of current tile after move is "+b.board[this.xCoordinate][this.yCoordinate].playerStatus);
-						System.out.println("Empty cells are "+this.b.countEmptyCells());							System.out.println("Active players are "+this.b.countAllActivePlayers(this.b.allPlayers));
+						this.boardContainer.allPlayers.get(currentPlayer).move(this.boardContainer, this.xCoordinate, this.yCoordinate);
 					}
 					catch (IllegalMoveException e){
-						currentPlayer = (currentPlayer - 1) % this.b.numberOfPlayers;
+						currentPlayer = (currentPlayer - 1) % this.boardContainer.numberOfPlayers;
 						System.out.println(e.getMessage());
 					}
 				}
-				currentPlayer = (currentPlayer + 1) % this.b.numberOfPlayers;
+				currentPlayer = (currentPlayer + 1) % this.boardContainer.numberOfPlayers;
 				
 				int p = currentPlayer;
 				while(!b.allPlayers.get(p).active)
 				{
-					p = (p + 1) % this.b.numberOfPlayers;
+					p = (p + 1) % this.boardContainer.numberOfPlayers;
 				}
 
 				for(int q=0;q<b.numberOfRows;q+=1)
@@ -242,43 +245,42 @@ public class CoordinateTile extends StackPane {
 						b.board[q][r].border.setStroke(b.allPlayers.get(p).colour);
 					}
 				}
-
-				}
+			}
 			else
 			{
-				if(i<this.b.numberOfPlayers)
+				if(counterForInitialGamePlay<this.boardContainer.numberOfPlayers)
 				{
-					System.out.println("Player "+this.b.allPlayers.get(i).playerNumber+" moves");
+					System.out.println("Player "+this.boardContainer.allPlayers.get(counterForInitialGamePlay).playerNumber+" moves");
 					try
 					{
-						this.b.allPlayers.get(i).move(this.b, this.xCoordinate, this.yCoordinate);
+						this.boardContainer.allPlayers.get(counterForInitialGamePlay).move(this.boardContainer, this.xCoordinate, this.yCoordinate);
 					}
 					catch (IllegalMoveException e)
 					{
 						System.out.println(e.getMessage());
 					}
-					if(this.b.playerCount(i+1)>0)
+					if(this.boardContainer.playerCount(counterForInitialGamePlay+1)>0)
 					{
-						this.b.allPlayers.get(i).orbCount = 1;
+						this.boardContainer.allPlayers.get(counterForInitialGamePlay).orbCount = 1;
 					}
 					else
 					{
-						i-=1;
-						k-=1;
+						counterForInitialGamePlay-=1;
+						counterForInitialBorder-=1;
 					}
-					i+=1;
+					counterForInitialGamePlay+=1;
 
 					for(int p=0;p<b.numberOfRows;p+=1)
 					{
 						for(int q=0;q<b.numberOfColumns;q+=1)
 						{
-							b.board[p][q].border.setStroke(b.allColours[(k+1)%b.allPlayers.size()]);
+							b.board[p][q].border.setStroke(b.allColours[(counterForInitialBorder+1)%b.allPlayers.size()]);
 						}
 					}
-					k+=1;
+					counterForInitialBorder+=1;
 
 				}
-				if(i>=this.b.numberOfPlayers)
+				if(counterForInitialGamePlay>=this.boardContainer.numberOfPlayers)
 				{
 					init = false;
 				}
@@ -321,7 +323,7 @@ public class CoordinateTile extends StackPane {
 				this.value+=1;
 			}
 		}
-		else if(this.xCoordinate==0 && this.yCoordinate==b.numberOfColumns-1)
+		else if(this.xCoordinate==0 && this.yCoordinate==this.numberOfColumns-1)
 		{
 			// Upper Right Corner
 			if((this.value+1)%this.criticalMass==1)
@@ -337,7 +339,7 @@ public class CoordinateTile extends StackPane {
 				this.value+=1;
 			}
 		}
-		else if(this.xCoordinate==b.numberOfRows-1 && this.yCoordinate==0)
+		else if(this.xCoordinate==this.numberOfRows-1 && this.yCoordinate==0)
 		{
 			// Lower Left Corner
 			if((this.value+1)%this.criticalMass==1)
@@ -353,7 +355,7 @@ public class CoordinateTile extends StackPane {
 				this.value+=1;
 			}
 		}
-		else if(this.xCoordinate==b.numberOfRows-1 && this.yCoordinate==b.numberOfColumns-1)
+		else if(this.xCoordinate==this.numberOfRows-1 && this.yCoordinate==this.numberOfColumns-1)
 		{
 			// Lower Right Corner
 			if((this.value+1)%this.criticalMass==1)
@@ -393,7 +395,7 @@ public class CoordinateTile extends StackPane {
 				this.value+=1;
 			}
 		}
-		else if(this.xCoordinate==b.numberOfRows-1)
+		else if(this.xCoordinate==this.numberOfRows-1)
 		{
 			// Last Row
 			if((this.value+1)%this.criticalMass==1)
@@ -441,7 +443,7 @@ public class CoordinateTile extends StackPane {
 				this.value+=1;
 			}
 		}
-		else if(this.yCoordinate==b.numberOfColumns-1)
+		else if(this.yCoordinate==this.numberOfColumns-1)
 		{
 			// Last Column
 			if((this.value+1)%this.criticalMass==1)
@@ -498,28 +500,28 @@ public class CoordinateTile extends StackPane {
 			}
 		}
 
-		PhongMaterial material = new PhongMaterial();
+	  PhongMaterial material = new PhongMaterial();
 	  material.setDiffuseColor(this.colour);
 	  material.setSpecularColor(Color.BLACK);
 	  if(leftOrb!=null)
 	  {
-	   leftOrb.setRadius(12);
-	   leftOrb.setMaterial(material);
+		  leftOrb.setRadius(12);
+		  leftOrb.setMaterial(material);
 	  }
 	  if(rightOrb!=null)
 	  {
-	   rightOrb.setRadius(12);
-	   rightOrb.setMaterial(material);
+		  rightOrb.setRadius(12);
+		  rightOrb.setMaterial(material);
 	  }
 	  if(aboveOrb!=null)
 	  {
-	   aboveOrb.setRadius(12);
-	   aboveOrb.setMaterial(material);
+		  aboveOrb.setRadius(12);
+		  aboveOrb.setMaterial(material);
 	  }
 	  if(belowOrb!=null)
 	  {
-	   belowOrb.setRadius(12);
-	   belowOrb.setMaterial(material);
+		  belowOrb.setRadius(12);
+		  belowOrb.setMaterial(material);
 	  }
 	}
 }
