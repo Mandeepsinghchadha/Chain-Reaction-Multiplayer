@@ -24,43 +24,90 @@ public class PlayerController {
 	{
 		if((b.board[x][y].playerStatus==this.playerNumber)||(b.board[x][y].playerStatus==0))
 		{
+			b.board[x][y].p = this;
 			b.board[x][y].playerStatus = this.playerNumber;
 			b.board[x][y].colour = this.colour;
 			b.board[x][y].drawSphere();
+			b.board[x][y].rotateGroup.play();
 			if(b.board[x][y].value>=b.board[x][y].criticalMass)
 			{
-				ArrayList<CoordinateTile> allNeighbours = b.getListOfNeighbours(x, y);
-				for(int i=0;i<allNeighbours.size();i+=1)
+				b.board[x][y].value = 0;
+				b.board[x][y].playerStatus = 0;
+				b.board[x][y].rotateGroup.stop();
+				
+				b.board[x][y].allOrbs.getChildren().clear();
+
+				if(b.board[x][y].rightOrb!=null)
 				{
-					allNeighbours.get(i).playerStatus = this.playerNumber;
-					allNeighbours.get(i).colour = this.colour;
-					for(Sphere n : allNeighbours.get(i).allOrbs.getChildren().toArray(new Sphere[allNeighbours.get(i).allOrbs.getChildren().size()]))
-					{
-						PhongMaterial material = new PhongMaterial();
-					    material.setDiffuseColor(this.colour);
-					    material.setSpecularColor(Color.BLACK);
-					    n.setMaterial(material);
-					}
-					allNeighbours.get(i).drawSphere();
-					allNeighbours.get(i).rotateGroup.play();
-					b.board[x][y].value = 0;
-					b.board[x][y].allOrbs.getChildren().clear();
-					b.board[x][y].playerStatus = 0;
+					b.board[x][y].getChildren().add(b.board[x][y].rightOrb);
+					b.board[x][y].transRight.setNode(b.board[x][y].rightOrb);
 				}
+				if(b.board[x][y].leftOrb!=null)
+				{
+					b.board[x][y].getChildren().add(b.board[x][y].leftOrb);
+					b.board[x][y].transLeft.setNode(b.board[x][y].leftOrb);
+				}
+				if(b.board[x][y].aboveOrb!=null)
+				{
+					b.board[x][y].getChildren().add(b.board[x][y].aboveOrb);
+					b.board[x][y].transAbove.setNode(b.board[x][y].aboveOrb);
+				}
+				if(b.board[x][y].belowOrb!=null)
+				{
+					b.board[x][y].getChildren().add(b.board[x][y].belowOrb);
+					b.board[x][y].transBelow.setNode(b.board[x][y].belowOrb);
+				}
+				
+				if(b.board[x][y].transAbove.getNode()!=null)
+				{
+					b.board[x][y].pt.getChildren().add(b.board[x][y].transAbove);
+				}
+				if(b.board[x][y].transBelow.getNode()!=null)
+				{
+					b.board[x][y].pt.getChildren().add(b.board[x][y].transBelow);
+				}
+				if(b.board[x][y].transLeft.getNode()!=null)
+				{
+					b.board[x][y].pt.getChildren().add(b.board[x][y].transLeft);
+				}
+				if(b.board[x][y].transRight.getNode()!=null)
+				{
+					b.board[x][y].pt.getChildren().add(b.board[x][y].transRight);
+				}
+				b.board[x][y].pt.play();
+				
+//				ArrayList<CoordinateTile> allNeighbours = b.getListOfNeighbours(x, y);
+//				for(int i=0;i<allNeighbours.size();i+=1)
+//				{
+//					allNeighbours.get(i).playerStatus = this.playerNumber;
+//					allNeighbours.get(i).colour = this.colour;
+//					for(Sphere n : allNeighbours.get(i).allOrbs.getChildren().toArray(new Sphere[allNeighbours.get(i).allOrbs.getChildren().size()]))
+//					{
+//						PhongMaterial material = new PhongMaterial();
+//					    material.setDiffuseColor(this.colour);
+//					    material.setSpecularColor(Color.BLACK);
+//					    n.setMaterial(material);
+//					}
+//					allNeighbours.get(i).drawSphere();
+//					allNeighbours.get(i).rotateGroup.play();
+//				}
+				
 				ArrayList<CoordinateTile> NeighbourCellsOfJustMovedCell = b.getListOfNeighbours(x,y);
 				ArrayList<CoordinateTile> NeighbourCellsWhichAreThemselvesUnstable = getAllUnstableNeighbourCells(NeighbourCellsOfJustMovedCell,b);
 				
-				for(int j=0;j<b.numberOfPlayers;j+=1)
-				{
-					if(b.allPlayers.get(j).active)
-					{
-						b.allPlayers.get(j).orbCount = b.playerCount(j+1);
-						if(b.allPlayers.get(j).orbCount==0)
-						{
-							b.allPlayers.get(j).active=false;
-						}
-					}
-				}
+//				for(int j=0;j<b.numberOfPlayers;j+=1)
+//				{
+//					if(b.allPlayers.get(j).active)
+//					{
+//						b.allPlayers.get(j).orbCount = b.playerCount(j+1);
+//						if(b.allPlayers.get(j).orbCount==0)
+//						{
+//							b.allPlayers.get(j).active=false;
+//						}
+//					}
+//				}
+				
+				b.board[x][y].pt.getChildren().clear();
 				
 				if(b.countAllActivePlayers(b.allPlayers)!=1)
 				{
