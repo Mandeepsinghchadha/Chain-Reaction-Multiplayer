@@ -1,5 +1,7 @@
 package remakeLogicAndGUI;
 
+import java.util.Scanner;
+
 import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -8,7 +10,7 @@ import javafx.stage.Stage;
 
 public class mainApp extends Application{
 	
-	BoardGUI b = new BoardGUI(6,8,4);
+	BoardGUI b; 
 	
 	public Parent createContent()
 	{
@@ -35,6 +37,15 @@ public class mainApp extends Application{
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		// TODO Auto-generated method stub
+		Scanner s = new Scanner(System.in);
+		System.out.println("Enter the number of Rows");
+		int m = s.nextInt();
+		System.out.println("Enter the number of Columns");
+		int n = s.nextInt();
+		System.out.println("Enter the number of Players");
+		int numberOfPlayers = s.nextInt();
+		this.b = new BoardGUI(m,n,numberOfPlayers);
+		s.close();
 		primaryStage.setScene(new Scene(this.createContent()));
 		primaryStage.show();
 	}
