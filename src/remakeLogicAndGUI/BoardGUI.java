@@ -24,7 +24,14 @@ public class BoardGUI {
 		{
 			for(int j=0;j<this.numberOfColumns;j+=1)
 			{
-				this.board[i][j] = new CoordinateTile(i,j,this.numberOfRows,this.numberOfColumns,this);
+				if(this.numberOfRows==9)
+				{
+					this.board[i][j] = new CoordinateTile(i,j,this.numberOfRows,this.numberOfColumns,this,50);
+				}
+				else
+				{
+					this.board[i][j] = new CoordinateTile(i,j,this.numberOfRows,this.numberOfColumns,this,40);
+				}
 			}
 		}
 		

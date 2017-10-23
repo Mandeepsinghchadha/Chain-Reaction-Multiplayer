@@ -58,7 +58,7 @@ public class CoordinateTile extends StackPane {
 	Sphere aboveOrb;
 	Sphere belowOrb;
 
-	CoordinateTile(int x, int y, int m, int n, BoardGUI b)
+	CoordinateTile(int x, int y, int m, int n, BoardGUI b, int squareSize)
 	{
 		this.xCoordinate = x;
 		this.yCoordinate = y;
@@ -78,32 +78,32 @@ public class CoordinateTile extends StackPane {
 		rotateGroup.setAxis(allAxes[new Random().nextInt(allAxes.length)]);
 		rotateGroup.setAutoReverse(false);
 
-		transRight = new TranslateTransition(Duration.millis(700));
-		transRight.setToX(100);
+		transRight = new TranslateTransition(Duration.millis(500));
+		transRight.setToX(squareSize);
 		transRight.setCycleCount(1);
 		transRight.setAutoReverse(false);
 		transRight.setOnFinished(e->{
 			this.getChildren().remove(this.rightOrb);
 		});
 		
-		transLeft = new TranslateTransition(Duration.millis(700));
-		transLeft.setToX(-100);
+		transLeft = new TranslateTransition(Duration.millis(500));
+		transLeft.setToX(-1*squareSize);
 		transLeft.setCycleCount(1);
 		transLeft.setAutoReverse(false);
 		transLeft.setOnFinished(e->{
 			this.getChildren().remove(this.leftOrb);
 		});
 		
-		transBelow = new TranslateTransition(Duration.millis(700));
-		transBelow.setToY(100);
+		transBelow = new TranslateTransition(Duration.millis(500));
+		transBelow.setToY(squareSize);
 		transBelow.setCycleCount(1);
 		transBelow.setAutoReverse(false);
 		transBelow.setOnFinished(e->{
 			this.getChildren().remove(this.belowOrb);
 		});
 		
-		transAbove = new TranslateTransition(Duration.millis(700));
-		transAbove.setToY(-100);
+		transAbove = new TranslateTransition(Duration.millis(500));
+		transAbove.setToY(-1*squareSize);
 		transAbove.setCycleCount(1);
 		transAbove.setAutoReverse(false);
 		transAbove.setOnFinished(e->{
@@ -201,7 +201,7 @@ public class CoordinateTile extends StackPane {
 			
 		});
 		
-		this.border = new Rectangle(100,100);
+		this.border = new Rectangle(squareSize,squareSize);
 		border.setFill(null);
 		border.setStroke(Color.RED);
 
@@ -487,7 +487,7 @@ public class CoordinateTile extends StackPane {
 			else if((this.value+1)%this.criticalMass==3)
 			{
 				leftOrb = new Sphere();
-				leftOrb.setTranslateX(-8);
+				leftOrb.setTranslateX(-6);
 				leftOrb.setTranslateY(12);
 				allOrbs.getChildren().add(leftOrb);
 				this.value+=1;
@@ -505,22 +505,22 @@ public class CoordinateTile extends StackPane {
 	  material.setSpecularColor(Color.BLACK);
 	  if(leftOrb!=null)
 	  {
-		  leftOrb.setRadius(12);
+		  leftOrb.setRadius(10);
 		  leftOrb.setMaterial(material);
 	  }
 	  if(rightOrb!=null)
 	  {
-		  rightOrb.setRadius(12);
+		  rightOrb.setRadius(10);
 		  rightOrb.setMaterial(material);
 	  }
 	  if(aboveOrb!=null)
 	  {
-		  aboveOrb.setRadius(12);
+		  aboveOrb.setRadius(10);
 		  aboveOrb.setMaterial(material);
 	  }
 	  if(belowOrb!=null)
 	  {
-		  belowOrb.setRadius(12);
+		  belowOrb.setRadius(10);
 		  belowOrb.setMaterial(material);
 	  }
 	}

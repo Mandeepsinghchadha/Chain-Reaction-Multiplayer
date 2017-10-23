@@ -8,9 +8,14 @@ import javafx.beans.value.ObservableValue;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.VPos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ColorPicker;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextFormatter;
@@ -20,6 +25,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class mainApp extends Application{
@@ -30,7 +37,64 @@ public class mainApp extends Application{
 	Stage window;
 	
 	public void createSettingsPage() {
+		GridPane layout = new GridPane();
+		layout.setVgap(3);
+		layout.setPadding(new Insets(20, 20, 20, 20));
+		layout.setAlignment(Pos.CENTER);
+		Label heading=new Label("Set Player Colour");
+		heading.setStyle("-fx-font: 34 arial;");
+		GridPane.setHalignment(heading, HPos.CENTER);
+		heading.setAlignment(Pos.CENTER);
+		layout.add(heading,6,6);
+		for(int i=1;i<=8;++i) {
+			HBox row = new HBox();
+			GridPane.setHalignment(row, HPos.CENTER);
+			row.setSpacing(80);
+			Button colorButton = new Button("  ");
+			final int idx=i-1;
+			colorButton.setOnAction(event -> {
+				Dialog<String> alert = new Dialog<>();
+				alert.setTitle("Pick a colour");
+				alert.setHeaderText(null);
+				GridPane grid = new GridPane();
+				ColorPicker colourPicker = new ColorPicker();
+				ButtonType OKButton = new ButtonType("OK", ButtonData.CANCEL_CLOSE);
+		        colourPicker.setValue((new BoardGUI(1,1,8)).allPlayers.get(idx).colour);
+				GridPane.setHalignment(colourPicker, HPos.CENTER);
+		        colourPicker.setOnAction(ev -> {
+		        			colorButton.setStyle("-fx-background-radius : 20px ;"+"-fx-background-color: #"+ String.format( "%02X%02X%02X",
+		    	            (int)( colourPicker.getValue().getRed() * 255 ),
+		    	            (int)( colourPicker.getValue().getGreen() * 255 ),
+		    	            (int)( colourPicker.getValue().getBlue() * 255 ) ));               
+		        });
+				grid.setVgap(3);
+				grid.setHgap(10);
+			    grid.setPadding(new Insets(22, 22, 22, 22));
+		        GridPane.setHalignment(colourPicker, HPos.CENTER);
+		        grid.add(colourPicker,2,2);
+		        alert.getDialogPane().setPrefSize(220,150);
+		        alert.getDialogPane().setContent(grid);
+		        alert.getDialogPane().getButtonTypes().add(OKButton);
+				alert.showAndWait();
+			});
+			colorButton.setStyle("-fx-background-radius : 20px ;"+"-fx-background-color: #"+ String.format( "%02X%02X%02X",
+	            (int)( (new BoardGUI(1,1,8)).allPlayers.get(i-1).colour.getRed() * 255 ),
+	            (int)( (new BoardGUI(1,1,8)).allPlayers.get(i-1).colour.getGreen() * 255 ),
+	            (int)( (new BoardGUI(1,1,8)).allPlayers.get(i-1).colour.getBlue() * 255 ) ));
+			row.getChildren().addAll(new Label("Player "+i),new Label(":"),colorButton);
+			row.setAlignment(Pos.CENTER);
+			layout.add(row,6,16+5*i);
+		}
+		Button doneButton = new Button("Done");
+		GridPane.setHalignment(doneButton, HPos.CENTER);
+		doneButton.setAlignment(Pos.CENTER);
 		
+		doneButton.setOnAction(event -> {
+			window.setScene(menu);
+		});
+		layout.add(doneButton,6,66);
+		settingsPage=new Scene(layout,640,520);
+		settingsPage.getStylesheets().add("style.css");
 	}
 	
 	public void createMenu(){
@@ -43,6 +107,10 @@ public class mainApp extends Application{
 		
 		playButton.setOnAction(event -> {
 			this.b = new BoardGUI(numRows,numCols,numPlayers);
+			CoordinateTile.init = true;
+			CoordinateTile.currentPlayer = 0;
+			CoordinateTile.counterForInitialGamePlay = 0;
+			CoordinateTile.counterForInitialBorder = 0;
 			game=new Scene(this.createContent());
 			window.setScene(game);
 		});
@@ -64,7 +132,7 @@ public class mainApp extends Application{
 		            numCols=6;
 		        } 
 		        else {
-		        		numRows=15;
+		        	numRows=15;
 		            numCols=10;
 		        }
 		    }
@@ -179,15 +247,30 @@ public class mainApp extends Application{
 	{
 		Pane root = new Pane();
 		
-		root.setPrefSize(b.numberOfColumns*100, b.numberOfRows*100);
-		for(int i=0;i<b.numberOfRows;i+=1)
+		if(b.numberOfRows==9)
 		{
-			for(int j=0;j<b.numberOfColumns;j+=1)
-			{	
-				b.board[i][j].setTranslateX(j*100);
-				b.board[i][j].setTranslateY(i*100);
-				
-				root.getChildren().add(b.board[i][j]);
+			root.setPrefSize(6*50, 9*50);
+			for(int i=0;i<b.numberOfRows;i+=1)
+			{
+				for(int j=0;j<b.numberOfColumns;j+=1)
+				{	
+						b.board[i][j].setTranslateX(j*50);
+						b.board[i][j].setTranslateY(i*50);
+						root.getChildren().add(b.board[i][j]);
+				}
+			}
+		}
+		else
+		{
+			root.setPrefSize(10*40, 15*40);
+			for(int i=0;i<b.numberOfRows;i+=1)
+			{
+				for(int j=0;j<b.numberOfColumns;j+=1)
+				{	
+						b.board[i][j].setTranslateX(j*40);
+						b.board[i][j].setTranslateY(i*40);
+						root.getChildren().add(b.board[i][j]);
+				}
 			}
 		}
 		
@@ -202,6 +285,10 @@ public class mainApp extends Application{
 		Button newGameButton = new Button("New Game");
 		newGameButton.setOnAction(event -> {
 			this.b = new BoardGUI(numRows,numCols,numPlayers);
+			CoordinateTile.init = true;
+			CoordinateTile.currentPlayer = 0;
+			CoordinateTile.counterForInitialGamePlay = 0;
+			CoordinateTile.counterForInitialBorder = 0;
 			game=new Scene(this.createContent());
 			window.setScene(game);
 		});
