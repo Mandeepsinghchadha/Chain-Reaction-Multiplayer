@@ -11,7 +11,7 @@ public class BoardGUI {
 	CoordinateTile[][] board;
 	int numberOfPlayers;
 	ArrayList<PlayerController> allPlayers;
-	Color[] allColours = {Color.RED,Color.GREEN,Color.BLUE,Color.YELLOW,Color.MAGENTA,Color.CYAN,Color.ORANGE,Color.GRAY};
+	static Color[] allColours = {Color.RED,Color.GREEN,Color.BLUE,Color.YELLOW,Color.MAGENTA,Color.CYAN,Color.ORANGE,Color.GRAY};
 	
 	BoardGUI(int m, int n, int numberOfPlayers)
 	{

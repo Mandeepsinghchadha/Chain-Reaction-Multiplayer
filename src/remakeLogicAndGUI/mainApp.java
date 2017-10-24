@@ -8,7 +8,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.geometry.VPos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -26,7 +25,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class mainApp extends Application{
@@ -46,7 +44,7 @@ public class mainApp extends Application{
 		GridPane.setHalignment(heading, HPos.CENTER);
 		heading.setAlignment(Pos.CENTER);
 		layout.add(heading,6,6);
-		for(int i=1;i<=8;++i) {
+		for(int i=1;i<=this.numPlayers;++i) {
 			HBox row = new HBox();
 			GridPane.setHalignment(row, HPos.CENTER);
 			row.setSpacing(80);
@@ -65,7 +63,9 @@ public class mainApp extends Application{
 		        			colorButton.setStyle("-fx-background-radius : 20px ;"+"-fx-background-color: #"+ String.format( "%02X%02X%02X",
 		    	            (int)( colourPicker.getValue().getRed() * 255 ),
 		    	            (int)( colourPicker.getValue().getGreen() * 255 ),
-		    	            (int)( colourPicker.getValue().getBlue() * 255 ) ));               
+		    	            (int)( colourPicker.getValue().getBlue() * 255 ) ));
+		        			
+		        			BoardGUI.allColours[idx] = Color.color(( colourPicker.getValue().getRed()),( colourPicker.getValue().getGreen()), (colourPicker.getValue().getBlue()));
 		        });
 				grid.setVgap(3);
 				grid.setHgap(10);
@@ -93,6 +93,17 @@ public class mainApp extends Application{
 			window.setScene(menu);
 		});
 		layout.add(doneButton,6,66);
+		
+		Button resetAllColorsButton = new Button("Reset All Colors");
+		GridPane.setHalignment(resetAllColorsButton, HPos.CENTER);
+		resetAllColorsButton.setAlignment(Pos.CENTER);
+		
+		resetAllColorsButton.setOnAction(event -> {
+			BoardGUI.allColours = new Color[]{Color.RED,Color.GREEN,Color.BLUE,Color.YELLOW,Color.MAGENTA,Color.CYAN,Color.ORANGE,Color.GRAY};
+			window.setScene(menu);
+		});
+		layout.add(resetAllColorsButton,6,62);
+		
 		settingsPage=new Scene(layout,640,520);
 		settingsPage.getStylesheets().add("style.css");
 	}

@@ -1,0 +1,10 @@
+.root{
+	-fx-background-color: linear-gradient(#f0f0f0,#a0a0a0);
+	-fx-font-size: 10pt;
+}
+.TextField{
+	-fx-background-radius:0;
+}
+.GridPane{
+	-fx-alignment: center ;
+}

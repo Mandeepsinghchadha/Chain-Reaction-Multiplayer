@@ -203,7 +203,7 @@ public class CoordinateTile extends StackPane {
 		
 		this.border = new Rectangle(squareSize,squareSize);
 		border.setFill(null);
-		border.setStroke(Color.RED);
+		border.setStroke(BoardGUI.allColours[0]);
 
 		this.setAlignment(Pos.CENTER);
 		this.getChildren().addAll(border);
@@ -274,7 +274,7 @@ public class CoordinateTile extends StackPane {
 					{
 						for(int q=0;q<b.numberOfColumns;q+=1)
 						{
-							b.board[p][q].border.setStroke(b.allColours[(counterForInitialBorder+1)%b.allPlayers.size()]);
+							b.board[p][q].border.setStroke(BoardGUI.allColours[(counterForInitialBorder+1)%b.allPlayers.size()]);
 						}
 					}
 					counterForInitialBorder+=1;
