@@ -1,4 +1,4 @@
-package remakeLogicAndGUI;
+package application;
 
 public class IllegalMoveException extends Exception {
 	private static final long serialVersionUID = 1L;
@@ -8,3 +8,4 @@ public class IllegalMoveException extends Exception {
 		super(message);
 	}
 }
+
