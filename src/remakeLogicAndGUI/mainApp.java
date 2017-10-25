@@ -1,7 +1,13 @@
 package remakeLogicAndGUI;
 
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.function.UnaryOperator;
+
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -27,13 +33,42 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-public class mainApp extends Application{
+public class mainApp extends Application implements Serializable{
 	
 	BoardGUI b;
 	int numRows,numCols,numPlayers;
 	Scene menu, game, settingsPage;
 	Stage window;
 	
+	public static void serialize(BoardGUI b) throws IOException
+	{
+		ObjectOutputStream out = null;
+		try
+		{
+			out = new ObjectOutputStream(new FileOutputStream("boardGame.b"));
+			out.writeObject(b);
+		}
+		finally
+		{
+			out.close();
+		}
+	}
+
+	public static BoardGUI deserialize() throws IOException, ClassNotFoundException
+	{
+		ObjectInputStream in = null;
+		try
+		{
+			in = new ObjectInputStream(new FileInputStream("boardGame.b"));
+			BoardGUI loadedB = (BoardGUI) in.readObject();
+			return loadedB;
+		}
+		finally
+		{
+			in.close();
+		}
+	}
+
 	public void createSettingsPage() {
 		GridPane layout = new GridPane();
 		layout.setVgap(3);
@@ -309,6 +344,16 @@ public class mainApp extends Application{
 		HBox.setHgrow(spacer, Priority.ALWAYS);
 		Button undoButton = new Button("Undo");
 		undoButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
+		
+		undoButton.setOnAction(event -> {
+			try {
+				BoardGUI loadedB = mainApp.deserialize();
+				this.b = loadedB;
+			} catch (ClassNotFoundException | IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		});
 		
 		menubar.getChildren().addAll(backButton,spacer,undoButton,newGameButton);
 

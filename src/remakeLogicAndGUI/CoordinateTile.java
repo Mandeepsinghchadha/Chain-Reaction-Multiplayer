@@ -1,5 +1,7 @@
 package remakeLogicAndGUI;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
 import javafx.util.Duration;
@@ -20,11 +22,11 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 
-public class CoordinateTile extends StackPane {
+public class CoordinateTile extends StackPane implements Serializable{
 	
 	BoardGUI boardContainer;
 	PlayerController playerContainer;
-	Rectangle border;
+	transient Rectangle border;
 	
 	static boolean init = true;
 	static int currentPlayer = 0;
@@ -36,27 +38,28 @@ public class CoordinateTile extends StackPane {
 	int playerStatus;
 	int value;
 	int criticalMass;
+	int sideLength;
 	
-	Color colour;
+	transient Color colour;
 	int numberOfRows;
 	int numberOfColumns;
 	
-	Group allOrbs = new Group();
-	Point3D allAxes[] = {Rotate.X_AXIS,Rotate.Y_AXIS,Rotate.Z_AXIS};
+	transient Group allOrbs = new Group();
+	transient Point3D allAxes[] = {Rotate.X_AXIS,Rotate.Y_AXIS,Rotate.Z_AXIS};
 	
-	RotateTransition rotateGroup;
+	transient RotateTransition rotateGroup;
 
-	TranslateTransition transRight;
-	TranslateTransition transLeft;
-	TranslateTransition transAbove;
-	TranslateTransition transBelow;
+	transient TranslateTransition transRight;
+	transient TranslateTransition transLeft;
+	transient TranslateTransition transAbove;
+	transient TranslateTransition transBelow;
 	
-	ParallelTransition parallelSplit;
+	transient ParallelTransition parallelSplit;
 
-	Sphere rightOrb;
-	Sphere leftOrb;
-	Sphere aboveOrb;
-	Sphere belowOrb;
+	transient Sphere rightOrb;
+	transient Sphere leftOrb;
+	transient Sphere aboveOrb;
+	transient Sphere belowOrb;
 
 	CoordinateTile(int x, int y, int m, int n, BoardGUI b, int squareSize)
 	{
@@ -69,7 +72,8 @@ public class CoordinateTile extends StackPane {
 		this.criticalMass = this.getCriticalMass(this.xCoordinate, this.yCoordinate);
 		this.colour = Color.WHITESMOKE;
 		this.boardContainer = b;
-
+		this.sideLength = squareSize;
+		
 		rotateGroup = new RotateTransition(Duration.millis(1500+Math.random()*500), allOrbs);
 		rotateGroup.setFromAngle(0);
 		rotateGroup.setToAngle(360);
@@ -198,8 +202,9 @@ public class CoordinateTile extends StackPane {
 					b.board[q][r].border.setStroke(b.allPlayers.get(p).colour);
 				}
 			}
-			
-		});
+		}
+		
+		);
 		
 		this.border = new Rectangle(squareSize,squareSize);
 		border.setFill(null);
@@ -224,10 +229,15 @@ public class CoordinateTile extends StackPane {
 					try
 					{
 						this.boardContainer.allPlayers.get(currentPlayer).move(this.boardContainer, this.xCoordinate, this.yCoordinate);
+						mainApp.serialize(this.boardContainer);
 					}
 					catch (IllegalMoveException e){
 						currentPlayer = (currentPlayer - 1) % this.boardContainer.numberOfPlayers;
 						System.out.println(e.getMessage());
+					} 
+					catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
 					}
 				}
 				currentPlayer = (currentPlayer + 1) % this.boardContainer.numberOfPlayers;
@@ -254,10 +264,15 @@ public class CoordinateTile extends StackPane {
 					try
 					{
 						this.boardContainer.allPlayers.get(counterForInitialGamePlay).move(this.boardContainer, this.xCoordinate, this.yCoordinate);
+						mainApp.serialize(this.boardContainer);
 					}
 					catch (IllegalMoveException e)
 					{
 						System.out.println(e.getMessage());
+					}
+					catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
 					}
 					if(this.boardContainer.playerCount(counterForInitialGamePlay+1)>0)
 					{

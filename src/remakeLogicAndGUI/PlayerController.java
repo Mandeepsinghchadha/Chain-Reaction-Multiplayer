@@ -1,13 +1,14 @@
 package remakeLogicAndGUI;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import javafx.scene.paint.Color;
 
-public class PlayerController {
+public class PlayerController implements Serializable{
 	
 	int orbCount;
 	int playerNumber;
-	Color colour;
+	transient Color colour;
 	boolean active;
 	
 	PlayerController(int playerNumber, Color c)

@@ -1,17 +1,18 @@
 package remakeLogicAndGUI;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import javafx.scene.paint.Color;
 
-public class BoardGUI {
+public class BoardGUI implements Serializable{
 
 	int numberOfRows;
 	int numberOfColumns;
 	CoordinateTile[][] board;
 	int numberOfPlayers;
 	ArrayList<PlayerController> allPlayers;
-	static Color[] allColours = {Color.RED,Color.GREEN,Color.BLUE,Color.YELLOW,Color.MAGENTA,Color.CYAN,Color.ORANGE,Color.GRAY};
+	transient static Color[] allColours = {Color.RED,Color.GREEN,Color.BLUE,Color.YELLOW,Color.MAGENTA,Color.CYAN,Color.ORANGE,Color.GRAY};
 	
 	BoardGUI(int m, int n, int numberOfPlayers)
 	{
