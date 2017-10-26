@@ -1,5 +1,6 @@
 package application;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import javafx.scene.paint.Color;
 import withoutGUI.Player;
@@ -21,7 +22,7 @@ public class PlayerController {
 		this.p = new Player(this.playerNumber,this.colour);
 	}
 	
-	public void move(BoardGUI b, int x, int y) throws IllegalMoveException
+	public void move(BoardGUI b, int x, int y) throws IllegalMoveException, IOException
 	{
 		if((b.board[x][y].playerStatus==this.playerNumber)||(b.board[x][y].playerStatus==0))
 		{
@@ -111,8 +112,7 @@ public class PlayerController {
 			else
 			{
 				return;
-			}
-			
+			}	
 		}
 		else
 		{

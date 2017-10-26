@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.Stack;
 
 public class gameState implements Serializable{
 
@@ -13,6 +14,22 @@ public class gameState implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 4L;
+	public Stack<TileBoard> allStates;
+	
+	public gameState()
+	{
+		this.allStates = new Stack<TileBoard>();
+	}
+	
+	public void saveState(TileBoard tb)
+	{
+		this.allStates.push(tb);
+	}
+	
+	public TileBoard loadState()
+	{
+		return this.allStates.pop();
+	}
 	
 	public void serialize(TileBoard tb) throws IOException
 	{
@@ -21,6 +38,7 @@ public class gameState implements Serializable{
 		{
 			out = new ObjectOutputStream(new FileOutputStream("gameState.db"));
 			out.writeObject(tb);
+//			this.allStates.push(tb);
 		}
 		finally
 		{
@@ -35,6 +53,7 @@ public class gameState implements Serializable{
 		{
 			in = new ObjectInputStream(new FileInputStream("gameState.db"));
 			TileBoard GS = (TileBoard) in.readObject();
+//			this.allStates.pop();
 			return GS;
 		}
 		finally
