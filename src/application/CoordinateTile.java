@@ -25,26 +25,26 @@ import javafx.scene.transform.Rotate;
 
 public class CoordinateTile extends StackPane {
 	
-	gameState gs;
+	static gameState gs;
 	TileCell t;
 	BoardGUI boardContainer;
 	PlayerController playerContainer;
 	Rectangle border;
 	
-	static boolean init = true;
-	static int currentPlayer = 0;
-	static int counterForInitialGamePlay = 0;
-	static int counterForInitialBorder = 0;
+	public static boolean init = true;
+	public static int currentPlayer = 0;
+	public static int counterForInitialGamePlay = 0;
+	public static int counterForInitialBorder = 0;
 	
-	int xCoordinate;
-	int yCoordinate;
-	int playerStatus;
-	int value;
-	int criticalMass;
+	public int xCoordinate;
+	public int yCoordinate;
+	public int playerStatus;
+	public int value;
+	public int criticalMass;
 	
-	Color colour;
-	int numberOfRows;
-	int numberOfColumns;
+	public Color colour;
+	public int numberOfRows;
+	public int numberOfColumns;
 	
 	Group allOrbs = new Group();
 	Point3D allAxes[] = {Rotate.X_AXIS,Rotate.Y_AXIS,Rotate.Z_AXIS};
@@ -75,7 +75,7 @@ public class CoordinateTile extends StackPane {
 		this.colour = Color.WHITESMOKE;
 		this.boardContainer = b;
 		this.t = new TileCell(this.numberOfRows,this.numberOfColumns,this.xCoordinate,this.yCoordinate);
-		this.gs = new gameState();
+		gs = new gameState();
 
 		rotateGroup = new RotateTransition(Duration.millis(1500+Math.random()*500), allOrbs);
 		rotateGroup.setFromAngle(0);
@@ -249,9 +249,9 @@ public class CoordinateTile extends StackPane {
 
 					try
 					{
-						this.gs.saveState(this.boardContainer.tb);
+						CoordinateTile.gs.saveState(this.boardContainer.tb);
 						
-						TileBoard previousState = this.gs.allStates.peek();
+						TileBoard previousState = CoordinateTile.gs.allStates.peek();
 						System.out.println("Details of Previous State");
 						for(int a=0;a<previousState.numberOfRows;a+=1)
 						{
@@ -321,9 +321,9 @@ public class CoordinateTile extends StackPane {
 					System.out.println("Player "+this.boardContainer.allPlayers.get(counterForInitialGamePlay).playerNumber+" moves");
 					try
 					{
-						this.gs.saveState(this.boardContainer.tb);
+						CoordinateTile.gs.saveState(this.boardContainer.tb);
 						
-						TileBoard previousState = this.gs.allStates.peek();
+						TileBoard previousState = CoordinateTile.gs.allStates.peek();
 						System.out.println("Details of Previous State");
 						for(int a=0;a<previousState.numberOfRows;a+=1)
 						{

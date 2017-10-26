@@ -326,8 +326,13 @@ public class mainApp extends Application{
 		backButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
 		newGameButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
 		HBox.setHgrow(spacer, Priority.ALWAYS);
+		
 		Button undoButton = new Button("Undo");
 		undoButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
+		
+		undoButton.setOnAction(event->{
+			b.loadGUIfromState(CoordinateTile.gs.allStates.pop());
+		});
 		
 		menubar.getChildren().addAll(backButton,spacer,undoButton,newGameButton);
 
