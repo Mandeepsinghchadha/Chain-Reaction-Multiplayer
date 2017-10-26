@@ -36,6 +36,7 @@ public class mainApp extends Application{
 	int numRows,numCols,numPlayers;
 	Scene menu, game, settingsPage;
 	Stage window;
+	public static Button undoButton;
 	
 	public void createSettingsPage() {
 		GridPane layout = new GridPane();
@@ -313,7 +314,7 @@ public class mainApp extends Application{
 			CoordinateTile.init = true;
 			TileCell.init = true;
 			CoordinateTile.gs = new gameState();
-			
+			undoButton.setDisable(true);
 			CoordinateTile.currentPlayer = 0;
 			TileCell.currentPlayer = 0;
 			
@@ -330,9 +331,9 @@ public class mainApp extends Application{
 		newGameButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
 		HBox.setHgrow(spacer, Priority.ALWAYS);
 		
-		Button undoButton = new Button("Undo");
+		undoButton = new Button("Undo");
 		undoButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
-		
+		undoButton.setDisable(true);
 		undoButton.setOnAction(event->{
 			if(!CoordinateTile.gs.allStates.isEmpty())
 			{

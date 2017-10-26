@@ -218,10 +218,11 @@ public class CoordinateTile extends StackPane {
 		this.getChildren().addAll(border);
 
 		setOnMouseClicked(event -> {
-			if(!init)
+
+			if(counterForInitialGamePlay>=this.boardContainer.numberOfPlayers)
 			{
 				counterForInitialGamePlay+=1;
-				if(this.boardContainer.countAllActivePlayers(this.boardContainer.allPlayers)!=1)
+				if(this.boardContainer.countAllActivePlayers(this.boardContainer.allPlayers)>1)
 				{
 					if(!b.allPlayers.get(currentPlayer).active)
 					{
@@ -237,6 +238,7 @@ public class CoordinateTile extends StackPane {
 						CoordinateTile.gs.saveState(new TileBoard(this.boardContainer.tb));
 						this.boardContainer.allPlayers.get(currentPlayer).move(this.boardContainer, this.xCoordinate, this.yCoordinate);
 						BoardGUI.undoOnce = true;
+						mainApp.undoButton.setDisable(false);
 					}
 					catch (IllegalMoveException e){
 						
@@ -248,7 +250,6 @@ public class CoordinateTile extends StackPane {
 						System.out.println(e.getMessage());
 					}
 					catch (IOException e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					} 
 				}
@@ -256,6 +257,7 @@ public class CoordinateTile extends StackPane {
 				TileCell.currentPlayer = (TileCell.currentPlayer + 1) % this.boardContainer.numberOfPlayers;
 				
 				int p = currentPlayer;
+				if(this.boardContainer.countAllActivePlayers(this.boardContainer.allPlayers)>0)
 				while(!b.allPlayers.get(p).active)
 				{
 					p = (p + 1) % this.boardContainer.numberOfPlayers;
@@ -281,12 +283,12 @@ public class CoordinateTile extends StackPane {
 						CoordinateTile.gs.saveState(new TileBoard(this.boardContainer.tb));
 						this.boardContainer.allPlayers.get(counterForInitialGamePlay).move(this.boardContainer, this.xCoordinate, this.yCoordinate);
 						BoardGUI.undoOnce = true;
+						mainApp.undoButton.setDisable(false);
 					}
 					catch (IllegalMoveException e)
 					{
 						System.out.println(e.getMessage());
 					} catch (IOException e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					} 
 					if(this.boardContainer.playerCount(counterForInitialGamePlay+1)>0)
