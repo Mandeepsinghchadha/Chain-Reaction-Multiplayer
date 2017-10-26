@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import javafx.scene.paint.Color;
 import withoutGUI.TileBoard;
+import withoutGUI.TileCell;
 
 public class BoardGUI {
 
@@ -100,31 +101,45 @@ public class BoardGUI {
 			}
 		}
 		
-		for(int i=0;i<this.numberOfPlayers;i+=1)
-		{
-			if(this.playerCount(i+1)>0)
-			{
-				this.allPlayers.get(i).active = true;
-			}
-			else
-			{
-				this.allPlayers.get(i).active = false;
-			}
-		}
-		
 		if(!CoordinateTile.init && CoordinateTile.counterForInitialGamePlay>this.numberOfPlayers)
 		{
 			CoordinateTile.currentPlayer = (((CoordinateTile.currentPlayer - 1) % this.numberOfPlayers) + this.numberOfPlayers) % this.numberOfPlayers;
+		
+			for(int i=0;i<this.numberOfPlayers;i+=1)
+			{
+				if(this.playerCount(i+1)>0)
+				{
+					this.allPlayers.get(i).active = true;
+				}
+				else
+				{
+					this.allPlayers.get(i).active = false;
+				}
+			}
 		}
 		else
 		{
 			CoordinateTile.counterForInitialGamePlay = (CoordinateTile.counterForInitialGamePlay - 1);
+			TileCell.counterForInitialGamePlay-=1;
 			CoordinateTile.counterForInitialBorder = (CoordinateTile.counterForInitialBorder - 1);
-			CoordinateTile.init = true;
+			TileCell.counterForInitialBorder-=1;
+			
+			if(this.playerCount(CoordinateTile.counterForInitialGamePlay+1)<=0)
+			{
+				this.allPlayers.get(CoordinateTile.counterForInitialGamePlay).orbCount = -2147483648;
+				this.allPlayers.get(CoordinateTile.counterForInitialGamePlay).p.orbCount = -2147483648;
+			}
+			else
+			{
+				CoordinateTile.counterForInitialGamePlay+=1;
+				TileCell.counterForInitialGamePlay+=1;
+				CoordinateTile.counterForInitialBorder+=1;
+				TileCell.counterForInitialBorder+=1;
+			}
 		}
 		
 		undoOnce = false;
-		
+		mainApp.undoButton.setDisable(true);
 	}
 //		CoordinateTile.gs.saveState(this.tb);
 	}

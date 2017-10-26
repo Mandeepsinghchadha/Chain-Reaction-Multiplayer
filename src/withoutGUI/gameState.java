@@ -38,7 +38,6 @@ public class gameState implements Serializable{
 		{
 			out = new ObjectOutputStream(new FileOutputStream("gameState.db"));
 			out.writeObject(tb);
-//			this.allStates.push(tb);
 		}
 		finally
 		{
@@ -53,7 +52,6 @@ public class gameState implements Serializable{
 		{
 			in = new ObjectInputStream(new FileInputStream("gameState.db"));
 			TileBoard GS = (TileBoard) in.readObject();
-//			this.allStates.pop();
 			return GS;
 		}
 		finally
