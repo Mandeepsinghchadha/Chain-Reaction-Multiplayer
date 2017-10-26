@@ -15,6 +15,7 @@ public class TileBoard implements Serializable {
 	public int numberOfColumns;
 	public TileCell[][] board;
 	public int numberOfPlayers;
+	public boolean undoOnce;
 	public ArrayList<Player> allPlayers;
 	public static String[] allColours = {Color.RED.toString(),Color.GREEN.toString(),Color.BLUE.toString(),Color.YELLOW.toString(),Color.MAGENTA.toString(),Color.CYAN.toString(),Color.ORANGE.toString(),Color.GRAY.toString()};
 	

@@ -1,6 +1,9 @@
 package application;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.function.UnaryOperator;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
@@ -36,7 +39,8 @@ public class mainApp extends Application{
 	int numRows,numCols,numPlayers;
 	Scene menu, game, settingsPage;
 	Stage window;
-	public static Button undoButton;
+	public static Button undoButton,resumeButton;
+	static gameState gs;
 	
 	public void createSettingsPage() {
 		GridPane layout = new GridPane();
@@ -114,12 +118,12 @@ public class mainApp extends Application{
 		settingsPage.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
 	}
 	
-	public void createMenu(){
+	public void createMenu() throws FileNotFoundException, IOException, ClassNotFoundException{
 		
 		Button playButton = new Button("New Game");
-		Button resumeButton = new Button("Resume");
+		resumeButton = new Button("Resume");
 		Button settingsButton = new Button("Settings");
-		
+		gs=new gameState();
 		playButton.setAlignment(Pos.CENTER);
 		
 		playButton.setOnAction(event -> {
@@ -137,7 +141,7 @@ public class mainApp extends Application{
 			CoordinateTile.counterForInitialBorder = 0;
 			TileCell.counterForInitialBorder = 0;
 			
-			game=new Scene(this.createContent());
+			game=new Scene(this.createContent(0));
 			window.setScene(game);
 		});
 		
@@ -156,10 +160,18 @@ public class mainApp extends Application{
 		        if(isNowSelected){ 
 		            numRows=9;
 		            numCols=6;
+		            if(gs.allStates.size()>0 && !(gs.getState().numberOfColumns==numCols && gs.getState().numberOfRows==numRows && gs.getState().numberOfPlayers==numPlayers) )
+						resumeButton.setDisable(true);
+					else
+						resumeButton.setDisable(false);
 		        } 
 		        else {
-		        	numRows=15;
+		        		numRows=15;
 		            numCols=10;
+		            if(gs.allStates.size()>0 && !(gs.getState().numberOfColumns==numCols && gs.getState().numberOfRows==numRows && gs.getState().numberOfPlayers==numPlayers) )
+						resumeButton.setDisable(true);
+					else
+						resumeButton.setDisable(false);
 		        }
 		    }
 		});
@@ -179,6 +191,10 @@ public class mainApp extends Application{
 			try {
 				if(newValue.length()>0)
 					numPlayers=Integer.parseInt(newValue);
+				if(gs.allStates.size()>0 && !(gs.getState().numberOfColumns==numCols && gs.getState().numberOfRows==numRows && gs.getState().numberOfPlayers==numPlayers) )
+					resumeButton.setDisable(true);
+				else
+					resumeButton.setDisable(false);
 			} catch(java.lang.NumberFormatException e) {
 				System.out.println("Invalid value");
 			}
@@ -189,6 +205,10 @@ public class mainApp extends Application{
 			if(Integer.parseInt(players.getText())>2) {
 				int x=Integer.parseInt(players.getText())-1;
 				numPlayers=x;
+				if(gs.allStates.size()>0 && !(gs.getState().numberOfColumns==numCols && gs.getState().numberOfRows==numRows && gs.getState().numberOfPlayers==numPlayers) )
+					resumeButton.setDisable(true);
+				else
+					resumeButton.setDisable(false);
 				players.clear();
 				players.setText(Integer.toString(x));
 			}
@@ -198,6 +218,11 @@ public class mainApp extends Application{
 			if(Integer.parseInt(players.getText())<8) {
 				int x=Integer.parseInt(players.getText())+1;
 				numPlayers=x;
+				if(gs.allStates.size()>0 && !(gs.getState().numberOfColumns==numCols && gs.getState().numberOfRows==numRows && gs.getState().numberOfPlayers==numPlayers) )
+					resumeButton.setDisable(true);
+				else
+					resumeButton.setDisable(false);
+				
 				players.clear();
 				players.setText(Integer.toString(x));
 			}
@@ -219,7 +244,34 @@ public class mainApp extends Application{
 	    layout.setPadding(new Insets(10, 10, 10, 10));
 	    
 	    resumeButton.setDisable(true);
-		
+		ObjectInputStream ino=null;
+		try{
+			ino=new ObjectInputStream(new FileInputStream("./src/gameState.db"));
+			this.gs= (gameState) ino.readObject();
+			System.out.println("Got: "+gs.allStates.size());
+			if(gs.allStates.size()>0) resumeButton.setDisable(false);
+		} finally{
+			try{
+				ino.close();
+			} catch(Exception e) {
+				
+			}
+		}
+		resumeButton.setOnAction(event -> {
+			this.b = new BoardGUI(numRows,numCols,numPlayers);
+			TileBoard tb=gs.getState();
+			try {
+				b.loadGUIfromState(tb,1);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			int f=0;
+			if(gs.allStates.size()>1) f=1;
+			CoordinateTile.gs=new gameState(gs);
+			game=new Scene(this.createContent(f));
+			window.setScene(game);
+		});
 	    layout.add(gridsize, 6, 2);
 		layout.add(resumeButton,6,26);
 		layout.add(playButton,6,36);
@@ -269,7 +321,7 @@ public class mainApp extends Application{
 		menu.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
 	}
 	
-	public Parent createContent()
+	public Parent createContent(int undocheck)
 	{
 		Pane root = new Pane();
 		
@@ -305,8 +357,20 @@ public class mainApp extends Application{
 		menubar.setPadding(new Insets(10));
 		Button backButton = new Button("Back to Menu");
 		backButton.setOnAction(event -> {
-			this.createMenu();
-			window.setScene(menu);
+			try {
+				this.createMenu();
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}finally {
+				window.setScene(menu);
+			}
 		});
 		Button newGameButton = new Button("New Game");
 		newGameButton.setOnAction(event -> {
@@ -323,7 +387,7 @@ public class mainApp extends Application{
 			
 			CoordinateTile.counterForInitialBorder = 0;
 			TileCell.counterForInitialBorder = 0;
-			game=new Scene(this.createContent());
+			game=new Scene(this.createContent(0));
 			window.setScene(game);
 		});
 		Pane spacer = new Pane();
@@ -333,11 +397,16 @@ public class mainApp extends Application{
 		
 		undoButton = new Button("Undo");
 		undoButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
-		undoButton.setDisable(true);
+		if(undocheck==0) undoButton.setDisable(true);
 		undoButton.setOnAction(event->{
 			if(!CoordinateTile.gs.allStates.isEmpty())
-			{
-				b.loadGUIfromState(CoordinateTile.gs.loadState());
+			{	
+				try {
+					b.loadGUIfromState(CoordinateTile.gs.loadState(),0);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		});
 		
@@ -366,7 +435,7 @@ public class mainApp extends Application{
 		primaryStage.setScene(menu);
 		primaryStage.show();
 		this.b = new BoardGUI(numRows,numCols,numPlayers);
-		game=new Scene(this.createContent());
+		game=new Scene(this.createContent(0));
 	}
 
 }

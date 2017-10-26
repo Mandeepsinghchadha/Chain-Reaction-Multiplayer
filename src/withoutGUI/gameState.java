@@ -20,8 +20,12 @@ public class gameState implements Serializable{
 	{
 		this.allStates = new Stack<TileBoard>();
 	}
+	public gameState(gameState gs)
+	{
+		this.allStates = (Stack<TileBoard>) gs.allStates.clone();
+	}
 	
-	public void saveState(TileBoard tb)
+	public void saveState(TileBoard tb) throws IOException
 	{
 		this.allStates.push(tb);
 	}
@@ -29,6 +33,10 @@ public class gameState implements Serializable{
 	public TileBoard loadState()
 	{
 		return this.allStates.pop();
+	}
+	public TileBoard getState()
+	{
+		return this.allStates.peek();
 	}
 	
 	public void serialize(TileBoard tb) throws IOException

@@ -1,11 +1,15 @@
 package application;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 import javafx.scene.paint.Color;
 import withoutGUI.TileBoard;
 import withoutGUI.TileCell;
+import withoutGUI.gameState;
 
 public class BoardGUI {
 
@@ -57,9 +61,9 @@ public class BoardGUI {
 		}
 	}
 	
-	public void loadGUIfromState(TileBoard tb)
+	public void loadGUIfromState(TileBoard tb, int force) throws IOException
 	{
-		if(undoOnce)
+		if(undoOnce || force==1)
 		{
 		/*
 		 * Resets The Board
@@ -138,10 +142,36 @@ public class BoardGUI {
 					TileCell.counterForInitialBorder+=1;
 				}
 		}
-		undoOnce = false;
+		if(force==0) undoOnce = false;
+		else undoOnce=tb.undoOnce;
 		mainApp.undoButton.setDisable(true);
 	}
-//		CoordinateTile.gs.saveState(this.tb);
+		if(force==0) {
+			ObjectOutputStream out = null;
+			try
+			{
+				out = new ObjectOutputStream(new FileOutputStream("./src/gameState.db"));
+				(mainApp.gs).allStates.push(new TileBoard(this.tb));
+				out.writeObject(mainApp.gs);
+				System.out.println("Saved "+mainApp.gs.allStates.size());
+			} catch (FileNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			finally
+			{
+				try {
+					out.close();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		}
+		//CoordinateTile.gs.saveState(this.tb);
 	}
 	
 	public boolean checkValidCoordinate(int i, int j)

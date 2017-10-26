@@ -1,6 +1,9 @@
 package application;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Random;
 import javafx.util.Duration;
@@ -237,7 +240,10 @@ public class CoordinateTile extends StackPane {
 					{
 						CoordinateTile.gs.saveState(new TileBoard(this.boardContainer.tb));
 						this.boardContainer.allPlayers.get(currentPlayer).move(this.boardContainer, this.xCoordinate, this.yCoordinate);
+						
 						BoardGUI.undoOnce = true;
+						boardContainer.tb.undoOnce = true;
+						
 						mainApp.undoButton.setDisable(false);
 					}
 					catch (IllegalMoveException e){
@@ -282,7 +288,7 @@ public class CoordinateTile extends StackPane {
 					{
 						CoordinateTile.gs.saveState(new TileBoard(this.boardContainer.tb));
 						this.boardContainer.allPlayers.get(counterForInitialGamePlay).move(this.boardContainer, this.xCoordinate, this.yCoordinate);
-						BoardGUI.undoOnce = true;
+						
 						mainApp.undoButton.setDisable(false);
 					}
 					catch (IllegalMoveException e)
@@ -324,6 +330,30 @@ public class CoordinateTile extends StackPane {
 					TileCell.init = false;
 				}
 			}
+			ObjectOutputStream out = null;
+			try
+			{
+				out = new ObjectOutputStream(new FileOutputStream("./src/gameState.db"));
+				gameState backup=new gameState(gs);
+				backup.allStates.push(new TileBoard(this.boardContainer.tb));
+				out.writeObject(backup);
+			} catch (FileNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			finally
+			{
+				try {
+					out.close();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+			System.out.println("Size: "+gs.allStates.size());
 		});
 		getChildren().add(allOrbs);
 	}
