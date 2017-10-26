@@ -87,7 +87,7 @@ public class mainApp extends Application{
 	            (int)( (new BoardGUI(1,1,8)).allPlayers.get(i-1).colour.getBlue() * 255 ) ));
 			row.getChildren().addAll(new Label("Player "+i),new Label(":"),colorButton);
 			row.setAlignment(Pos.CENTER);
-			layout.add(row,6,16+5*i);
+			layout.add(row,6,12+4*i);
 		}
 		Button doneButton = new Button("Done");
 		GridPane.setHalignment(doneButton, HPos.CENTER);
@@ -96,7 +96,7 @@ public class mainApp extends Application{
 		doneButton.setOnAction(event -> {
 			window.setScene(menu);
 		});
-		layout.add(doneButton,6,66);
+		layout.add(doneButton,6,56);
 		
 		Button resetAllColorsButton = new Button("Reset All Colors");
 		GridPane.setHalignment(resetAllColorsButton, HPos.CENTER);
@@ -107,7 +107,7 @@ public class mainApp extends Application{
 			TileBoard.allColours = new String[] {Color.RED.toString(),Color.GREEN.toString(),Color.BLUE.toString(),Color.YELLOW.toString(),Color.MAGENTA.toString(),Color.CYAN.toString(),Color.ORANGE.toString(),Color.GRAY.toString()};
 			window.setScene(menu);
 		});
-		layout.add(resetAllColorsButton,6,62);
+		layout.add(resetAllColorsButton,6,52);
 		
 		settingsPage=new Scene(layout,640,520);
 		settingsPage.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
