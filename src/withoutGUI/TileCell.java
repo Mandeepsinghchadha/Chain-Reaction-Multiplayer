@@ -39,6 +39,19 @@ public class TileCell implements Serializable {
 		this.borderColour = Color.WHITESMOKE.toString();
 	}
 	
+	public TileCell(TileCell tc) {
+		// TODO Auto-generated constructor stub
+		this.numberOfRows = tc.numberOfRows;
+		this.numberOfColumns = tc.numberOfColumns;
+		this.xCoordinate = tc.xCoordinate;
+		this.yCoordinate = tc.yCoordinate;
+		this.playerStatus = tc.playerStatus;
+		this.value = tc.value;
+		this.criticalMass = tc.criticalMass;
+		this.colour = tc.colour;
+		this.borderColour = tc.borderColour;
+	}
+
 	public int getCriticalMass(int i, int j)
 	{
 		if ((i==0 && j==0) || (i==0 && j==this.numberOfColumns-1) || (i==this.numberOfRows-1 && j==0) || (i==this.numberOfRows-1 && j==this.numberOfColumns-1))

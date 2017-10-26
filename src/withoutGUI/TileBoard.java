@@ -42,6 +42,29 @@ public class TileBoard implements Serializable {
 		}
 	}
 	
+	public TileBoard(TileBoard tb) {
+		// TODO Auto-generated constructor stub
+		this.numberOfRows = tb.numberOfRows;
+		this.numberOfColumns = tb.numberOfColumns;
+		this.numberOfPlayers = tb.numberOfPlayers;
+		
+		this.board = new TileCell[tb.numberOfRows][tb.numberOfColumns];
+		this.allPlayers = new ArrayList<>(tb.allPlayers);
+		
+		for(int i=0;i<this.numberOfRows;i+=1)
+		{
+			for(int j=0;j<this.numberOfColumns;j+=1)
+			{
+				this.board[i][j] = new TileCell(tb.board[i][j]);
+			}
+		}
+		
+		for(int i=0;i<this.numberOfPlayers;i+=1)
+		{
+			this.allPlayers.add(tb.allPlayers.get(i));
+		}
+	}
+
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 

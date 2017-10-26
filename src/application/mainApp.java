@@ -28,6 +28,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import withoutGUI.TileBoard;
 import withoutGUI.TileCell;
+import withoutGUI.gameState;
 
 public class mainApp extends Application{
 	
@@ -124,6 +125,7 @@ public class mainApp extends Application{
 			this.b = new BoardGUI(numRows,numCols,numPlayers);
 			CoordinateTile.init = true;
 			TileCell.init = true;
+			CoordinateTile.gs = new gameState();
 			
 			CoordinateTile.currentPlayer = 0;
 			TileCell.currentPlayer = 0;
@@ -310,6 +312,7 @@ public class mainApp extends Application{
 			this.b = new BoardGUI(numRows,numCols,numPlayers);
 			CoordinateTile.init = true;
 			TileCell.init = true;
+			CoordinateTile.gs = new gameState();
 			
 			CoordinateTile.currentPlayer = 0;
 			TileCell.currentPlayer = 0;
@@ -331,7 +334,10 @@ public class mainApp extends Application{
 		undoButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
 		
 		undoButton.setOnAction(event->{
-			b.loadGUIfromState(CoordinateTile.gs.allStates.pop());
+			if(!CoordinateTile.gs.allStates.isEmpty())
+			{
+				b.loadGUIfromState(CoordinateTile.gs.loadState());
+			}
 		});
 		
 		menubar.getChildren().addAll(backButton,spacer,undoButton,newGameButton);
