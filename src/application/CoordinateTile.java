@@ -186,10 +186,6 @@ public class CoordinateTile extends StackPane {
 				}
 			}
 			
-			b.board[x][y].colour = Color.WHITESMOKE;
-			b.board[x][y].t.colour = b.board[x][y].colour.toString();
-			b.tb.board[x][y].colour = b.board[x][y].colour.toString();
-			
 			int p = currentPlayer;
 			while(!b.allPlayers.get(p).active)
 			{
