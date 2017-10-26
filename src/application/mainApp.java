@@ -160,7 +160,7 @@ public class mainApp extends Application{
 		        if(isNowSelected){ 
 		            numRows=9;
 		            numCols=6;
-		            if(gs.allStates.size()>0 && !(gs.getState().numberOfColumns==numCols && gs.getState().numberOfRows==numRows && gs.getState().numberOfPlayers==numPlayers) )
+		            if(gs.allStates.size()==0 || !(gs.getState().numberOfColumns==numCols && gs.getState().numberOfRows==numRows && gs.getState().numberOfPlayers==numPlayers) )
 						resumeButton.setDisable(true);
 					else
 						resumeButton.setDisable(false);
@@ -168,7 +168,7 @@ public class mainApp extends Application{
 		        else {
 		        		numRows=15;
 		            numCols=10;
-		            if(gs.allStates.size()>0 && !(gs.getState().numberOfColumns==numCols && gs.getState().numberOfRows==numRows && gs.getState().numberOfPlayers==numPlayers) )
+		            if(gs.allStates.size()==0 || !(gs.getState().numberOfColumns==numCols && gs.getState().numberOfRows==numRows && gs.getState().numberOfPlayers==numPlayers) )
 						resumeButton.setDisable(true);
 					else
 						resumeButton.setDisable(false);
@@ -191,7 +191,7 @@ public class mainApp extends Application{
 			try {
 				if(newValue.length()>0)
 					numPlayers=Integer.parseInt(newValue);
-				if(gs.allStates.size()>0 && !(gs.getState().numberOfColumns==numCols && gs.getState().numberOfRows==numRows && gs.getState().numberOfPlayers==numPlayers) )
+				if(gs.allStates.size()==0 || !(gs.getState().numberOfColumns==numCols && gs.getState().numberOfRows==numRows && gs.getState().numberOfPlayers==numPlayers) )
 					resumeButton.setDisable(true);
 				else
 					resumeButton.setDisable(false);
@@ -205,7 +205,7 @@ public class mainApp extends Application{
 			if(Integer.parseInt(players.getText())>2) {
 				int x=Integer.parseInt(players.getText())-1;
 				numPlayers=x;
-				if(gs.allStates.size()>0 && !(gs.getState().numberOfColumns==numCols && gs.getState().numberOfRows==numRows && gs.getState().numberOfPlayers==numPlayers) )
+				if(gs.allStates.size()==0 || !(gs.getState().numberOfColumns==numCols && gs.getState().numberOfRows==numRows && gs.getState().numberOfPlayers==numPlayers) )
 					resumeButton.setDisable(true);
 				else
 					resumeButton.setDisable(false);
@@ -218,7 +218,7 @@ public class mainApp extends Application{
 			if(Integer.parseInt(players.getText())<8) {
 				int x=Integer.parseInt(players.getText())+1;
 				numPlayers=x;
-				if(gs.allStates.size()>0 && !(gs.getState().numberOfColumns==numCols && gs.getState().numberOfRows==numRows && gs.getState().numberOfPlayers==numPlayers) )
+				if(gs.allStates.size()==0 || !(gs.getState().numberOfColumns==numCols && gs.getState().numberOfRows==numRows && gs.getState().numberOfPlayers==numPlayers) )
 					resumeButton.setDisable(true);
 				else
 					resumeButton.setDisable(false);
@@ -248,7 +248,8 @@ public class mainApp extends Application{
 		try{
 			ino=new ObjectInputStream(new FileInputStream("./src/gameState.db"));
 			gs= (gameState) ino.readObject();
-			if(gs.allStates.size()>0) resumeButton.setDisable(false);
+			if(gs.allStates.size()>0)
+				resumeButton.setDisable(false);
 		} finally{
 			try{
 				ino.close();
@@ -432,7 +433,22 @@ public class mainApp extends Application{
 		numRows=9;
 		numCols=6;
 		numPlayers=2;
-		
+		ObjectInputStream ino=null;
+		try{
+			ino=new ObjectInputStream(new FileInputStream("./src/gameState.db"));
+			gs= (gameState) ino.readObject();
+			if(gs.allStates.size()>0) {
+				numRows=gs.getState().numberOfRows;
+				numCols=gs.getState().numberOfColumns;
+				numPlayers=gs.getState().numberOfPlayers;
+			}
+		} finally{
+			try{
+				ino.close();
+			} catch(Exception e) {
+				
+			}
+		}
 		this.createMenu();
 		primaryStage.setScene(menu);
 		primaryStage.show();
