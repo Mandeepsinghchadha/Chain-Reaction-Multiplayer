@@ -247,8 +247,7 @@ public class mainApp extends Application{
 		ObjectInputStream ino=null;
 		try{
 			ino=new ObjectInputStream(new FileInputStream("./src/gameState.db"));
-			this.gs= (gameState) ino.readObject();
-			System.out.println("Got: "+gs.allStates.size());
+			gs= (gameState) ino.readObject();
 			if(gs.allStates.size()>0) resumeButton.setDisable(false);
 		} finally{
 			try{
@@ -259,12 +258,15 @@ public class mainApp extends Application{
 		}
 		resumeButton.setOnAction(event -> {
 			this.b = new BoardGUI(numRows,numCols,numPlayers);
-			TileBoard tb=gs.getState();
-			try {
-				b.loadGUIfromState(tb,1);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			
+			if(!gs.allStates.isEmpty())
+			{	
+				try {
+					b.loadGUIfromState(gs.getState(),1);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			int f=0;
 			if(gs.allStates.size()>1) f=1;
@@ -434,8 +436,6 @@ public class mainApp extends Application{
 		this.createMenu();
 		primaryStage.setScene(menu);
 		primaryStage.show();
-		this.b = new BoardGUI(numRows,numCols,numPlayers);
-		game=new Scene(this.createContent(0));
 	}
 
 }

@@ -125,10 +125,12 @@ public class BoardGUI {
 		}
 		else
 		{		
-				CoordinateTile.counterForInitialGamePlay-=1;
-				TileCell.counterForInitialGamePlay-=1;
-				CoordinateTile.counterForInitialBorder-=1;
-				TileCell.counterForInitialBorder-=1;
+				if(force==0) {
+					CoordinateTile.counterForInitialGamePlay-=1;
+					TileCell.counterForInitialGamePlay-=1;
+					CoordinateTile.counterForInitialBorder-=1;
+					TileCell.counterForInitialBorder-=1;
+				}
 				if(this.playerCount(CoordinateTile.counterForInitialGamePlay+1)<=0)
 				{
 					this.allPlayers.get(CoordinateTile.counterForInitialGamePlay).orbCount = -2147483648;
@@ -141,11 +143,11 @@ public class BoardGUI {
 					CoordinateTile.counterForInitialBorder+=1;
 					TileCell.counterForInitialBorder+=1;
 				}
+			}
+			if(force==0) undoOnce = false;
+			else undoOnce=tb.undoOnce;
+			if(force==0) mainApp.undoButton.setDisable(true);
 		}
-		if(force==0) undoOnce = false;
-		else undoOnce=tb.undoOnce;
-		mainApp.undoButton.setDisable(true);
-	}
 		if(force==0) {
 			ObjectOutputStream out = null;
 			try
@@ -153,7 +155,6 @@ public class BoardGUI {
 				out = new ObjectOutputStream(new FileOutputStream("./src/gameState.db"));
 				(mainApp.gs).allStates.push(new TileBoard(this.tb));
 				out.writeObject(mainApp.gs);
-				System.out.println("Saved "+mainApp.gs.allStates.size());
 			} catch (FileNotFoundException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
