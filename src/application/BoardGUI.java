@@ -140,6 +140,7 @@ public class BoardGUI {
 		
 		undoOnce = false;
 		mainApp.undoButton.setDisable(true);
+		this.board[0][0].enableAllTiles();
 	}
 //		CoordinateTile.gs.saveState(this.tb);
 	}
