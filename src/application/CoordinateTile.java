@@ -238,11 +238,12 @@ public class CoordinateTile extends StackPane {
 
 					try
 					{
-						CoordinateTile.gs.saveState(new TileBoard(this.boardContainer.tb));
+						TileBoard tbold=new TileBoard(this.boardContainer.tb);
 						this.boardContainer.allPlayers.get(currentPlayer).move(this.boardContainer, this.xCoordinate, this.yCoordinate);
 						
 						BoardGUI.undoOnce = true;
-						boardContainer.tb.undoOnce = true;
+						tbold.undoOnce = true;
+						CoordinateTile.gs.saveState(new TileBoard(tbold));
 						
 						mainApp.undoButton.setDisable(false);
 					}
@@ -286,8 +287,13 @@ public class CoordinateTile extends StackPane {
 					System.out.println("Player "+this.boardContainer.allPlayers.get(counterForInitialGamePlay).playerNumber+" moves");
 					try
 					{
-						CoordinateTile.gs.saveState(new TileBoard(this.boardContainer.tb));
+						TileBoard tbold=new TileBoard(this.boardContainer.tb);
 						this.boardContainer.allPlayers.get(counterForInitialGamePlay).move(this.boardContainer, this.xCoordinate, this.yCoordinate);
+						
+						BoardGUI.undoOnce = true;
+						tbold.undoOnce = true;
+						CoordinateTile.gs.saveState(new TileBoard(tbold));
+						
 						
 						mainApp.undoButton.setDisable(false);
 					}
@@ -353,7 +359,7 @@ public class CoordinateTile extends StackPane {
 					e1.printStackTrace();
 				}
 			}
-			System.out.println("Size: "+gs.allStates.size());
+			System.out.println("Size: "+gs.allStates.size() + BoardGUI.undoOnce);
 		});
 		getChildren().add(allOrbs);
 	}

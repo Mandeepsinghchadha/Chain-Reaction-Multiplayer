@@ -144,11 +144,10 @@ public class BoardGUI {
 					TileCell.counterForInitialBorder+=1;
 				}
 			}
-			if(force==0) undoOnce = false;
-			else undoOnce=tb.undoOnce;
-			if(force==0) mainApp.undoButton.setDisable(true);
 		}
 		if(force==0) {
+			undoOnce=false;
+			mainApp.undoButton.setDisable(true);
 			ObjectOutputStream out = null;
 			try
 			{
@@ -171,6 +170,9 @@ public class BoardGUI {
 					e1.printStackTrace();
 				}
 			}
+		}
+		else {
+			undoOnce=this.tb.undoOnce;
 		}
 		//CoordinateTile.gs.saveState(this.tb);
 	}
