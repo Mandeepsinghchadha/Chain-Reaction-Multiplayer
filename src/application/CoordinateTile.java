@@ -75,7 +75,7 @@ public class CoordinateTile extends StackPane {
 		this.colour = Color.WHITESMOKE;
 		this.boardContainer = b;
 		this.t = new TileCell(this.numberOfRows,this.numberOfColumns,this.xCoordinate,this.yCoordinate);
-		gs = new gameState();
+		gs = new gameState(this.boardContainer.tb);
 
 		rotateGroup = new RotateTransition(Duration.millis(1500+Math.random()*500), allOrbs);
 		rotateGroup.setFromAngle(0);
@@ -175,7 +175,6 @@ public class CoordinateTile extends StackPane {
 				for(int a=0;a<NeighbourCellsWhichAreThemselvesUnstable.size();a+=1)
 				{
 					 try {
-						this.disableAllTiles();
 						this.playerContainer.move(b,NeighbourCellsWhichAreThemselvesUnstable.get(a).xCoordinate,NeighbourCellsWhichAreThemselvesUnstable.get(a).yCoordinate);
 					} catch (IllegalMoveException e1) {
 						// TODO Auto-generated catch block
@@ -185,6 +184,12 @@ public class CoordinateTile extends StackPane {
 						e1.printStackTrace();
 					}
 				}
+			}
+			else
+			{
+				this.boardContainer.tb.lastGameCompleted = true;
+				this.boardContainer.tb.undoOnce = false;
+				mainApp.undoButton.setDisable(true);
 			}
 			
 			int p = currentPlayer;
@@ -200,6 +205,29 @@ public class CoordinateTile extends StackPane {
 					b.board[q][r].border.setStroke(b.allPlayers.get(p).colour);
 					b.board[q][r].t.borderColour = b.allPlayers.get(p).colour.toString();
 					b.tb.board[q][r].borderColour = b.allPlayers.get(p).colour.toString();
+				}
+			}
+			
+			if(NeighbourCellsWhichAreThemselvesUnstable.isEmpty())
+			{
+				System.out.println("End of Transition");
+				try {
+					gs.currentBoard = new TileBoard(this.boardContainer.tb);
+					gs.currentPlayer = currentPlayer;
+					gs.counterForInitialBorder = counterForInitialBorder;
+					gs.counterForInitialGamePlay = counterForInitialGamePlay;
+					gs.init = init;
+					mainApp.resumeGS.serialize(gs);
+					
+					System.out.println("Details of Saved Game After Saving are:");
+					System.out.println("CurrentPlayer : "+CoordinateTile.gs.currentPlayer);
+					System.out.println("counterForInitialBorder : "+CoordinateTile.gs.counterForInitialBorder);
+					System.out.println("counterForInitialGamePlay : "+CoordinateTile.gs.counterForInitialGamePlay);
+					System.out.println("init : "+CoordinateTile.gs.init);
+					System.out.println();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
 				}
 			}
 		});
@@ -231,30 +259,30 @@ public class CoordinateTile extends StackPane {
 					try
 					{
 						CoordinateTile.gs.saveState(new TileBoard(this.boardContainer.tb));
-						this.disableAllTiles();
 						this.boardContainer.allPlayers.get(currentPlayer).move(this.boardContainer, this.xCoordinate, this.yCoordinate);
-						this.enableAllTiles();
-						BoardGUI.undoOnce = true;
+						this.boardContainer.tb.undoOnce = true;
 						mainApp.undoButton.setDisable(false);
 					}
 					catch (IllegalMoveException e){
-						this.enableAllTiles();
 						currentPlayer = (((currentPlayer - 1) % this.boardContainer.numberOfPlayers) + this.boardContainer.numberOfPlayers) % this.boardContainer.numberOfPlayers;
 						TileCell.currentPlayer = (((TileCell.currentPlayer - 1) % this.boardContainer.numberOfPlayers) + this.boardContainer.numberOfPlayers) % this.boardContainer.numberOfPlayers;
 						System.out.println(e.getMessage());
 					}
 					catch (IOException e1) {
-						this.enableAllTiles();
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					} 
 				}
+				else
+				{
+					this.boardContainer.tb.lastGameCompleted = true;
+					this.boardContainer.tb.undoOnce = false;
+					mainApp.undoButton.setDisable(true);
+				}
 				currentPlayer = (currentPlayer + 1) % this.boardContainer.numberOfPlayers;
 				TileCell.currentPlayer = (TileCell.currentPlayer + 1) % this.boardContainer.numberOfPlayers;
 				
-				
 				int p = currentPlayer;
-				if(this.boardContainer.countAllActivePlayers(this.boardContainer.allPlayers)>0)
 				while(!b.allPlayers.get(p).active)
 				{
 					p = (p + 1) % this.boardContainer.numberOfPlayers;
@@ -269,6 +297,24 @@ public class CoordinateTile extends StackPane {
 						b.tb.board[q][r].borderColour = b.allPlayers.get(p).colour.toString();
 					}
 				}
+				try {
+					gs.currentBoard = new TileBoard(this.boardContainer.tb);
+					gs.currentPlayer = currentPlayer;
+					gs.counterForInitialBorder = counterForInitialBorder;
+					gs.counterForInitialGamePlay = counterForInitialGamePlay;
+					gs.init = init;
+					mainApp.resumeGS.serialize(gs);
+					
+					System.out.println("Details of Saved Game After Saving are:");
+					System.out.println("CurrentPlayer : "+CoordinateTile.gs.currentPlayer);
+					System.out.println("counterForInitialBorder : "+CoordinateTile.gs.counterForInitialBorder);
+					System.out.println("counterForInitialGamePlay : "+CoordinateTile.gs.counterForInitialGamePlay);
+					System.out.println("init : "+CoordinateTile.gs.init);
+					System.out.println();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 			else
 			{
@@ -277,19 +323,15 @@ public class CoordinateTile extends StackPane {
 					try
 					{
 						CoordinateTile.gs.saveState(new TileBoard(this.boardContainer.tb));
-						this.disableAllTiles();
 						this.boardContainer.allPlayers.get(counterForInitialGamePlay).move(this.boardContainer, this.xCoordinate, this.yCoordinate);
-						this.enableAllTiles();
-						BoardGUI.undoOnce = true;
+						this.boardContainer.tb.undoOnce = true;
 						mainApp.undoButton.setDisable(false);
 					}
 					catch (IllegalMoveException e)
 					{
-						this.enableAllTiles();
 						System.out.println(e.getMessage());
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
-						this.enableAllTiles();
 						e1.printStackTrace();
 					} 
 					if(this.boardContainer.playerCount(counterForInitialGamePlay+1)>0)
@@ -323,6 +365,24 @@ public class CoordinateTile extends StackPane {
 				{
 					init = false;
 					TileCell.init = false;
+				}
+				try {
+					gs.currentBoard = new TileBoard(this.boardContainer.tb);
+					gs.currentPlayer = currentPlayer;
+					gs.counterForInitialBorder = counterForInitialBorder;
+					gs.counterForInitialGamePlay = counterForInitialGamePlay;
+					gs.init = init;
+					mainApp.resumeGS.serialize(gs);
+					
+					System.out.println("Details of Saved Game After Saving are:");
+					System.out.println("CurrentPlayer : "+CoordinateTile.gs.currentPlayer);
+					System.out.println("counterForInitialBorder : "+CoordinateTile.gs.counterForInitialBorder);
+					System.out.println("counterForInitialGamePlay : "+CoordinateTile.gs.counterForInitialGamePlay);
+					System.out.println("init : "+CoordinateTile.gs.init);
+					System.out.println();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
 				}
 			}
 		});
@@ -611,28 +671,6 @@ public class CoordinateTile extends StackPane {
 		  belowOrb.setRadius(10);
 		  belowOrb.setMaterial(material);
 	  }
-	}
-	
-	public void disableAllTiles()
-	{
-		for(int i=0;i<this.numberOfRows;i+=1)
-		{
-			for(int j=0;j<this.numberOfColumns;j+=1)
-			{
-				this.boardContainer.board[i][j].setDisable(true);
-			}
-		}
-	}
-	
-	public void enableAllTiles()
-	{
-		for(int i=0;i<this.numberOfRows;i+=1)
-		{
-			for(int j=0;j<this.numberOfColumns;j+=1)
-			{
-				this.boardContainer.board[i][j].setDisable(false);
-			}
-		}
 	}
 }
 
