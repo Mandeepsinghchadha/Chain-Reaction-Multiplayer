@@ -13,12 +13,14 @@ public class BoardGUI {
 	int numberOfColumns;
 	CoordinateTile[][] board;
 	int numberOfPlayers;
+	public boolean shownPrompt;
 	public static long startTime;
 	ArrayList<PlayerController> allPlayers;
 	static Color[] allColours = {Color.RED,Color.GREEN,Color.BLUE,Color.YELLOW,Color.MAGENTA,Color.CYAN,Color.ORANGE,Color.GRAY};
 	
 	BoardGUI(int m, int n, int numberOfPlayers)
 	{
+		this.shownPrompt=true;
 		this.numberOfRows = m;
 		this.numberOfColumns = n;
 		this.numberOfPlayers = numberOfPlayers;

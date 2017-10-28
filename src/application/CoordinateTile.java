@@ -197,7 +197,10 @@ public class CoordinateTile extends StackPane {
 				this.boardContainer.tb.lastGameCompleted = true;
 				this.boardContainer.tb.undoOnce = false;
 				mainApp.undoButton.setDisable(true);
-				if(cnt==1) mainApp.showWinAlertBox(pl+1);
+				if(cnt==1 && this.boardContainer.shownPrompt) { 
+					this.boardContainer.shownPrompt=false;
+					mainApp.showWinAlertBox(pl+1);
+				}
 			}
 			
 			int p = currentPlayer;
