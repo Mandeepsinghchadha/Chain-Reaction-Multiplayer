@@ -44,8 +44,10 @@ public class mainApp extends Application{
 	public static Button undoButton;
 	public static Button resumeButton;
 	
-	public static void showWinAlertBox(int x){
+	public static void showWinAlertBox(int x) throws IOException{
 		b.tb.lastGameCompleted = true;
+		CoordinateTile.gs.currentBoard = new TileBoard(b.tb);
+		mainApp.resumeGS.serialize(CoordinateTile.gs);
 		Alert alert = new Alert(AlertType.INFORMATION);
 		alert.setTitle("Game Over");
 		alert.setHeaderText(null);

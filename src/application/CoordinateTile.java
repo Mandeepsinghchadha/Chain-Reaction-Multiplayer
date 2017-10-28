@@ -203,7 +203,12 @@ public class CoordinateTile extends StackPane {
 				if(numberOfActivePlayers==1 && this.boardContainer.shownPrompt)
 				{
 					this.boardContainer.shownPrompt=false;
-					mainApp.showWinAlertBox(winningPlayerNumber+1);
+					try {
+						mainApp.showWinAlertBox(winningPlayerNumber+1);
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 				}
 			}
 			
@@ -312,7 +317,12 @@ public class CoordinateTile extends StackPane {
 					if(numberOfActivePlayers==1 && this.boardContainer.shownPrompt)
 					{
 						this.boardContainer.shownPrompt=false;
-						mainApp.showWinAlertBox(winningPlayerNumber+1);
+						try {
+							mainApp.showWinAlertBox(winningPlayerNumber+1);
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
 					}
 				}
 				currentPlayer = (currentPlayer + 1) % this.boardContainer.numberOfPlayers;

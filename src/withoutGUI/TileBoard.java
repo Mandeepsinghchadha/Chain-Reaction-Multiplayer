@@ -12,7 +12,7 @@ public class TileBoard implements Serializable {
 	 */
 	public boolean undoOnce = true;
 	private static final long serialVersionUID = 2L;
-	public boolean lastGameCompleted = false;
+	public boolean lastGameCompleted;
 	public int numberOfRows;
 	public int numberOfColumns;
 	public TileCell[][] board;
@@ -25,6 +25,7 @@ public class TileBoard implements Serializable {
 		this.numberOfRows = m;
 		this.numberOfColumns = n;
 		this.numberOfPlayers = numberOfPlayers;
+		this.lastGameCompleted = false;
 		
 		this.board = new TileCell[this.numberOfRows][this.numberOfColumns];
 		this.allPlayers = new ArrayList<Player>();
