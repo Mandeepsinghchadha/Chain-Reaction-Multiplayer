@@ -1,15 +1,10 @@
 package application;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 import javafx.scene.paint.Color;
 import withoutGUI.TileBoard;
 import withoutGUI.TileCell;
-import withoutGUI.gameState;
 
 public class BoardGUI {
 
@@ -17,6 +12,7 @@ public class BoardGUI {
 	TileBoard tb;
 	int numberOfRows;
 	int numberOfColumns;
+	long startTime;
 	CoordinateTile[][] board;
 	int numberOfPlayers;
 	ArrayList<PlayerController> allPlayers;
@@ -61,14 +57,13 @@ public class BoardGUI {
 		}
 	}
 	
-	public void loadGUIfromState(TileBoard tb, int force) throws IOException
+	public void loadGUIfromState(TileBoard tb)
 	{
-		if(undoOnce || force==1)
+		if(undoOnce)
 		{
 		/*
 		 * Resets The Board
 		 */
-
 		for(int i=0;i<tb.numberOfRows;i+=1)
 		{
 			for(int j=0;j<tb.numberOfColumns;j+=1)
@@ -107,10 +102,10 @@ public class BoardGUI {
 			}
 		}
 		
-		
 		if(!CoordinateTile.init && CoordinateTile.counterForInitialGamePlay>this.numberOfPlayers)
 		{
 			CoordinateTile.currentPlayer = (((CoordinateTile.currentPlayer - 1) % this.numberOfPlayers) + this.numberOfPlayers) % this.numberOfPlayers;
+		
 			for(int i=0;i<this.numberOfPlayers;i+=1)
 			{
 				if(this.playerCount(i+1)>0)
@@ -124,57 +119,31 @@ public class BoardGUI {
 			}
 		}
 		else
-		{		
-				if(force==0) {
-					CoordinateTile.counterForInitialGamePlay-=1;
-					TileCell.counterForInitialGamePlay-=1;
-					CoordinateTile.counterForInitialBorder-=1;
-					TileCell.counterForInitialBorder-=1;
-				}
-				if(this.playerCount(CoordinateTile.counterForInitialGamePlay+1)<=0)
-				{
-					this.allPlayers.get(CoordinateTile.counterForInitialGamePlay).orbCount = -2147483648;
-					this.allPlayers.get(CoordinateTile.counterForInitialGamePlay).p.orbCount = -2147483648;
-				}
-				else
-				{
-					CoordinateTile.counterForInitialGamePlay+=1;
-					TileCell.counterForInitialGamePlay+=1;
-					CoordinateTile.counterForInitialBorder+=1;
-					TileCell.counterForInitialBorder+=1;
-				}
-			}
-		}
-		if(force==0) {
-			undoOnce=false;
-			mainApp.undoButton.setDisable(true);
-			ObjectOutputStream out = null;
-			try
+		{
+			CoordinateTile.counterForInitialGamePlay = (CoordinateTile.counterForInitialGamePlay - 1);
+			TileCell.counterForInitialGamePlay-=1;
+			CoordinateTile.counterForInitialBorder = (CoordinateTile.counterForInitialBorder - 1);
+			TileCell.counterForInitialBorder-=1;
+			
+			if(this.playerCount(CoordinateTile.counterForInitialGamePlay+1)<=0)
 			{
-				out = new ObjectOutputStream(new FileOutputStream("./src/gameState.db"));
-				(mainApp.gs).allStates.push(new TileBoard(this.tb));
-				out.writeObject(mainApp.gs);
-			} catch (FileNotFoundException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				this.allPlayers.get(CoordinateTile.counterForInitialGamePlay).orbCount = -2147483648;
+				this.allPlayers.get(CoordinateTile.counterForInitialGamePlay).p.orbCount = -2147483648;
 			}
-			finally
+			else
 			{
-				try {
-					out.close();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+				CoordinateTile.counterForInitialGamePlay+=1;
+				TileCell.counterForInitialGamePlay+=1;
+				CoordinateTile.counterForInitialBorder+=1;
+				TileCell.counterForInitialBorder+=1;
 			}
 		}
-		else {
-			undoOnce=this.tb.undoOnce;
-		}
-		//CoordinateTile.gs.saveState(this.tb);
+		
+		undoOnce = false;
+		mainApp.undoButton.setDisable(true);
+		//this.board[0][0].enableAllTiles();
+	}
+//		CoordinateTile.gs.saveState(this.tb);
 	}
 	
 	public boolean checkValidCoordinate(int i, int j)

@@ -1,9 +1,6 @@
 package application;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Random;
 import javafx.util.Duration;
@@ -122,7 +119,7 @@ public class CoordinateTile extends StackPane {
 
 		parallelSplit = new ParallelTransition();
 		parallelSplit.setOnFinished(e->{
-			
+			this.boardContainer.startTime=System.currentTimeMillis();
 			ArrayList<CoordinateTile> allNeighbours = b.getListOfNeighbours(this.xCoordinate, this.yCoordinate);
 			for(int i=0;i<allNeighbours.size();i+=1)
 			{
@@ -178,6 +175,7 @@ public class CoordinateTile extends StackPane {
 				for(int a=0;a<NeighbourCellsWhichAreThemselvesUnstable.size();a+=1)
 				{
 					 try {
+						//this.disableAllTiles();
 						this.playerContainer.move(b,NeighbourCellsWhichAreThemselvesUnstable.get(a).xCoordinate,NeighbourCellsWhichAreThemselvesUnstable.get(a).yCoordinate);
 					} catch (IllegalMoveException e1) {
 						// TODO Auto-generated catch block
@@ -188,10 +186,6 @@ public class CoordinateTile extends StackPane {
 					}
 				}
 			}
-			
-			b.board[x][y].colour = Color.WHITESMOKE;
-			b.board[x][y].t.colour = b.board[x][y].colour.toString();
-			b.tb.board[x][y].colour = b.board[x][y].colour.toString();
 			
 			int p = currentPlayer;
 			while(!b.allPlayers.get(p).active)
@@ -208,7 +202,6 @@ public class CoordinateTile extends StackPane {
 					b.tb.board[q][r].borderColour = b.allPlayers.get(p).colour.toString();
 				}
 			}
-//			CoordinateTile.gs.saveState(new TileBoard(this.boardContainer.tb));
 		});
 		
 		this.border = new Rectangle(squareSize,squareSize);
@@ -221,7 +214,7 @@ public class CoordinateTile extends StackPane {
 		this.getChildren().addAll(border);
 
 		setOnMouseClicked(event -> {
-
+			if(System.currentTimeMillis() - this.boardContainer.startTime < 600) return;
 			if(counterForInitialGamePlay>=this.boardContainer.numberOfPlayers)
 			{
 				counterForInitialGamePlay+=1;
@@ -238,30 +231,28 @@ public class CoordinateTile extends StackPane {
 
 					try
 					{
-						TileBoard tbold=new TileBoard(this.boardContainer.tb);
+						CoordinateTile.gs.saveState(new TileBoard(this.boardContainer.tb));
+						//this.disableAllTiles();
 						this.boardContainer.allPlayers.get(currentPlayer).move(this.boardContainer, this.xCoordinate, this.yCoordinate);
-						
+						//this.enableAllTiles();
 						BoardGUI.undoOnce = true;
-						tbold.undoOnce = true;
-						CoordinateTile.gs.saveState(new TileBoard(tbold));
-						
 						mainApp.undoButton.setDisable(false);
 					}
 					catch (IllegalMoveException e){
-						
-//						currentPlayer = (currentPlayer - 1) % this.boardContainer.numberOfPlayers;
-//						TileCell.currentPlayer = (TileCell.currentPlayer -  1) % this.boardContainer.numberOfPlayers;
-						
+						//this.enableAllTiles();
 						currentPlayer = (((currentPlayer - 1) % this.boardContainer.numberOfPlayers) + this.boardContainer.numberOfPlayers) % this.boardContainer.numberOfPlayers;
 						TileCell.currentPlayer = (((TileCell.currentPlayer - 1) % this.boardContainer.numberOfPlayers) + this.boardContainer.numberOfPlayers) % this.boardContainer.numberOfPlayers;
 						System.out.println(e.getMessage());
 					}
 					catch (IOException e1) {
+						//this.enableAllTiles();
+						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					} 
 				}
 				currentPlayer = (currentPlayer + 1) % this.boardContainer.numberOfPlayers;
 				TileCell.currentPlayer = (TileCell.currentPlayer + 1) % this.boardContainer.numberOfPlayers;
+				
 				
 				int p = currentPlayer;
 				if(this.boardContainer.countAllActivePlayers(this.boardContainer.allPlayers)>0)
@@ -284,23 +275,22 @@ public class CoordinateTile extends StackPane {
 			{
 				if(counterForInitialGamePlay<this.boardContainer.numberOfPlayers)
 				{
-					System.out.println("Player "+this.boardContainer.allPlayers.get(counterForInitialGamePlay).playerNumber+" moves");
 					try
 					{
-						TileBoard tbold=new TileBoard(this.boardContainer.tb);
+						CoordinateTile.gs.saveState(new TileBoard(this.boardContainer.tb));
+						//this.disableAllTiles();
 						this.boardContainer.allPlayers.get(counterForInitialGamePlay).move(this.boardContainer, this.xCoordinate, this.yCoordinate);
-						
+						//this.enableAllTiles();
 						BoardGUI.undoOnce = true;
-						tbold.undoOnce = true;
-						CoordinateTile.gs.saveState(new TileBoard(tbold));
-						
-						
 						mainApp.undoButton.setDisable(false);
 					}
 					catch (IllegalMoveException e)
 					{
+						//this.enableAllTiles();
 						System.out.println(e.getMessage());
 					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						//this.enableAllTiles();
 						e1.printStackTrace();
 					} 
 					if(this.boardContainer.playerCount(counterForInitialGamePlay+1)>0)
@@ -336,30 +326,6 @@ public class CoordinateTile extends StackPane {
 					TileCell.init = false;
 				}
 			}
-			ObjectOutputStream out = null;
-			try
-			{
-				out = new ObjectOutputStream(new FileOutputStream("./src/gameState.db"));
-				gameState backup=new gameState(gs);
-				backup.allStates.push(new TileBoard(this.boardContainer.tb));
-				out.writeObject(backup);
-			} catch (FileNotFoundException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			finally
-			{
-				try {
-					out.close();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-			}
-			System.out.println("Size: "+gs.allStates.size() + BoardGUI.undoOnce);
 		});
 		getChildren().add(allOrbs);
 	}
@@ -647,5 +613,27 @@ public class CoordinateTile extends StackPane {
 		  belowOrb.setMaterial(material);
 	  }
 	}
+	
+//	public void disableAllTiles()
+//	{
+//		for(int i=0;i<this.numberOfRows;i+=1)
+//		{
+//			for(int j=0;j<this.numberOfColumns;j+=1)
+//			{
+//				this.boardContainer.board[i][j].setDisable(true);
+//			}
+//		}
+//	}
+//	
+//	public void enableAllTiles()
+//	{
+//		for(int i=0;i<this.numberOfRows;i+=1)
+//		{
+//			for(int j=0;j<this.numberOfColumns;j+=1)
+//			{
+//				this.boardContainer.board[i][j].setDisable(false);
+//			}
+//		}
+//	}
 }
 
