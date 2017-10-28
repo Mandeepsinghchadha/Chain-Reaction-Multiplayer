@@ -8,13 +8,12 @@ import withoutGUI.TileCell;
 
 public class BoardGUI {
 
-	static boolean undoOnce = true;
 	TileBoard tb;
 	int numberOfRows;
 	int numberOfColumns;
-	long startTime;
 	CoordinateTile[][] board;
 	int numberOfPlayers;
+	public static long startTime;
 	ArrayList<PlayerController> allPlayers;
 	static Color[] allColours = {Color.RED,Color.GREEN,Color.BLUE,Color.YELLOW,Color.MAGENTA,Color.CYAN,Color.ORANGE,Color.GRAY};
 	
@@ -57,55 +56,134 @@ public class BoardGUI {
 		}
 	}
 	
-	public void loadGUIfromState(TileBoard tb)
+	public void loadGUIfromState(TileBoard tb, boolean resumeSavedGame)
 	{
-		if(undoOnce)
+		if(!resumeSavedGame)
 		{
-		/*
-		 * Resets The Board
-		 */
-		for(int i=0;i<tb.numberOfRows;i+=1)
-		{
-			for(int j=0;j<tb.numberOfColumns;j+=1)
-			{
-				this.board[i][j].rotateGroup.stop();
-				this.board[i][j].parallelSplit.stop();
-				this.board[i][j].allOrbs.getChildren().clear();
-				this.board[i][j].border.setStroke(allColours[0]);
-				this.board[i][j].value = 0;
-				this.board[i][j].playerStatus = 0;
-				this.board[i][j].colour = allColours[0];
-			}
-		}
-		
-		/*
-		 * Designs Board According to State
-		 */
-		for(int i=0;i<tb.numberOfRows;i+=1)
-		{
-			for(int j=0;j<tb.numberOfColumns;j+=1)
-			{
-				
-				this.board[i][j].colour = Color.valueOf(tb.board[i][j].colour);
-				this.board[i][j].playerStatus = tb.board[i][j].playerStatus;
-				this.board[i][j].border.setStroke(Color.valueOf(tb.board[i][j].borderColour));
-				for(int k=0;k<tb.board[i][j].value;k+=1)
+				if(this.tb.undoOnce)
 				{
-					this.board[i][j].drawSphere();
+				/*
+				 * Resets The Board
+				 */
+				for(int i=0;i<tb.numberOfRows;i+=1)
+				{
+					for(int j=0;j<tb.numberOfColumns;j+=1)
+					{
+						this.board[i][j].rotateGroup.stop();
+						this.board[i][j].parallelSplit.stop();
+						this.board[i][j].allOrbs.getChildren().clear();
+						this.board[i][j].border.setStroke(allColours[0]);
+						this.board[i][j].value = 0;
+						this.board[i][j].playerStatus = 0;
+						this.board[i][j].colour = allColours[0];
+					}
 				}
-				this.board[i][j].rotateGroup.play();
 				
-				this.tb.board[i][j].colour = this.board[i][j].colour.toString();
-				this.tb.board[i][j].playerStatus = this.board[i][j].playerStatus;
-				this.tb.board[i][j].value = this.board[i][j].value;
-				this.tb.board[i][j].borderColour = tb.board[i][j].borderColour;
+				/*
+				 * Designs Board According to State
+				 */
+				for(int i=0;i<tb.numberOfRows;i+=1)
+				{
+					for(int j=0;j<tb.numberOfColumns;j+=1)
+					{
+						
+						this.board[i][j].colour = Color.valueOf(tb.board[i][j].colour);
+						this.board[i][j].playerStatus = tb.board[i][j].playerStatus;
+						this.board[i][j].border.setStroke(Color.valueOf(tb.board[i][j].borderColour));
+						for(int k=0;k<tb.board[i][j].value;k+=1)
+						{
+							this.board[i][j].drawSphere();
+						}
+						this.board[i][j].rotateGroup.play();
+						
+						this.tb.board[i][j].colour = this.board[i][j].colour.toString();
+						this.tb.board[i][j].playerStatus = this.board[i][j].playerStatus;
+						this.tb.board[i][j].value = this.board[i][j].value;
+						this.tb.board[i][j].borderColour = tb.board[i][j].borderColour;
+					}
+				}
+				
+				if(!CoordinateTile.init && CoordinateTile.counterForInitialGamePlay>this.numberOfPlayers)
+				{
+					CoordinateTile.currentPlayer = (((CoordinateTile.currentPlayer - 1) % this.numberOfPlayers) + this.numberOfPlayers) % this.numberOfPlayers;
+				
+					for(int i=0;i<this.numberOfPlayers;i+=1)
+					{
+						if(this.playerCount(i+1)>0)
+						{
+							this.allPlayers.get(i).active = true;
+						}
+						else
+						{
+							this.allPlayers.get(i).active = false;
+						}
+					}
+				}
+				else
+				{
+					CoordinateTile.counterForInitialGamePlay = (CoordinateTile.counterForInitialGamePlay - 1);
+					TileCell.counterForInitialGamePlay-=1;
+					CoordinateTile.counterForInitialBorder = (CoordinateTile.counterForInitialBorder - 1);
+					TileCell.counterForInitialBorder-=1;
+					
+					if(this.playerCount(CoordinateTile.counterForInitialGamePlay+1)<=0)
+					{
+						this.allPlayers.get(CoordinateTile.counterForInitialGamePlay).orbCount = -2147483648;
+						this.allPlayers.get(CoordinateTile.counterForInitialGamePlay).p.orbCount = -2147483648;
+					}
+					else
+					{
+						CoordinateTile.counterForInitialGamePlay+=1;
+						TileCell.counterForInitialGamePlay+=1;
+						CoordinateTile.counterForInitialBorder+=1;
+						TileCell.counterForInitialBorder+=1;
+					}
+				}
+				
+				this.tb.undoOnce = false;
+				mainApp.undoButton.setDisable(true);
 			}
 		}
-		
-		if(!CoordinateTile.init && CoordinateTile.counterForInitialGamePlay>this.numberOfPlayers)
+		else if(resumeSavedGame)
 		{
-			CoordinateTile.currentPlayer = (((CoordinateTile.currentPlayer - 1) % this.numberOfPlayers) + this.numberOfPlayers) % this.numberOfPlayers;
-		
+			for(int i=0;i<tb.numberOfRows;i+=1)
+			{
+				for(int j=0;j<tb.numberOfColumns;j+=1)
+				{
+					this.board[i][j].rotateGroup.stop();
+					this.board[i][j].parallelSplit.stop();
+					this.board[i][j].allOrbs.getChildren().clear();
+					this.board[i][j].border.setStroke(allColours[0]);
+					this.board[i][j].value = 0;
+					this.board[i][j].playerStatus = 0;
+					this.board[i][j].colour = allColours[0];
+				}
+			}
+			
+			/*
+			 * Designs Board According to State
+			 */
+			for(int i=0;i<tb.numberOfRows;i+=1)
+			{
+				for(int j=0;j<tb.numberOfColumns;j+=1)
+				{
+					
+					this.board[i][j].colour = Color.valueOf(tb.board[i][j].colour);
+					this.board[i][j].playerStatus = tb.board[i][j].playerStatus;
+					this.board[i][j].border.setStroke(Color.valueOf(tb.board[i][j].borderColour));
+					for(int k=0;k<tb.board[i][j].value;k+=1)
+					{
+						this.board[i][j].drawSphere();
+					}
+					this.board[i][j].rotateGroup.play();
+					
+					this.tb.board[i][j].colour = this.board[i][j].colour.toString();
+					this.tb.board[i][j].playerStatus = this.board[i][j].playerStatus;
+					this.tb.board[i][j].value = this.board[i][j].value;
+					this.tb.board[i][j].borderColour = tb.board[i][j].borderColour;
+				}
+			}
+			
 			for(int i=0;i<this.numberOfPlayers;i+=1)
 			{
 				if(this.playerCount(i+1)>0)
@@ -118,32 +196,6 @@ public class BoardGUI {
 				}
 			}
 		}
-		else
-		{
-			CoordinateTile.counterForInitialGamePlay = (CoordinateTile.counterForInitialGamePlay - 1);
-			TileCell.counterForInitialGamePlay-=1;
-			CoordinateTile.counterForInitialBorder = (CoordinateTile.counterForInitialBorder - 1);
-			TileCell.counterForInitialBorder-=1;
-			
-			if(this.playerCount(CoordinateTile.counterForInitialGamePlay+1)<=0)
-			{
-				this.allPlayers.get(CoordinateTile.counterForInitialGamePlay).orbCount = -2147483648;
-				this.allPlayers.get(CoordinateTile.counterForInitialGamePlay).p.orbCount = -2147483648;
-			}
-			else
-			{
-				CoordinateTile.counterForInitialGamePlay+=1;
-				TileCell.counterForInitialGamePlay+=1;
-				CoordinateTile.counterForInitialBorder+=1;
-				TileCell.counterForInitialBorder+=1;
-			}
-		}
-		
-		undoOnce = false;
-		mainApp.undoButton.setDisable(true);
-		//this.board[0][0].enableAllTiles();
-	}
-//		CoordinateTile.gs.saveState(this.tb);
 	}
 	
 	public boolean checkValidCoordinate(int i, int j)

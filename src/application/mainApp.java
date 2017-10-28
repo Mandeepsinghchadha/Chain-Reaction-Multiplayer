@@ -1,6 +1,7 @@
 package application;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.function.UnaryOperator;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
@@ -10,6 +11,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
@@ -28,16 +31,29 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import withoutGUI.TileBoard;
 import withoutGUI.TileCell;
+import withoutGUI.gameSave;
 import withoutGUI.gameState;
 
 public class mainApp extends Application{
 	
+	static gameSave resumeGS = new gameSave();
 	BoardGUI b;
 	int numRows,numCols,numPlayers;
-	Scene menu, game, settingsPage;
-	Stage window;
+	static Scene menu, game, settingsPage;
+	static Stage window;
 	public static Button undoButton;
-	
+	public static Button resumeButton;
+
+	public static  void showWinAlertBox(int x){
+		Alert alert = new Alert(AlertType.INFORMATION);
+		alert.setTitle("Game Over");
+		alert.setHeaderText(null);
+		alert.setContentText("Player "+x+" wins.\n\nClick OK to go back to menu.");
+		alert.setOnHidden(evt -> {
+			window.setScene(menu);
+		});
+		alert.show();
+	}
 	public void createSettingsPage() {
 		GridPane layout = new GridPane();
 		layout.setVgap(3);
@@ -117,7 +133,7 @@ public class mainApp extends Application{
 	public void createMenu(){
 		
 		Button playButton = new Button("New Game");
-		Button resumeButton = new Button("Resume");
+		resumeButton = new Button("Resume");
 		Button settingsButton = new Button("Settings");
 		
 		playButton.setAlignment(Pos.CENTER);
@@ -126,7 +142,8 @@ public class mainApp extends Application{
 			this.b = new BoardGUI(numRows,numCols,numPlayers);
 			CoordinateTile.init = true;
 			TileCell.init = true;
-			CoordinateTile.gs = new gameState();
+			CoordinateTile.gs = new gameState(this.b.tb);
+			undoButton.setDisable(true);
 			
 			CoordinateTile.currentPlayer = 0;
 			TileCell.currentPlayer = 0;
@@ -137,7 +154,7 @@ public class mainApp extends Application{
 			CoordinateTile.counterForInitialBorder = 0;
 			TileCell.counterForInitialBorder = 0;
 			
-			game=new Scene(this.createContent());
+			game=new Scene(this.createContent(true));
 			window.setScene(game);
 		});
 		
@@ -156,10 +173,40 @@ public class mainApp extends Application{
 		        if(isNowSelected){ 
 		            numRows=9;
 		            numCols=6;
+		         
+					try {
+						gameState loadPreviousGame = resumeGS.deserialize();
+						if(!(loadPreviousGame.currentBoard.numberOfRows==numRows && loadPreviousGame.currentBoard.numberOfColumns==numCols && loadPreviousGame.currentBoard.numberOfPlayers==numPlayers && !loadPreviousGame.currentBoard.lastGameCompleted))
+			            {
+			            	resumeButton.setDisable(true);
+			            }
+			            else
+			            {
+			            	resumeButton.setDisable(false);
+			            }
+					} catch (ClassNotFoundException | IOException | NullPointerException e) {
+						// TODO Auto-generated catch block
+						resumeButton.setDisable(true);
+					}
 		        } 
 		        else {
 		        	numRows=15;
 		            numCols=10;
+		            
+		            try {
+						gameState loadPreviousGame = resumeGS.deserialize();
+						if(!(loadPreviousGame.currentBoard.numberOfRows==numRows && loadPreviousGame.currentBoard.numberOfColumns==numCols && loadPreviousGame.currentBoard.numberOfPlayers==numPlayers && !loadPreviousGame.currentBoard.lastGameCompleted))
+			            {
+			            	resumeButton.setDisable(true);
+			            }
+			            else
+			            {
+			            	resumeButton.setDisable(false);
+			            }
+					} catch (ClassNotFoundException | IOException | NullPointerException e) {
+						// TODO Auto-generated catch block
+						resumeButton.setDisable(true);
+					}
 		        }
 		    }
 		});
@@ -179,6 +226,22 @@ public class mainApp extends Application{
 			try {
 				if(newValue.length()>0)
 					numPlayers=Integer.parseInt(newValue);
+				
+				try {
+					gameState loadPreviousGame = resumeGS.deserialize();
+					if(!(loadPreviousGame.currentBoard.numberOfRows==numRows && loadPreviousGame.currentBoard.numberOfColumns==numCols && loadPreviousGame.currentBoard.numberOfPlayers==numPlayers && !loadPreviousGame.currentBoard.lastGameCompleted))
+		            {
+		            	resumeButton.setDisable(true);
+		            }
+		            else
+		            {
+		            	resumeButton.setDisable(false);
+		            }
+				} catch (ClassNotFoundException | IOException | NullPointerException e) {
+					// TODO Auto-generated catch block
+					resumeButton.setDisable(true);
+				}
+				
 			} catch(java.lang.NumberFormatException e) {
 				System.out.println("Invalid value");
 			}
@@ -189,6 +252,22 @@ public class mainApp extends Application{
 			if(Integer.parseInt(players.getText())>2) {
 				int x=Integer.parseInt(players.getText())-1;
 				numPlayers=x;
+				
+				try {
+					gameState loadPreviousGame = resumeGS.deserialize();
+					if(!(loadPreviousGame.currentBoard.numberOfRows==numRows && loadPreviousGame.currentBoard.numberOfColumns==numCols && loadPreviousGame.currentBoard.numberOfPlayers==numPlayers && !loadPreviousGame.currentBoard.lastGameCompleted))
+		            {
+		            	resumeButton.setDisable(true);
+		            }
+		            else
+		            {
+		            	resumeButton.setDisable(false);
+		            }
+				} catch (ClassNotFoundException | IOException | NullPointerException e) {
+					// TODO Auto-generated catch block
+					resumeButton.setDisable(true);
+				}
+				
 				players.clear();
 				players.setText(Integer.toString(x));
 			}
@@ -198,6 +277,22 @@ public class mainApp extends Application{
 			if(Integer.parseInt(players.getText())<8) {
 				int x=Integer.parseInt(players.getText())+1;
 				numPlayers=x;
+				
+				try {
+					gameState loadPreviousGame = resumeGS.deserialize();
+					if(!(loadPreviousGame.currentBoard.numberOfRows==numRows && loadPreviousGame.currentBoard.numberOfColumns==numCols && loadPreviousGame.currentBoard.numberOfPlayers==numPlayers && !loadPreviousGame.currentBoard.lastGameCompleted))
+		            {
+		            	resumeButton.setDisable(true);
+		            }
+		            else
+		            {
+		            	resumeButton.setDisable(false);
+		            }
+				} catch (ClassNotFoundException | IOException | NullPointerException e) {
+					// TODO Auto-generated catch block
+					resumeButton.setDisable(true);
+				}
+				
 				players.clear();
 				players.setText(Integer.toString(x));
 			}
@@ -218,7 +313,59 @@ public class mainApp extends Application{
 	    layout.setHgap(10);
 	    layout.setPadding(new Insets(10, 10, 10, 10));
 	    
-	    resumeButton.setDisable(true);
+	    try {
+			gameState loadPreviousGame = resumeGS.deserialize();
+			if(!(loadPreviousGame.currentBoard.numberOfRows==numRows && loadPreviousGame.currentBoard.numberOfColumns==numCols && loadPreviousGame.currentBoard.numberOfPlayers==numPlayers && !loadPreviousGame.currentBoard.lastGameCompleted))
+            {
+            	resumeButton.setDisable(true);
+            }
+            else
+            {
+            	resumeButton.setDisable(false);
+            }
+		} catch (ClassNotFoundException | IOException | NullPointerException e) {
+			// TODO Auto-generated catch block
+			resumeButton.setDisable(true);
+		}
+	    
+	    resumeButton.setOnAction(event->{
+	    	try {
+	    		CoordinateTile.gs = mainApp.resumeGS.deserialize();
+				TileBoard loadSavedGame = CoordinateTile.gs.currentBoard;
+				CoordinateTile.currentPlayer = CoordinateTile.gs.currentPlayer;
+				CoordinateTile.counterForInitialBorder = CoordinateTile.gs.counterForInitialBorder;
+				CoordinateTile.counterForInitialGamePlay = CoordinateTile.gs.counterForInitialGamePlay;
+				CoordinateTile.init = CoordinateTile.gs.init;
+				
+				System.out.println("Details of Saved Game After Loading are:");
+				System.out.println("CurrentPlayer : "+CoordinateTile.gs.currentPlayer);
+				System.out.println("counterForInitialBorder : "+CoordinateTile.gs.counterForInitialBorder);
+				System.out.println("counterForInitialGamePlay : "+CoordinateTile.gs.counterForInitialGamePlay);
+				System.out.println("init : "+CoordinateTile.gs.init);
+				System.out.println("Game Complete Status : "+loadSavedGame.lastGameCompleted);
+				System.out.println();
+				
+				if(!loadSavedGame.lastGameCompleted)
+				{
+					this.b = new BoardGUI(numRows,numCols,numPlayers);
+					this.b.loadGUIfromState(new TileBoard(loadSavedGame),true);
+					game=new Scene(this.createContent(loadSavedGame.undoOnce));
+					window.setScene(game);
+				}
+				else
+				{
+					System.out.println("Last game was completed");
+				}
+			} catch (ClassNotFoundException | IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	    	catch (NullPointerException e)
+	    	{
+	    		System.out.println("No State Found");
+	    	}
+	    	
+	    });
 		
 	    layout.add(gridsize, 6, 2);
 		layout.add(resumeButton,6,26);
@@ -269,7 +416,7 @@ public class mainApp extends Application{
 		menu.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
 	}
 	
-	public Parent createContent()
+	public Parent createContent(boolean setUndoButtonVisibility)
 	{
 		Pane root = new Pane();
 		
@@ -305,6 +452,43 @@ public class mainApp extends Application{
 		menubar.setPadding(new Insets(10));
 		Button backButton = new Button("Back to Menu");
 		backButton.setOnAction(event -> {
+			
+			try {
+				
+				CoordinateTile.gs.currentBoard = new TileBoard(this.b.tb);
+				CoordinateTile.gs.currentPlayer = CoordinateTile.currentPlayer;
+				CoordinateTile.gs.counterForInitialBorder = CoordinateTile.counterForInitialBorder;
+				CoordinateTile.gs.counterForInitialGamePlay = CoordinateTile.counterForInitialGamePlay;
+				CoordinateTile.gs.init = CoordinateTile.init; 
+				
+				resumeGS.serialize(CoordinateTile.gs);
+				
+				System.out.println("Details of Saved Game After Saving are:");
+				System.out.println("CurrentPlayer : "+CoordinateTile.gs.currentPlayer);
+				System.out.println("counterForInitialBorder : "+CoordinateTile.gs.counterForInitialBorder);
+				System.out.println("counterForInitialGamePlay : "+CoordinateTile.gs.counterForInitialGamePlay);
+				System.out.println("init : "+CoordinateTile.gs.init);
+				System.out.println();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			try {
+				gameState loadPreviousGame = resumeGS.deserialize();
+				if(!(loadPreviousGame.currentBoard.numberOfRows==numRows && loadPreviousGame.currentBoard.numberOfColumns==numCols && loadPreviousGame.currentBoard.numberOfPlayers==numPlayers && !loadPreviousGame.currentBoard.lastGameCompleted))
+	            {
+	            	resumeButton.setDisable(true);
+	            }
+	            else
+	            {
+	            	resumeButton.setDisable(false);
+	            }
+			} catch (ClassNotFoundException | IOException | NullPointerException e) {
+				// TODO Auto-generated catch block
+				resumeButton.setDisable(true);
+			}
+			
 			this.createMenu();
 			window.setScene(menu);
 		});
@@ -313,7 +497,7 @@ public class mainApp extends Application{
 			this.b = new BoardGUI(numRows,numCols,numPlayers);
 			CoordinateTile.init = true;
 			TileCell.init = true;
-			CoordinateTile.gs = new gameState();
+			CoordinateTile.gs = new gameState(this.b.tb);
 			undoButton.setDisable(true);
 			
 			CoordinateTile.currentPlayer = 0;
@@ -324,7 +508,23 @@ public class mainApp extends Application{
 			
 			CoordinateTile.counterForInitialBorder = 0;
 			TileCell.counterForInitialBorder = 0;
-			game=new Scene(this.createContent());
+			
+			try {
+				gameState loadPreviousGame = resumeGS.deserialize();
+				if(!(loadPreviousGame.currentBoard.numberOfRows==numRows && loadPreviousGame.currentBoard.numberOfColumns==numCols && loadPreviousGame.currentBoard.numberOfPlayers==numPlayers && !loadPreviousGame.currentBoard.lastGameCompleted))
+	            {
+	            	resumeButton.setDisable(true);
+	            }
+	            else
+	            {
+	            	resumeButton.setDisable(false);
+	            }
+			} catch (ClassNotFoundException | IOException | NullPointerException e) {
+				// TODO Auto-generated catch block
+				resumeButton.setDisable(true);
+			}
+			
+			game=new Scene(this.createContent(true));
 			window.setScene(game);
 		});
 		Pane spacer = new Pane();
@@ -334,12 +534,35 @@ public class mainApp extends Application{
 		
 		undoButton = new Button("Undo");
 		undoButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
-		undoButton.setDisable(true);
+		undoButton.setDisable(setUndoButtonVisibility);
 		
 		undoButton.setOnAction(event->{
+			if(System.currentTimeMillis() - BoardGUI.startTime < 600) return;
 			if(!CoordinateTile.gs.allStates.isEmpty())
 			{
-				b.loadGUIfromState(CoordinateTile.gs.loadState());
+				TileBoard previousState = CoordinateTile.gs.loadState();
+				CoordinateTile.gs.currentBoard = new TileBoard(previousState);
+				
+				b.loadGUIfromState(previousState,false);
+				
+				CoordinateTile.gs.currentPlayer = CoordinateTile.currentPlayer;
+				CoordinateTile.gs.counterForInitialBorder = CoordinateTile.counterForInitialBorder;
+				CoordinateTile.gs.counterForInitialGamePlay = CoordinateTile.counterForInitialGamePlay;
+				CoordinateTile.gs.init = CoordinateTile.init; 
+				
+				try {
+					resumeGS.serialize(CoordinateTile.gs);
+					
+					System.out.println("Details of Saved Game After Saving are:");
+					System.out.println("CurrentPlayer : "+CoordinateTile.gs.currentPlayer);
+					System.out.println("counterForInitialBorder : "+CoordinateTile.gs.counterForInitialBorder);
+					System.out.println("counterForInitialGamePlay : "+CoordinateTile.gs.counterForInitialGamePlay);
+					System.out.println("init : "+CoordinateTile.gs.init);
+					System.out.println();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		});
 		
@@ -363,12 +586,17 @@ public class mainApp extends Application{
 		numRows=9;
 		numCols=6;
 		numPlayers=2;
-		
+		gameState lastState = resumeGS.deserialize();
+		if(lastState.allStates.size()>0) {
+			numRows=lastState.allStates.peek().numberOfRows;
+			numCols=lastState.allStates.peek().numberOfColumns;
+			numPlayers=lastState.allStates.peek().numberOfPlayers;
+		}
 		this.createMenu();
 		primaryStage.setScene(menu);
 		primaryStage.show();
 		this.b = new BoardGUI(numRows,numCols,numPlayers);
-		game=new Scene(this.createContent());
+		game=new Scene(this.createContent(true));
 	}
 
 }
