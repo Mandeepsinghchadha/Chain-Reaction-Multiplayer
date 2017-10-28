@@ -282,9 +282,10 @@ public class CoordinateTile extends StackPane {
 						}
 					}
 
+					
+					CoordinateTile.gs.saveState(new TileBoard(this.boardContainer.tb));
 					try
 					{
-						CoordinateTile.gs.saveState(new TileBoard(this.boardContainer.tb));
 						this.boardContainer.allPlayers.get(currentPlayer).move(this.boardContainer, this.xCoordinate, this.yCoordinate);
 						this.boardContainer.tb.undoOnce = true;
 						mainApp.undoButton.setDisable(false);
@@ -367,9 +368,9 @@ public class CoordinateTile extends StackPane {
 			{
 				if(counterForInitialGamePlay<this.boardContainer.numberOfPlayers)
 				{
+					CoordinateTile.gs.saveState(new TileBoard(this.boardContainer.tb));
 					try
 					{
-						CoordinateTile.gs.saveState(new TileBoard(this.boardContainer.tb));
 						this.boardContainer.allPlayers.get(counterForInitialGamePlay).move(this.boardContainer, this.xCoordinate, this.yCoordinate);
 						this.boardContainer.tb.undoOnce = true;
 						mainApp.undoButton.setDisable(false);
