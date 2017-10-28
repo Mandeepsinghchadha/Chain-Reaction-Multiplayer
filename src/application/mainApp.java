@@ -11,6 +11,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
@@ -37,10 +39,21 @@ public class mainApp extends Application{
 	static gameSave resumeGS = new gameSave();
 	BoardGUI b;
 	int numRows,numCols,numPlayers;
-	Scene menu, game, settingsPage;
-	Stage window;
+	static Scene menu, game, settingsPage;
+	static Stage window;
 	public static Button undoButton;
 	public static Button resumeButton;
+	
+	public static  void showWinAlertBox(int x){
+		Alert alert = new Alert(AlertType.INFORMATION);
+		alert.setTitle("Game Over");
+		alert.setHeaderText(null);
+		alert.setContentText("Player "+x+" wins.\n\nClick OK to go back to menu.");
+		alert.setOnHidden(evt -> {
+			window.setScene(menu);
+		});
+		alert.show();
+	}
 	
 	public void createSettingsPage() {
 		GridPane layout = new GridPane();
@@ -531,6 +544,12 @@ public class mainApp extends Application{
 		undoButton.setDisable(setUndoButtonVisibility);
 		
 		undoButton.setOnAction(event->{
+			
+			if(System.currentTimeMillis() - BoardGUI.startTime < 600) 
+			{
+				return;
+			}
+			
 			if(!CoordinateTile.gs.allStates.isEmpty())
 			{
 				TileBoard previousState = CoordinateTile.gs.loadState();
@@ -575,11 +594,23 @@ public class mainApp extends Application{
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		primaryStage.setTitle("Chain Reaction");
-		this.window=primaryStage;
+		mainApp.window=primaryStage;
 		
 		numRows=9;
 		numCols=6;
 		numPlayers=2;
+		
+		try {
+			gameState lastState = resumeGS.deserialize();
+			numRows = lastState.currentBoard.numberOfRows;
+			numCols = lastState.currentBoard.numberOfColumns;
+			numPlayers = lastState.currentBoard.numberOfPlayers;
+		}
+		catch (ClassNotFoundException | IOException | NullPointerException e)
+		{
+			System.out.println("No State Loaded");
+		}
+		
 		
 		this.createMenu();
 		primaryStage.setScene(menu);

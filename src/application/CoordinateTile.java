@@ -119,7 +119,7 @@ public class CoordinateTile extends StackPane {
 
 		parallelSplit = new ParallelTransition();
 		parallelSplit.setOnFinished(e->{
-			
+			BoardGUI.startTime=System.currentTimeMillis();
 			ArrayList<CoordinateTile> allNeighbours = b.getListOfNeighbours(this.xCoordinate, this.yCoordinate);
 			for(int i=0;i<allNeighbours.size();i+=1)
 			{
@@ -187,17 +187,24 @@ public class CoordinateTile extends StackPane {
 			}
 			else
 			{
+				int winningPlayerNumber = -1;
+				int numberOfActivePlayers = 0;
 				for(int i=0;i<this.boardContainer.numberOfPlayers;i+=1)
 				{
 					if(this.boardContainer.allPlayers.get(i).active)
 					{
-						System.out.println("Player "+(i+1)+" wins");
-						break;
+						winningPlayerNumber = i;
+						numberOfActivePlayers+=1;
 					}
 				}
 				this.boardContainer.tb.lastGameCompleted = true;
 				this.boardContainer.tb.undoOnce = false;
 				mainApp.undoButton.setDisable(true);
+				if(numberOfActivePlayers==1 && this.boardContainer.shownPrompt)
+				{
+					this.boardContainer.shownPrompt=false;
+					mainApp.showWinAlertBox(winningPlayerNumber+1);
+				}
 			}
 			
 			int p = currentPlayer;
@@ -251,6 +258,11 @@ public class CoordinateTile extends StackPane {
 		this.getChildren().addAll(border);
 
 		setOnMouseClicked(event -> {
+			if(System.currentTimeMillis() - BoardGUI.startTime < 600) 
+			{
+				return;
+			}
+			
 			if(counterForInitialGamePlay>=this.boardContainer.numberOfPlayers)
 			{
 				counterForInitialGamePlay+=1;
@@ -284,17 +296,23 @@ public class CoordinateTile extends StackPane {
 				}
 				else
 				{
+					int winningPlayerNumber = -1;
+					int numberOfActivePlayers = 0;
 					for(int i=0;i<this.boardContainer.numberOfPlayers;i+=1)
 					{
 						if(this.boardContainer.allPlayers.get(i).active)
 						{
-							System.out.println("Player "+(i+1)+" wins");
-							break;
+							winningPlayerNumber = i;
+							numberOfActivePlayers+=1;
 						}
 					}
 					this.boardContainer.tb.lastGameCompleted = true;
 					this.boardContainer.tb.undoOnce = false;
 					mainApp.undoButton.setDisable(true);
+					if(numberOfActivePlayers==1)
+					{
+						mainApp.showWinAlertBox(winningPlayerNumber+1);
+					}
 				}
 				currentPlayer = (currentPlayer + 1) % this.boardContainer.numberOfPlayers;
 				TileCell.currentPlayer = (TileCell.currentPlayer + 1) % this.boardContainer.numberOfPlayers;
