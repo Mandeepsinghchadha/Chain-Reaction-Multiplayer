@@ -15,6 +15,7 @@ public class gameState implements Serializable{
 	public int counterForInitialGamePlay;
 	public int counterForInitialBorder;
 	public boolean init;
+	public String allColours[];
 	
 	public gameState(TileBoard tb)
 	{

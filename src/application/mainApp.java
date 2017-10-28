@@ -325,6 +325,11 @@ public class mainApp extends Application{
 				CoordinateTile.counterForInitialGamePlay = CoordinateTile.gs.counterForInitialGamePlay;
 				CoordinateTile.init = CoordinateTile.gs.init;
 				
+				for(int i=0;i<CoordinateTile.gs.allColours.length;i+=1)
+				{
+					BoardGUI.allColours[i] = Color.valueOf(CoordinateTile.gs.allColours[i]);
+				}
+				
 				System.out.println("Details of Saved Game After Loading are:");
 				System.out.println("CurrentPlayer : "+CoordinateTile.gs.currentPlayer);
 				System.out.println("counterForInitialBorder : "+CoordinateTile.gs.counterForInitialBorder);
@@ -448,6 +453,7 @@ public class mainApp extends Application{
 				CoordinateTile.gs.counterForInitialBorder = CoordinateTile.counterForInitialBorder;
 				CoordinateTile.gs.counterForInitialGamePlay = CoordinateTile.counterForInitialGamePlay;
 				CoordinateTile.gs.init = CoordinateTile.init; 
+				CoordinateTile.gs.allColours = TileBoard.allColours;
 				
 				resumeGS.serialize(CoordinateTile.gs);
 				
@@ -536,6 +542,7 @@ public class mainApp extends Application{
 				CoordinateTile.gs.counterForInitialBorder = CoordinateTile.counterForInitialBorder;
 				CoordinateTile.gs.counterForInitialGamePlay = CoordinateTile.counterForInitialGamePlay;
 				CoordinateTile.gs.init = CoordinateTile.init; 
+				CoordinateTile.gs.allColours = TileBoard.allColours;
 				
 				try {
 					resumeGS.serialize(CoordinateTile.gs);

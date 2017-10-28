@@ -187,6 +187,14 @@ public class CoordinateTile extends StackPane {
 			}
 			else
 			{
+				for(int i=0;i<this.boardContainer.numberOfPlayers;i+=1)
+				{
+					if(this.boardContainer.allPlayers.get(i).active)
+					{
+						System.out.println("Player "+(i+1)+" wins");
+						break;
+					}
+				}
 				this.boardContainer.tb.lastGameCompleted = true;
 				this.boardContainer.tb.undoOnce = false;
 				mainApp.undoButton.setDisable(true);
@@ -217,6 +225,7 @@ public class CoordinateTile extends StackPane {
 					gs.counterForInitialBorder = counterForInitialBorder;
 					gs.counterForInitialGamePlay = counterForInitialGamePlay;
 					gs.init = init;
+					gs.allColours = TileBoard.allColours;
 					mainApp.resumeGS.serialize(gs);
 					
 					System.out.println("Details of Saved Game After Saving are:");
@@ -275,6 +284,14 @@ public class CoordinateTile extends StackPane {
 				}
 				else
 				{
+					for(int i=0;i<this.boardContainer.numberOfPlayers;i+=1)
+					{
+						if(this.boardContainer.allPlayers.get(i).active)
+						{
+							System.out.println("Player "+(i+1)+" wins");
+							break;
+						}
+					}
 					this.boardContainer.tb.lastGameCompleted = true;
 					this.boardContainer.tb.undoOnce = false;
 					mainApp.undoButton.setDisable(true);
@@ -303,6 +320,7 @@ public class CoordinateTile extends StackPane {
 					gs.counterForInitialBorder = counterForInitialBorder;
 					gs.counterForInitialGamePlay = counterForInitialGamePlay;
 					gs.init = init;
+					gs.allColours = TileBoard.allColours;
 					mainApp.resumeGS.serialize(gs);
 					
 					System.out.println("Details of Saved Game After Saving are:");
@@ -372,6 +390,7 @@ public class CoordinateTile extends StackPane {
 					gs.counterForInitialBorder = counterForInitialBorder;
 					gs.counterForInitialGamePlay = counterForInitialGamePlay;
 					gs.init = init;
+					gs.allColours = TileBoard.allColours;
 					mainApp.resumeGS.serialize(gs);
 					
 					System.out.println("Details of Saved Game After Saving are:");
