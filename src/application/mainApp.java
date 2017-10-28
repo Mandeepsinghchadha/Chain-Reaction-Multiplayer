@@ -37,14 +37,15 @@ import withoutGUI.gameState;
 public class mainApp extends Application{
 	
 	static gameSave resumeGS = new gameSave();
-	BoardGUI b;
+	static BoardGUI b;
 	int numRows,numCols,numPlayers;
 	static Scene menu, game, settingsPage;
 	static Stage window;
 	public static Button undoButton;
 	public static Button resumeButton;
 	
-	public static  void showWinAlertBox(int x){
+	public static void showWinAlertBox(int x){
+		b.tb.lastGameCompleted = true;
 		Alert alert = new Alert(AlertType.INFORMATION);
 		alert.setTitle("Game Over");
 		alert.setHeaderText(null);
@@ -140,10 +141,10 @@ public class mainApp extends Application{
 		playButton.setAlignment(Pos.CENTER);
 		
 		playButton.setOnAction(event -> {
-			this.b = new BoardGUI(numRows,numCols,numPlayers);
+			mainApp.b = new BoardGUI(numRows,numCols,numPlayers);
 			CoordinateTile.init = true;
 			TileCell.init = true;
-			CoordinateTile.gs = new gameState(this.b.tb);
+			CoordinateTile.gs = new gameState(mainApp.b.tb);
 			undoButton.setDisable(true);
 			
 			CoordinateTile.currentPlayer = 0;
@@ -337,6 +338,7 @@ public class mainApp extends Application{
 				CoordinateTile.counterForInitialBorder = CoordinateTile.gs.counterForInitialBorder;
 				CoordinateTile.counterForInitialGamePlay = CoordinateTile.gs.counterForInitialGamePlay;
 				CoordinateTile.init = CoordinateTile.gs.init;
+				TileBoard.allColours = CoordinateTile.gs.allColours;
 				
 				for(int i=0;i<CoordinateTile.gs.allColours.length;i+=1)
 				{
@@ -353,13 +355,14 @@ public class mainApp extends Application{
 				
 				if(!loadSavedGame.lastGameCompleted)
 				{
-					this.b = new BoardGUI(numRows,numCols,numPlayers);
-					this.b.loadGUIfromState(new TileBoard(loadSavedGame),true);
+					mainApp.b = new BoardGUI(numRows,numCols,numPlayers);
+					mainApp.b.loadGUIfromState(new TileBoard(loadSavedGame),true);
 					game=new Scene(this.createContent(loadSavedGame.undoOnce));
 					window.setScene(game);
 				}
 				else
 				{
+					resumeButton.setDisable(true);
 					System.out.println("Last game was completed");
 				}
 			} catch (ClassNotFoundException | IOException e) {
@@ -461,7 +464,7 @@ public class mainApp extends Application{
 			
 			try {
 				
-				CoordinateTile.gs.currentBoard = new TileBoard(this.b.tb);
+				CoordinateTile.gs.currentBoard = new TileBoard(mainApp.b.tb);
 				CoordinateTile.gs.currentPlayer = CoordinateTile.currentPlayer;
 				CoordinateTile.gs.counterForInitialBorder = CoordinateTile.counterForInitialBorder;
 				CoordinateTile.gs.counterForInitialGamePlay = CoordinateTile.counterForInitialGamePlay;
@@ -501,10 +504,10 @@ public class mainApp extends Application{
 		});
 		Button newGameButton = new Button("New Game");
 		newGameButton.setOnAction(event -> {
-			this.b = new BoardGUI(numRows,numCols,numPlayers);
+			mainApp.b = new BoardGUI(numRows,numCols,numPlayers);
 			CoordinateTile.init = true;
 			TileCell.init = true;
-			CoordinateTile.gs = new gameState(this.b.tb);
+			CoordinateTile.gs = new gameState(mainApp.b.tb);
 			undoButton.setDisable(true);
 			
 			CoordinateTile.currentPlayer = 0;
@@ -545,7 +548,7 @@ public class mainApp extends Application{
 		
 		undoButton.setOnAction(event->{
 			
-			if(System.currentTimeMillis() - BoardGUI.startTime < 600) 
+			if(System.currentTimeMillis() - BoardGUI.startTime < 770) 
 			{
 				return;
 			}
@@ -615,7 +618,7 @@ public class mainApp extends Application{
 		this.createMenu();
 		primaryStage.setScene(menu);
 		primaryStage.show();
-		this.b = new BoardGUI(numRows,numCols,numPlayers);
+		mainApp.b = new BoardGUI(numRows,numCols,numPlayers);
 		game=new Scene(this.createContent(true));
 	}
 

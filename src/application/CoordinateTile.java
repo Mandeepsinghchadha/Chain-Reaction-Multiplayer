@@ -85,7 +85,7 @@ public class CoordinateTile extends StackPane {
 		rotateGroup.setAxis(allAxes[new Random().nextInt(allAxes.length)]);
 		rotateGroup.setAutoReverse(false);
 
-		transRight = new TranslateTransition(Duration.millis(500));
+		transRight = new TranslateTransition(Duration.millis(700));
 		transRight.setToX(squareSize);
 		transRight.setCycleCount(1);
 		transRight.setAutoReverse(false);
@@ -93,7 +93,7 @@ public class CoordinateTile extends StackPane {
 			this.getChildren().remove(this.rightOrb);
 		});
 		
-		transLeft = new TranslateTransition(Duration.millis(500));
+		transLeft = new TranslateTransition(Duration.millis(700));
 		transLeft.setToX(-1*squareSize);
 		transLeft.setCycleCount(1);
 		transLeft.setAutoReverse(false);
@@ -101,7 +101,7 @@ public class CoordinateTile extends StackPane {
 			this.getChildren().remove(this.leftOrb);
 		});
 		
-		transBelow = new TranslateTransition(Duration.millis(500));
+		transBelow = new TranslateTransition(Duration.millis(700));
 		transBelow.setToY(squareSize);
 		transBelow.setCycleCount(1);
 		transBelow.setAutoReverse(false);
@@ -109,7 +109,7 @@ public class CoordinateTile extends StackPane {
 			this.getChildren().remove(this.belowOrb);
 		});
 		
-		transAbove = new TranslateTransition(Duration.millis(500));
+		transAbove = new TranslateTransition(Duration.millis(700));
 		transAbove.setToY(-1*squareSize);
 		transAbove.setCycleCount(1);
 		transAbove.setAutoReverse(false);
@@ -258,7 +258,7 @@ public class CoordinateTile extends StackPane {
 		this.getChildren().addAll(border);
 
 		setOnMouseClicked(event -> {
-			if(System.currentTimeMillis() - BoardGUI.startTime < 600) 
+			if(System.currentTimeMillis() - BoardGUI.startTime < 770) 
 			{
 				return;
 			}
@@ -309,8 +309,9 @@ public class CoordinateTile extends StackPane {
 					this.boardContainer.tb.lastGameCompleted = true;
 					this.boardContainer.tb.undoOnce = false;
 					mainApp.undoButton.setDisable(true);
-					if(numberOfActivePlayers==1)
+					if(numberOfActivePlayers==1 && this.boardContainer.shownPrompt)
 					{
+						this.boardContainer.shownPrompt=false;
 						mainApp.showWinAlertBox(winningPlayerNumber+1);
 					}
 				}
