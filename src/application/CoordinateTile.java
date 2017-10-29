@@ -72,7 +72,7 @@ public class CoordinateTile extends StackPane {
 		this.playerStatus = 0;
 		this.value = 0;
 		this.criticalMass = this.getCriticalMass(this.xCoordinate, this.yCoordinate);
-		this.colour = Color.WHITESMOKE;
+		this.colour = BoardGUI.allColours[0];
 		this.boardContainer = b;
 		this.t = new TileCell(this.numberOfRows,this.numberOfColumns,this.xCoordinate,this.yCoordinate);
 		gs = new gameState(this.boardContainer.tb);
@@ -225,6 +225,12 @@ public class CoordinateTile extends StackPane {
 					b.board[q][r].border.setStroke(b.allPlayers.get(p).colour);
 					b.board[q][r].t.borderColour = b.allPlayers.get(p).colour.toString();
 					b.tb.board[q][r].borderColour = b.allPlayers.get(p).colour.toString();
+					if(b.board[q][r].value==0)
+					{
+						b.board[q][r].colour = (Color) b.board[q][r].border.getStroke();
+						b.tb.board[q][r].colour = b.board[q][r].border.getStroke().toString();
+						b.board[q][r].t.colour = b.board[q][r].border.getStroke().toString();
+					}
 				}
 			}
 			
@@ -261,7 +267,18 @@ public class CoordinateTile extends StackPane {
 
 		this.setAlignment(Pos.CENTER);
 		this.getChildren().addAll(border);
-
+		
+		this.setOnMouseEntered(event->{
+			if(this.border.getStroke().equals(this.colour))
+			{
+				this.border.setFill(this.colour);
+			}
+		});
+		
+		this.setOnMouseExited(event->{
+			this.border.setFill(null);
+		});
+		
 		setOnMouseClicked(event -> {
 			if(System.currentTimeMillis() - BoardGUI.startTime < 770) 
 			{
@@ -342,6 +359,12 @@ public class CoordinateTile extends StackPane {
 						b.board[q][r].border.setStroke(b.allPlayers.get(p).colour);
 						b.board[q][r].t.borderColour = b.allPlayers.get(p).colour.toString();
 						b.tb.board[q][r].borderColour = b.allPlayers.get(p).colour.toString();
+						if(b.board[q][r].value==0)
+						{
+							b.board[q][r].colour = (Color) b.board[q][r].border.getStroke();
+							b.tb.board[q][r].colour = b.board[q][r].border.getStroke().toString();
+							b.board[q][r].t.colour = b.board[q][r].border.getStroke().toString();
+						}
 					}
 				}
 				try {
@@ -404,6 +427,12 @@ public class CoordinateTile extends StackPane {
 							b.board[p][q].border.setStroke(BoardGUI.allColours[(counterForInitialBorder+1)%b.allPlayers.size()]);
 							b.board[p][q].t.borderColour = BoardGUI.allColours[(counterForInitialBorder+1)%b.allPlayers.size()].toString();
 							b.tb.board[p][q].borderColour = BoardGUI.allColours[(counterForInitialBorder+1)%b.allPlayers.size()].toString();
+							if(b.board[p][q].value==0)
+							{
+								b.board[p][q].colour = (Color) b.board[p][q].border.getStroke();
+								b.tb.board[p][q].colour = b.board[p][q].border.getStroke().toString();
+								b.board[p][q].t.colour = b.board[p][q].border.getStroke().toString();
+							}
 						}
 					}
 					counterForInitialBorder+=1;
