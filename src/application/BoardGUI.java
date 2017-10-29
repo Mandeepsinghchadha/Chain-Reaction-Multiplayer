@@ -17,7 +17,7 @@ public class BoardGUI {
 	public boolean shownPrompt;
 	ArrayList<PlayerController> allPlayers;
 	static Color[] allColours = {Color.RED,Color.GREEN,Color.BLUE,Color.YELLOW,Color.MAGENTA,Color.CYAN,Color.ORANGE,Color.GRAY};
-	
+
 	BoardGUI(int m, int n, int numberOfPlayers)
 	{
 		this.shownPrompt=true;
@@ -26,7 +26,7 @@ public class BoardGUI {
 		this.numberOfPlayers = numberOfPlayers;
 		board = new CoordinateTile[this.numberOfRows][this.numberOfColumns];
 		this.tb = new TileBoard(this.numberOfRows,this.numberOfColumns,this.numberOfPlayers);
-		
+
 		for(int i=0;i<this.numberOfRows;i+=1)
 		{
 			for(int j=0;j<this.numberOfColumns;j+=1)
@@ -41,14 +41,14 @@ public class BoardGUI {
 				}
 			}
 		}
-		
+
 		this.allPlayers = new ArrayList<PlayerController>();
 		for(int i=0;i<numberOfPlayers;i+=1)
 		{
 			PlayerController p = new PlayerController(i+1,allColours[i]);
 			allPlayers.add(p);
 		}
-		
+
 		for(int i=0;i<tb.numberOfRows;i+=1)
 		{
 			for(int j=0;j<tb.numberOfColumns;j+=1)
@@ -57,7 +57,7 @@ public class BoardGUI {
 			}
 		}
 	}
-	
+
 	public void loadGUIfromState(TileBoard tb, boolean resumeSavedGame)
 	{
 		if(!resumeSavedGame)
@@ -80,7 +80,7 @@ public class BoardGUI {
 						this.board[i][j].colour = allColours[0];
 					}
 				}
-				
+
 				/*
 				 * Designs Board According to State
 				 */
@@ -88,7 +88,7 @@ public class BoardGUI {
 				{
 					for(int j=0;j<tb.numberOfColumns;j+=1)
 					{
-						
+
 						this.board[i][j].colour = Color.valueOf(tb.board[i][j].colour);
 						this.board[i][j].playerStatus = tb.board[i][j].playerStatus;
 						this.board[i][j].border.setStroke(Color.valueOf(tb.board[i][j].borderColour));
@@ -97,18 +97,18 @@ public class BoardGUI {
 							this.board[i][j].drawSphere();
 						}
 						this.board[i][j].rotateGroup.play();
-						
+
 						this.tb.board[i][j].colour = this.board[i][j].colour.toString();
 						this.tb.board[i][j].playerStatus = this.board[i][j].playerStatus;
 						this.tb.board[i][j].value = this.board[i][j].value;
 						this.tb.board[i][j].borderColour = tb.board[i][j].borderColour;
 					}
 				}
-				
+
 				if(!CoordinateTile.init && CoordinateTile.counterForInitialGamePlay>this.numberOfPlayers)
 				{
 					CoordinateTile.currentPlayer = (((CoordinateTile.currentPlayer - 1) % this.numberOfPlayers) + this.numberOfPlayers) % this.numberOfPlayers;
-				
+
 					for(int i=0;i<this.numberOfPlayers;i+=1)
 					{
 						if(this.playerCount(i+1)>0)
@@ -127,7 +127,7 @@ public class BoardGUI {
 					TileCell.counterForInitialGamePlay-=1;
 					CoordinateTile.counterForInitialBorder = (CoordinateTile.counterForInitialBorder - 1);
 					TileCell.counterForInitialBorder-=1;
-					
+
 					if(this.playerCount(CoordinateTile.counterForInitialGamePlay+1)<=0)
 					{
 						this.allPlayers.get(CoordinateTile.counterForInitialGamePlay).orbCount = -2147483648;
@@ -141,7 +141,7 @@ public class BoardGUI {
 						TileCell.counterForInitialBorder+=1;
 					}
 				}
-				
+
 				this.tb.undoOnce = false;
 				mainApp.undoButton.setDisable(true);
 			}
@@ -161,7 +161,7 @@ public class BoardGUI {
 					this.board[i][j].colour = allColours[0];
 				}
 			}
-			
+
 			/*
 			 * Designs Board According to State
 			 */
@@ -169,7 +169,7 @@ public class BoardGUI {
 			{
 				for(int j=0;j<tb.numberOfColumns;j+=1)
 				{
-					
+
 					this.board[i][j].colour = Color.valueOf(tb.board[i][j].colour);
 					this.board[i][j].playerStatus = tb.board[i][j].playerStatus;
 					this.board[i][j].border.setStroke(Color.valueOf(tb.board[i][j].borderColour));
@@ -178,14 +178,14 @@ public class BoardGUI {
 						this.board[i][j].drawSphere();
 					}
 					this.board[i][j].rotateGroup.play();
-					
+
 					this.tb.board[i][j].colour = this.board[i][j].colour.toString();
 					this.tb.board[i][j].playerStatus = this.board[i][j].playerStatus;
 					this.tb.board[i][j].value = this.board[i][j].value;
 					this.tb.board[i][j].borderColour = tb.board[i][j].borderColour;
 				}
 			}
-			
+
 			for(int i=0;i<this.numberOfPlayers;i+=1)
 			{
 				if(this.playerCount(i+1)>0)
@@ -199,7 +199,7 @@ public class BoardGUI {
 			}
 		}
 	}
-	
+
 	public boolean checkValidCoordinate(int i, int j)
 	{
 		if(i>=0 && i<this.numberOfRows && j>=0 && j<this.numberOfColumns)
@@ -211,7 +211,7 @@ public class BoardGUI {
 			return false;
 		}
 	}
-	
+
 	public ArrayList<CoordinateTile> getListOfNeighbours(int i, int j)
 	{
 		ArrayList<CoordinateTile> allNeighbours = new ArrayList<CoordinateTile>();
@@ -233,7 +233,7 @@ public class BoardGUI {
 		}
 		return allNeighbours;
 	}
-	
+
 	public int playerCount(int playerStatus)
 	{
 		int count = 0;
@@ -249,7 +249,7 @@ public class BoardGUI {
 		}
 		return count;
 	}
-	
+
 	public int countEmptyCells()
 	{
 		int count = 0;
@@ -265,7 +265,7 @@ public class BoardGUI {
 		}
 		return count;
 	}
-	
+
 	public int countAllActivePlayers(ArrayList<PlayerController> allPlayers)
 	{
 		int count = 0;
@@ -278,7 +278,7 @@ public class BoardGUI {
 		}
 		return count;
 	}
-	
+
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 	}

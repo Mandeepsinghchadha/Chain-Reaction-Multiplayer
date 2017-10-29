@@ -35,7 +35,7 @@ import withoutGUI.gameSave;
 import withoutGUI.gameState;
 
 public class mainApp extends Application{
-	
+
 	static gameSave resumeGS = new gameSave();
 	static BoardGUI b;
 	int numRows,numCols,numPlayers;
@@ -43,7 +43,7 @@ public class mainApp extends Application{
 	static Stage window;
 	public static Button undoButton;
 	public static Button resumeButton;
-	
+
 	public static void showWinAlertBox(int x) throws IOException{
 		b.tb.lastGameCompleted = true;
 		CoordinateTile.gs.currentBoard = new TileBoard(b.tb);
@@ -57,7 +57,7 @@ public class mainApp extends Application{
 		});
 		alert.show();
 	}
-	
+
 	public void createSettingsPage() {
 		GridPane layout = new GridPane();
 		layout.setVgap(3);
@@ -88,7 +88,7 @@ public class mainApp extends Application{
 		    	            (int)( colourPicker.getValue().getRed() * 255 ),
 		    	            (int)( colourPicker.getValue().getGreen() * 255 ),
 		    	            (int)( colourPicker.getValue().getBlue() * 255 ) ));
-		        			
+
 		        			BoardGUI.allColours[idx] = Color.color(( colourPicker.getValue().getRed()),( colourPicker.getValue().getGreen()), (colourPicker.getValue().getBlue()));
 		        			TileBoard.allColours[idx] = BoardGUI.allColours[idx].toString();
 		        });
@@ -113,71 +113,71 @@ public class mainApp extends Application{
 		Button doneButton = new Button("Done");
 		GridPane.setHalignment(doneButton, HPos.CENTER);
 		doneButton.setAlignment(Pos.CENTER);
-		
+
 		doneButton.setOnAction(event -> {
 			window.setScene(menu);
 		});
 		layout.add(doneButton,6,56);
-		
+
 		Button resetAllColorsButton = new Button("Reset All Colors");
 		GridPane.setHalignment(resetAllColorsButton, HPos.CENTER);
 		resetAllColorsButton.setAlignment(Pos.CENTER);
-		
+
 		resetAllColorsButton.setOnAction(event -> {
 			BoardGUI.allColours = new Color[]{Color.RED,Color.GREEN,Color.BLUE,Color.YELLOW,Color.MAGENTA,Color.CYAN,Color.ORANGE,Color.GRAY};
 			TileBoard.allColours = new String[] {Color.RED.toString(),Color.GREEN.toString(),Color.BLUE.toString(),Color.YELLOW.toString(),Color.MAGENTA.toString(),Color.CYAN.toString(),Color.ORANGE.toString(),Color.GRAY.toString()};
 			window.setScene(menu);
 		});
 		layout.add(resetAllColorsButton,6,52);
-		
+
 		settingsPage=new Scene(layout,640,520);
 		settingsPage.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
 	}
-	
+
 	public void createMenu(){
-		
+
 		Button playButton = new Button("New Game");
 		resumeButton = new Button("Resume");
 		Button settingsButton = new Button("Settings");
-		
+
 		playButton.setAlignment(Pos.CENTER);
-		
+
 		playButton.setOnAction(event -> {
 			mainApp.b = new BoardGUI(numRows,numCols,numPlayers);
 			CoordinateTile.init = true;
 			TileCell.init = true;
 			CoordinateTile.gs = new gameState(mainApp.b.tb);
 			undoButton.setDisable(true);
-			
+
 			CoordinateTile.currentPlayer = 0;
 			TileCell.currentPlayer = 0;
-			
+
 			CoordinateTile.counterForInitialGamePlay = 0;
 			TileCell.counterForInitialGamePlay = 0;
-			
+
 			CoordinateTile.counterForInitialBorder = 0;
 			TileCell.counterForInitialBorder = 0;
-			
+
 			game=new Scene(this.createContent(true));
 			window.setScene(game);
 		});
-		
+
 		settingsButton.setOnAction(event -> {
 			this.createSettingsPage();
 			window.setScene(settingsPage);
 		});
-		
+
 		final ToggleGroup radio = new ToggleGroup();
 
 		RadioButton small = new RadioButton("9 X 6");
-		small.setToggleGroup(radio);		
+		small.setToggleGroup(radio);
 		small.selectedProperty().addListener(new ChangeListener<Boolean>() {
 		    @Override
 		    public void changed(ObservableValue<? extends Boolean> obs, Boolean wasPreviouslySelected, Boolean isNowSelected) {
-		        if(isNowSelected){ 
+		        if(isNowSelected){
 		            numRows=9;
 		            numCols=6;
-		         
+
 					try {
 						gameState loadPreviousGame = resumeGS.deserialize();
 						if(!(loadPreviousGame.currentBoard.numberOfRows==numRows && loadPreviousGame.currentBoard.numberOfColumns==numCols && loadPreviousGame.currentBoard.numberOfPlayers==numPlayers && !loadPreviousGame.currentBoard.lastGameCompleted))
@@ -192,11 +192,11 @@ public class mainApp extends Application{
 						// TODO Auto-generated catch block
 						resumeButton.setDisable(true);
 					}
-		        } 
+		        }
 		        else {
 		        	numRows=15;
 		            numCols=10;
-		            
+
 		            try {
 						gameState loadPreviousGame = resumeGS.deserialize();
 						if(!(loadPreviousGame.currentBoard.numberOfRows==numRows && loadPreviousGame.currentBoard.numberOfColumns==numCols && loadPreviousGame.currentBoard.numberOfPlayers==numPlayers && !loadPreviousGame.currentBoard.lastGameCompleted))
@@ -214,23 +214,23 @@ public class mainApp extends Application{
 		        }
 		    }
 		});
-		
+
 		RadioButton large = new RadioButton("15 X 10");
 		large.setToggleGroup(radio);
-		
+
 		if(numRows==15) large.setSelected(true);
 		else small.setSelected(true);
 		HBox radiobox=new HBox();
 		radiobox.setSpacing(50);
 		radiobox.getChildren().addAll(small,large);
-		
+
 		TextField players=new TextField(""+numPlayers+"");
 		players.setAlignment(Pos.CENTER);
 		players.textProperty().addListener((observable, oldValue, newValue) -> {
 			try {
 				if(newValue.length()>0)
 					numPlayers=Integer.parseInt(newValue);
-				
+
 				try {
 					gameState loadPreviousGame = resumeGS.deserialize();
 					if(!(loadPreviousGame.currentBoard.numberOfRows==numRows && loadPreviousGame.currentBoard.numberOfColumns==numCols && loadPreviousGame.currentBoard.numberOfPlayers==numPlayers && !loadPreviousGame.currentBoard.lastGameCompleted))
@@ -245,18 +245,18 @@ public class mainApp extends Application{
 					// TODO Auto-generated catch block
 					resumeButton.setDisable(true);
 				}
-				
+
 			} catch(java.lang.NumberFormatException e) {
 				System.out.println("Invalid value");
 			}
 		});
-		
+
 		Button minusButton = new Button("-");
 		minusButton.setOnAction(event -> {
 			if(Integer.parseInt(players.getText())>2) {
 				int x=Integer.parseInt(players.getText())-1;
 				numPlayers=x;
-				
+
 				try {
 					gameState loadPreviousGame = resumeGS.deserialize();
 					if(!(loadPreviousGame.currentBoard.numberOfRows==numRows && loadPreviousGame.currentBoard.numberOfColumns==numCols && loadPreviousGame.currentBoard.numberOfPlayers==numPlayers && !loadPreviousGame.currentBoard.lastGameCompleted))
@@ -271,7 +271,7 @@ public class mainApp extends Application{
 					// TODO Auto-generated catch block
 					resumeButton.setDisable(true);
 				}
-				
+
 				players.clear();
 				players.setText(Integer.toString(x));
 			}
@@ -281,7 +281,7 @@ public class mainApp extends Application{
 			if(Integer.parseInt(players.getText())<8) {
 				int x=Integer.parseInt(players.getText())+1;
 				numPlayers=x;
-				
+
 				try {
 					gameState loadPreviousGame = resumeGS.deserialize();
 					if(!(loadPreviousGame.currentBoard.numberOfRows==numRows && loadPreviousGame.currentBoard.numberOfColumns==numCols && loadPreviousGame.currentBoard.numberOfPlayers==numPlayers && !loadPreviousGame.currentBoard.lastGameCompleted))
@@ -296,7 +296,7 @@ public class mainApp extends Application{
 					// TODO Auto-generated catch block
 					resumeButton.setDisable(true);
 				}
-				
+
 				players.clear();
 				players.setText(Integer.toString(x));
 			}
@@ -316,7 +316,7 @@ public class mainApp extends Application{
 		layout.setVgap(3);
 	    layout.setHgap(10);
 	    layout.setPadding(new Insets(10, 10, 10, 10));
-	    
+
 	    try {
 			gameState loadPreviousGame = resumeGS.deserialize();
 			if(!(loadPreviousGame.currentBoard.numberOfRows==numRows && loadPreviousGame.currentBoard.numberOfColumns==numCols && loadPreviousGame.currentBoard.numberOfPlayers==numPlayers && !loadPreviousGame.currentBoard.lastGameCompleted))
@@ -331,7 +331,7 @@ public class mainApp extends Application{
 			// TODO Auto-generated catch block
 			resumeButton.setDisable(true);
 		}
-	    
+
 	    resumeButton.setOnAction(event->{
 	    	try {
 	    		CoordinateTile.gs = mainApp.resumeGS.deserialize();
@@ -341,12 +341,12 @@ public class mainApp extends Application{
 				CoordinateTile.counterForInitialGamePlay = CoordinateTile.gs.counterForInitialGamePlay;
 				CoordinateTile.init = CoordinateTile.gs.init;
 				TileBoard.allColours = CoordinateTile.gs.allColours;
-				
+
 				for(int i=0;i<CoordinateTile.gs.allColours.length;i+=1)
 				{
 					BoardGUI.allColours[i] = Color.valueOf(CoordinateTile.gs.allColours[i]);
 				}
-				
+
 				System.out.println("Details of Saved Game After Loading are:");
 				System.out.println("CurrentPlayer : "+CoordinateTile.gs.currentPlayer);
 				System.out.println("counterForInitialBorder : "+CoordinateTile.gs.counterForInitialBorder);
@@ -354,7 +354,7 @@ public class mainApp extends Application{
 				System.out.println("init : "+CoordinateTile.gs.init);
 				System.out.println("Game Complete Status : "+loadSavedGame.lastGameCompleted);
 				System.out.println();
-				
+
 				if(!loadSavedGame.lastGameCompleted)
 				{
 					mainApp.b = new BoardGUI(numRows,numCols,numPlayers);
@@ -375,9 +375,9 @@ public class mainApp extends Application{
 	    	{
 	    		System.out.println("No State Found");
 	    	}
-	    	
+
 	    });
-		
+
 	    layout.add(gridsize, 6, 2);
 		layout.add(resumeButton,6,26);
 		layout.add(playButton,6,36);
@@ -385,7 +385,7 @@ public class mainApp extends Application{
 		players.setMaxWidth(60);
 		layout.add(radiobox, 6, 4);
 		layout.add(numPlayersLabel, 6, 12);
-		
+
 		HBox numPlayerControl=new HBox();
 		numPlayerControl.setSpacing(0);
 		numPlayerControl.getChildren().addAll(minusButton,players,plusButton);
@@ -393,7 +393,7 @@ public class mainApp extends Application{
 		numPlayerControl.setAlignment(Pos.CENTER);
 		layout.add(numPlayerControl,6,14);
 
-		
+
 		UnaryOperator<Change> filter = value -> {
             if (value.isAdded()) {
                 String s = value.getText();
@@ -409,35 +409,35 @@ public class mainApp extends Application{
             return value ;
         };
         players.setTextFormatter(new TextFormatter<String>(filter));
-        
+
         try {
 	    		Image image = new Image(new FileInputStream("./src/logo.png"));
 	    		ImageView imageView = new ImageView(image);
-	    		imageView.setPreserveRatio(true); 
-	    	    imageView.setFitWidth(480); 
+	    		imageView.setPreserveRatio(true);
+	    	    imageView.setFitWidth(480);
 	    	    GridPane.setHalignment(imageView, HPos.CENTER);
 	    		layout.add(imageView,6,0);
     		}
     		catch(Exception e) {
     			System.out.println("Error retriieving logo");
     		}
-    		
+
 		menu=new Scene(layout,640,520);
-		
+
 		menu.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
 	}
-	
+
 	public Parent createContent(boolean setUndoButtonVisibility)
 	{
 		Pane root = new Pane();
-		
+
 		if(b.numberOfRows==9)
 		{
 			root.setPrefSize(6*50, 9*50);
 			for(int i=0;i<b.numberOfRows;i+=1)
 			{
 				for(int j=0;j<b.numberOfColumns;j+=1)
-				{	
+				{
 						b.board[i][j].setTranslateX(j*50);
 						b.board[i][j].setTranslateY(i*50);
 						root.getChildren().add(b.board[i][j]);
@@ -450,31 +450,31 @@ public class mainApp extends Application{
 			for(int i=0;i<b.numberOfRows;i+=1)
 			{
 				for(int j=0;j<b.numberOfColumns;j+=1)
-				{	
+				{
 						b.board[i][j].setTranslateX(j*40);
 						b.board[i][j].setTranslateY(i*40);
 						root.getChildren().add(b.board[i][j]);
 				}
 			}
 		}
-		
+
 		BorderPane ret=new BorderPane();
 		HBox menubar=new HBox(10);
 		menubar.setPadding(new Insets(10));
 		Button backButton = new Button("Back to Menu");
 		backButton.setOnAction(event -> {
-			
+
 			try {
-				
+
 				CoordinateTile.gs.currentBoard = new TileBoard(mainApp.b.tb);
 				CoordinateTile.gs.currentPlayer = CoordinateTile.currentPlayer;
 				CoordinateTile.gs.counterForInitialBorder = CoordinateTile.counterForInitialBorder;
 				CoordinateTile.gs.counterForInitialGamePlay = CoordinateTile.counterForInitialGamePlay;
-				CoordinateTile.gs.init = CoordinateTile.init; 
+				CoordinateTile.gs.init = CoordinateTile.init;
 				CoordinateTile.gs.allColours = TileBoard.allColours;
-				
+
 				resumeGS.serialize(CoordinateTile.gs);
-				
+
 				System.out.println("Details of Saved Game After Saving are:");
 				System.out.println("CurrentPlayer : "+CoordinateTile.gs.currentPlayer);
 				System.out.println("counterForInitialBorder : "+CoordinateTile.gs.counterForInitialBorder);
@@ -485,7 +485,7 @@ public class mainApp extends Application{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 			try {
 				gameState loadPreviousGame = resumeGS.deserialize();
 				if(!(loadPreviousGame.currentBoard.numberOfRows==numRows && loadPreviousGame.currentBoard.numberOfColumns==numCols && loadPreviousGame.currentBoard.numberOfPlayers==numPlayers && !loadPreviousGame.currentBoard.lastGameCompleted))
@@ -500,7 +500,7 @@ public class mainApp extends Application{
 				// TODO Auto-generated catch block
 				resumeButton.setDisable(true);
 			}
-			
+
 			this.createMenu();
 			window.setScene(menu);
 		});
@@ -511,16 +511,16 @@ public class mainApp extends Application{
 			TileCell.init = true;
 			CoordinateTile.gs = new gameState(mainApp.b.tb);
 			undoButton.setDisable(true);
-			
+
 			CoordinateTile.currentPlayer = 0;
 			TileCell.currentPlayer = 0;
-			
+
 			CoordinateTile.counterForInitialGamePlay = 0;
 			TileCell.counterForInitialGamePlay = 0;
-			
+
 			CoordinateTile.counterForInitialBorder = 0;
 			TileCell.counterForInitialBorder = 0;
-			
+
 			try {
 				gameState loadPreviousGame = resumeGS.deserialize();
 				if(!(loadPreviousGame.currentBoard.numberOfRows==numRows && loadPreviousGame.currentBoard.numberOfColumns==numCols && loadPreviousGame.currentBoard.numberOfPlayers==numPlayers && !loadPreviousGame.currentBoard.lastGameCompleted))
@@ -535,7 +535,7 @@ public class mainApp extends Application{
 				// TODO Auto-generated catch block
 				resumeButton.setDisable(true);
 			}
-			
+
 			game=new Scene(this.createContent(true));
 			window.setScene(game);
 		});
@@ -543,34 +543,32 @@ public class mainApp extends Application{
 		backButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
 		newGameButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
 		HBox.setHgrow(spacer, Priority.ALWAYS);
-		
+
 		undoButton = new Button("Undo");
 		undoButton.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
 		undoButton.setDisable(setUndoButtonVisibility);
-		
+
 		undoButton.setOnAction(event->{
-			
-			if(System.currentTimeMillis() - BoardGUI.startTime < 770) 
+			if(System.currentTimeMillis() - BoardGUI.startTime < 770)
 			{
 				return;
 			}
-			
 			if(!CoordinateTile.gs.allStates.isEmpty())
 			{
 				TileBoard previousState = CoordinateTile.gs.loadState();
 				CoordinateTile.gs.currentBoard = new TileBoard(previousState);
-				
+
 				b.loadGUIfromState(previousState,false);
-				
+
 				CoordinateTile.gs.currentPlayer = CoordinateTile.currentPlayer;
 				CoordinateTile.gs.counterForInitialBorder = CoordinateTile.counterForInitialBorder;
 				CoordinateTile.gs.counterForInitialGamePlay = CoordinateTile.counterForInitialGamePlay;
-				CoordinateTile.gs.init = CoordinateTile.init; 
+				CoordinateTile.gs.init = CoordinateTile.init;
 				CoordinateTile.gs.allColours = TileBoard.allColours;
-				
+
 				try {
 					resumeGS.serialize(CoordinateTile.gs);
-					
+
 					System.out.println("Details of Saved Game After Saving are:");
 					System.out.println("CurrentPlayer : "+CoordinateTile.gs.currentPlayer);
 					System.out.println("counterForInitialBorder : "+CoordinateTile.gs.counterForInitialBorder);
@@ -583,7 +581,7 @@ public class mainApp extends Application{
 				}
 			}
 		});
-		
+
 		menubar.getChildren().addAll(backButton,spacer,undoButton,newGameButton);
 
 		ret.setTop(menubar);
@@ -600,11 +598,11 @@ public class mainApp extends Application{
 	public void start(Stage primaryStage) throws Exception {
 		primaryStage.setTitle("Chain Reaction");
 		mainApp.window=primaryStage;
-		
+
 		numRows=9;
 		numCols=6;
 		numPlayers=2;
-		
+
 		try {
 			gameState lastState = resumeGS.deserialize();
 			numRows = lastState.currentBoard.numberOfRows;
@@ -615,8 +613,8 @@ public class mainApp extends Application{
 		{
 			System.out.println("No State Loaded");
 		}
-		
-		
+
+
 		this.createMenu();
 		primaryStage.setScene(menu);
 		primaryStage.show();
@@ -625,4 +623,3 @@ public class mainApp extends Application{
 	}
 
 }
-
