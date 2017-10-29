@@ -24,38 +24,38 @@ import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 
 public class CoordinateTile extends StackPane {
-
+	
 	static gameState gs;
 	TileCell t;
 	BoardGUI boardContainer;
 	PlayerController playerContainer;
 	Rectangle border;
-
+	
 	public static boolean init = true;
 	public static int currentPlayer = 0;
 	public static int counterForInitialGamePlay = 0;
 	public static int counterForInitialBorder = 0;
-
+	
 	public int xCoordinate;
 	public int yCoordinate;
 	public int playerStatus;
 	public int value;
 	public int criticalMass;
-
+	
 	public Color colour;
 	public int numberOfRows;
 	public int numberOfColumns;
-
+	
 	Group allOrbs = new Group();
 	Point3D allAxes[] = {Rotate.X_AXIS,Rotate.Y_AXIS,Rotate.Z_AXIS};
-
+	
 	RotateTransition rotateGroup;
 
 	TranslateTransition transRight;
 	TranslateTransition transLeft;
 	TranslateTransition transAbove;
 	TranslateTransition transBelow;
-
+	
 	ParallelTransition parallelSplit;
 
 	Sphere rightOrb;
@@ -92,7 +92,7 @@ public class CoordinateTile extends StackPane {
 		transRight.setOnFinished(e->{
 			this.getChildren().remove(this.rightOrb);
 		});
-
+		
 		transLeft = new TranslateTransition(Duration.millis(700));
 		transLeft.setToX(-1*squareSize);
 		transLeft.setCycleCount(1);
@@ -100,7 +100,7 @@ public class CoordinateTile extends StackPane {
 		transLeft.setOnFinished(e->{
 			this.getChildren().remove(this.leftOrb);
 		});
-
+		
 		transBelow = new TranslateTransition(Duration.millis(700));
 		transBelow.setToY(squareSize);
 		transBelow.setCycleCount(1);
@@ -108,7 +108,7 @@ public class CoordinateTile extends StackPane {
 		transBelow.setOnFinished(e->{
 			this.getChildren().remove(this.belowOrb);
 		});
-
+		
 		transAbove = new TranslateTransition(Duration.millis(700));
 		transAbove.setToY(-1*squareSize);
 		transAbove.setCycleCount(1);
@@ -125,17 +125,17 @@ public class CoordinateTile extends StackPane {
 			{
 				allNeighbours.get(i).playerStatus = this.playerContainer.playerNumber;
 				allNeighbours.get(i).colour = this.playerContainer.colour;
-
+				
 				allNeighbours.get(i).t.playerStatus = allNeighbours.get(i).playerStatus;
 				allNeighbours.get(i).t.colour = allNeighbours.get(i).colour.toString();
 				b.tb.board[allNeighbours.get(i).xCoordinate][allNeighbours.get(i).yCoordinate].playerStatus = allNeighbours.get(i).playerStatus;
 				b.tb.board[allNeighbours.get(i).xCoordinate][allNeighbours.get(i).yCoordinate].colour = allNeighbours.get(i).colour.toString();
-
+				
 				allNeighbours.get(i).getChildren().remove(allNeighbours.get(i).leftOrb);
 				allNeighbours.get(i).getChildren().remove(allNeighbours.get(i).rightOrb);
 				allNeighbours.get(i).getChildren().remove(allNeighbours.get(i).aboveOrb);
 				allNeighbours.get(i).getChildren().remove(allNeighbours.get(i).belowOrb);
-
+				
 				Sphere[] allNeighbourSpheres = allNeighbours.get(i).allOrbs.getChildren().toArray(new Sphere[allNeighbours.get(i).allOrbs.getChildren().size()]);
 				for(int a=0;a<allNeighbourSpheres.length;a+=1)
 				{
@@ -148,7 +148,7 @@ public class CoordinateTile extends StackPane {
 				allNeighbours.get(i).drawSphere();
 				allNeighbours.get(i).rotateGroup.play();
 			}
-
+			
 			for(int j=0;j<b.numberOfPlayers;j+=1)
 			{
 				if(b.allPlayers.get(j).active)
@@ -164,12 +164,12 @@ public class CoordinateTile extends StackPane {
 					}
 				}
 			}
-
+			
 			ArrayList<CoordinateTile> NeighbourCellsOfJustMovedCell = b.getListOfNeighbours(x,y);
 			ArrayList<CoordinateTile> NeighbourCellsWhichAreThemselvesUnstable = this.playerContainer.getAllUnstableNeighbourCells(NeighbourCellsOfJustMovedCell,b);
-
+			
 			b.board[x][y].parallelSplit.getChildren().clear();
-
+			
 			if(b.countAllActivePlayers(b.allPlayers)!=1)
 			{
 				for(int a=0;a<NeighbourCellsWhichAreThemselvesUnstable.size();a+=1)
@@ -211,7 +211,7 @@ public class CoordinateTile extends StackPane {
 					}
 				}
 			}
-
+			
 			int p = currentPlayer;
 			while(!b.allPlayers.get(p).active)
 			{
@@ -233,7 +233,7 @@ public class CoordinateTile extends StackPane {
 					}
 				}
 			}
-
+			
 			if(NeighbourCellsWhichAreThemselvesUnstable.isEmpty())
 			{
 				System.out.println("End of Transition");
@@ -245,7 +245,7 @@ public class CoordinateTile extends StackPane {
 					gs.init = init;
 					gs.allColours = TileBoard.allColours;
 					mainApp.resumeGS.serialize(gs);
-
+					
 					System.out.println("Details of Saved Game After Saving are:");
 					System.out.println("CurrentPlayer : "+CoordinateTile.gs.currentPlayer);
 					System.out.println("counterForInitialBorder : "+CoordinateTile.gs.counterForInitialBorder);
@@ -258,7 +258,7 @@ public class CoordinateTile extends StackPane {
 				}
 			}
 		});
-
+		
 		this.border = new Rectangle(squareSize,squareSize);
 		border.setFill(null);
 		border.setStroke(BoardGUI.allColours[0]);
@@ -267,23 +267,24 @@ public class CoordinateTile extends StackPane {
 
 		this.setAlignment(Pos.CENTER);
 		this.getChildren().addAll(border);
-
+		
 		this.setOnMouseEntered(event->{
 			if(this.border.getStroke().equals(this.colour))
 			{
 				this.border.setFill(this.colour);
 			}
 		});
-
+		
 		this.setOnMouseExited(event->{
 			this.border.setFill(null);
 		});
-
+		
 		setOnMouseClicked(event -> {
-			if(System.currentTimeMillis() - BoardGUI.startTime < 770)
+			if(System.currentTimeMillis() - BoardGUI.startTime < 770) 
 			{
 				return;
 			}
+			
 			if(counterForInitialGamePlay>=this.boardContainer.numberOfPlayers)
 			{
 				counterForInitialGamePlay+=1;
@@ -298,7 +299,7 @@ public class CoordinateTile extends StackPane {
 						}
 					}
 
-
+					
 					CoordinateTile.gs.saveState(new TileBoard(this.boardContainer.tb));
 					try
 					{
@@ -314,7 +315,7 @@ public class CoordinateTile extends StackPane {
 					catch (IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
-					}
+					} 
 				}
 				else
 				{
@@ -344,7 +345,7 @@ public class CoordinateTile extends StackPane {
 				}
 				currentPlayer = (currentPlayer + 1) % this.boardContainer.numberOfPlayers;
 				TileCell.currentPlayer = (TileCell.currentPlayer + 1) % this.boardContainer.numberOfPlayers;
-
+				
 				int p = currentPlayer;
 				while(!b.allPlayers.get(p).active)
 				{
@@ -374,7 +375,7 @@ public class CoordinateTile extends StackPane {
 					gs.init = init;
 					gs.allColours = TileBoard.allColours;
 					mainApp.resumeGS.serialize(gs);
-
+					
 					System.out.println("Details of Saved Game After Saving are:");
 					System.out.println("CurrentPlayer : "+CoordinateTile.gs.currentPlayer);
 					System.out.println("counterForInitialBorder : "+CoordinateTile.gs.counterForInitialBorder);
@@ -403,7 +404,7 @@ public class CoordinateTile extends StackPane {
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
-					}
+					} 
 					if(this.boardContainer.playerCount(counterForInitialGamePlay+1)>0)
 					{
 						this.boardContainer.allPlayers.get(counterForInitialGamePlay).orbCount = 1;
@@ -450,7 +451,7 @@ public class CoordinateTile extends StackPane {
 					gs.init = init;
 					gs.allColours = TileBoard.allColours;
 					mainApp.resumeGS.serialize(gs);
-
+					
 					System.out.println("Details of Saved Game After Saving are:");
 					System.out.println("CurrentPlayer : "+CoordinateTile.gs.currentPlayer);
 					System.out.println("counterForInitialBorder : "+CoordinateTile.gs.counterForInitialBorder);
@@ -750,3 +751,4 @@ public class CoordinateTile extends StackPane {
 	  }
 	}
 }
+
