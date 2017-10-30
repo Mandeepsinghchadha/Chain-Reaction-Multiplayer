@@ -48,6 +48,7 @@ public class mainApp extends Application{
 		b.tb.lastGameCompleted = true;
 		CoordinateTile.gs.currentBoard = new TileBoard(b.tb);
 		mainApp.resumeGS.serialize(CoordinateTile.gs);
+		mainApp.resumeButton.setDisable(true);
 		Alert alert = new Alert(AlertType.INFORMATION);
 		alert.setTitle("Game Over");
 		alert.setHeaderText(null);
@@ -587,6 +588,7 @@ public class mainApp extends Application{
 		menubar.getChildren().addAll(backButton,spacer,undoButton,newGameButton);
 
 		ret.setTop(menubar);
+		root.setStyle("-fx-background-color : #fff ;");
 		ret.setBottom(root);
 
 		return ret;
