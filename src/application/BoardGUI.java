@@ -111,14 +111,7 @@ public class BoardGUI {
 				
 					for(int i=0;i<this.numberOfPlayers;i+=1)
 					{
-						if(this.playerCount(i+1)>0)
-						{
-							this.allPlayers.get(i).active = true;
-						}
-						else
-						{
-							this.allPlayers.get(i).active = false;
-						}
+						this.allPlayers.get(i).active = tb.allPlayers.get(i).active;
 					}
 				}
 				else
@@ -188,14 +181,7 @@ public class BoardGUI {
 			
 			for(int i=0;i<this.numberOfPlayers;i+=1)
 			{
-				if(this.playerCount(i+1)>0)
-				{
-					this.allPlayers.get(i).active = true;
-				}
-				else
-				{
-					this.allPlayers.get(i).active = false;
-				}
+				this.allPlayers.get(i).active = tb.allPlayers.get(i).active;
 			}
 		}
 	}
