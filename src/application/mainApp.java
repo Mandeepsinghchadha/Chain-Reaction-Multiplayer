@@ -533,7 +533,6 @@ public class mainApp extends Application{
 	            	resumeButton.setDisable(false);
 	            }
 			} catch (ClassNotFoundException | IOException | NullPointerException e) {
-				// TODO Auto-generated catch block
 				resumeButton.setDisable(true);
 			}
 			
