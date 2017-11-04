@@ -44,6 +44,13 @@ public class mainApp extends Application{
 	public static Button undoButton;
 	public static Button resumeButton;
 	
+	/** 
+	 * Shows the win alert box once some player has won.
+	 * Pressing the OK button thereafter takes the user back to the menu and resets the state of the game.
+	 * @author aayush9
+	 * @param x Player who won
+	 * @throws IOException In case serialization fails
+	 */
 	public static void showWinAlertBox(int x) throws IOException{
 		b.tb.lastGameCompleted = true;
 		CoordinateTile.gs.currentBoard = new TileBoard(b.tb);
@@ -58,7 +65,11 @@ public class mainApp extends Application{
 		});
 		alert.show();
 	}
-	
+	/** 
+	 * Creates the settings menu where user can change colour of players.
+	 * The method uses the java-fx's built in color-picker tool to allow for choosing between
+	 * predefined colours or making a custom colour.
+	 */
 	public void createSettingsPage() {
 		GridPane layout = new GridPane();
 		layout.setVgap(3);
@@ -135,6 +146,11 @@ public class mainApp extends Application{
 		settingsPage.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
 	}
 	
+	/** 
+	 * Creates the main menu page which the user interacts with most of the time.
+	 * Presents between 2 choices of grid size and a player counter which can only contain values 2-8.
+	 * Has buttons resume game, new game, and settings.
+	 */
 	public void createMenu(){
 		
 		Button playButton = new Button("New Game");
