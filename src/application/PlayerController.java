@@ -16,6 +16,7 @@ public class PlayerController {
 	 * Initializes the player state giving it the appropriate player index and color of orb.
 	 * @param playerNumber The index player is to be initialized with.
 	 * @param c The color player is to be initialized with.
+	 * @author Madhur Tandon
 	 */
 	PlayerController(int playerNumber, Color c)
 	{
@@ -32,6 +33,7 @@ public class PlayerController {
 	 * @param y The y coordinate from where the move begins (where mouse click has happened)
 	 * @throws IllegalMoveException Throws this exception in case the 
 	 * @throws IOException Calls in case the parallelsplit animation throws IOException
+	 * @author Madhur Tandon
 	 */
 	public void move(BoardGUI b, int x, int y) throws IllegalMoveException, IOException
 	{
@@ -135,6 +137,7 @@ public class PlayerController {
 	 * @param allNeighbours The list of all adjacent neighbors.
 	 * @param b Board where the game is currently being played.
 	 * @return Returns the list of neighbors which are going to explode by addition of just 1 orb.
+	 * @author Madhur Tandon
 	 */
 	public ArrayList<CoordinateTile> getAllUnstableNeighbourCells(ArrayList<CoordinateTile> allNeighbours, BoardGUI b)
 	{

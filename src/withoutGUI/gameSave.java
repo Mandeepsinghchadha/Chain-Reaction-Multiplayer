@@ -9,11 +9,15 @@ import java.io.Serializable;
 
 public class gameSave implements Serializable{
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 5L;
-
+	
+	/**
+	 * Serializes the gameState given by ``gs`` and writes it to
+	 * a file named ``gameState.db``.
+	 * @param gs
+	 * @throws IOException
+	 * @author Madhur Tandon
+	 */
 	public void serialize(gameState gs) throws IOException
 	{
 		ObjectOutputStream out = null;
@@ -28,6 +32,14 @@ public class gameSave implements Serializable{
 		}
 	}
 	
+	/**
+	 * Reads the gameState stored in the file "gameState.db" and returns
+	 * the gameState object which can be used for Resume operation.
+	 * @return gameState object used to restore the game
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 * @author Madhur Tandon
+	 */
 	public gameState deserialize() throws IOException, ClassNotFoundException
 	{
 		ObjectInputStream in = null;

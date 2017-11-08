@@ -69,6 +69,7 @@ public class mainApp extends Application{
 	 * Creates the settings menu where user can change colour of players.
 	 * The method uses the java-fx's built in color-picker tool to allow for choosing between
 	 * predefined colors or making a custom color.
+	 * @author aayush9
 	 */
 	public void createSettingsPage() {
 		GridPane layout = new GridPane();
@@ -150,6 +151,7 @@ public class mainApp extends Application{
 	 * Creates the main menu page which the user interacts with most of the time.
 	 * Presents between 2 choices of grid size and a player counter which can only contain values 2-8.
 	 * Has buttons resume game, new game, and settings.
+	 * @author aayush9
 	 */
 	public void createMenu(){
 		

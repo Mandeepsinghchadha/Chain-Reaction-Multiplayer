@@ -22,6 +22,7 @@ public class BoardGUI {
 	 * @param m The required number of rows
 	 * @param n The required number of columns
 	 * @param numberOfPlayers The required number of players
+	 * @author Madhur Tandon
 	 */
 	BoardGUI(int m, int n, int numberOfPlayers)
 	{
@@ -66,6 +67,7 @@ public class BoardGUI {
 	 * Function responsible for drawing the board from a given state. Required in case of undo or resume game. 
 	 * @param tb The state to be restored.
 	 * @param resumeSavedGame A flag if the function is invoked for undo or resume.
+	 * @author Madhur Tandon
 	 */
 	public void loadGUIfromState(TileBoard tb, boolean resumeSavedGame)
 	{
@@ -205,7 +207,8 @@ public class BoardGUI {
 	 * Helper function for the dfs to check if a given coordinate is a valid coordinate
 	 * @param i The x coordinate
 	 * @param j The y coordinate
-	 * @return Returns tru if given point is valid, false otherwise
+	 * @return Returns true if given point is valid, false otherwise
+	 * @author Madhur Tandon
 	 */
 	public boolean checkValidCoordinate(int i, int j)
 	{
@@ -223,6 +226,7 @@ public class BoardGUI {
 	 * @param i The X coordinate of the point in question
 	 * @param j The Y coordinate of the point in question
 	 * @return Returns a list of the tiles which are valid neighbors of the cell in question
+	 * @author Madhur Tandon
 	 */
 	public ArrayList<CoordinateTile> getListOfNeighbours(int i, int j)
 	{
@@ -249,6 +253,7 @@ public class BoardGUI {
 	 * Returns the number of orbs of a particular player in all of the board.
 	 * @param playerStatus The player number we have to query for.
 	 * @return Returns the number of orbs of the player in question.
+	 * @author Madhur Tandon
 	 */
 	public int playerCount(int playerStatus)
 	{
@@ -268,6 +273,7 @@ public class BoardGUI {
 	/**
 	 * Function to find the number of empty cells in the board.
 	 * @return Returns the number of cells which are not occupied by any player.
+	 * @author Madhur Tandon
 	 */
 	public int countEmptyCells()
 	{
@@ -288,6 +294,7 @@ public class BoardGUI {
 	 * Helper function to calculate the number of players still in play
 	 * @param allPlayers An array list of players initially generated
 	 * @return Returns the size of the players still in play, i.e. not yet completely dead.
+	 * @author Madhur Tandon
 	 */
 	public int countAllActivePlayers(ArrayList<PlayerController> allPlayers)
 	{

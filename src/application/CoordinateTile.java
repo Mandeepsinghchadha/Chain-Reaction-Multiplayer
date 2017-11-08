@@ -63,7 +63,7 @@ public class CoordinateTile extends StackPane {
 	Sphere aboveOrb;
 	Sphere belowOrb;
 	/**
-	 * Initializes the tile with required animation(rotation, translations, parallelsplit). 
+	 * Initializes the tile with required animation(rotation, translations, parallel split). 
 	 * Also coordinates the movements of players in the round robin manner.
 	 * @param x X coordinate of the tile in question
 	 * @param y Y coordinate of the tile in question
@@ -71,6 +71,7 @@ public class CoordinateTile extends StackPane {
 	 * @param n Number of columns of the board
 	 * @param b The board where the game is being played
 	 * @param squareSize The tile size for different grid sizes in order to fit in the visible workspace window.
+	 * @author Madhur Tandon
 	 */
 	CoordinateTile(int x, int y, int m, int n, BoardGUI b, int squareSize)
 	{
@@ -278,6 +279,7 @@ public class CoordinateTile extends StackPane {
 		this.getChildren().addAll(border);
 		/**
 		 * Helper function to highlight the cell where the mouse is currently hovering.
+		 * @author Madhur Tandon
 		 */
 		this.setOnMouseEntered(event->{
 			if(this.border.getStroke().equals(this.colour))
@@ -287,6 +289,7 @@ public class CoordinateTile extends StackPane {
 		});
 		/**
 		 * Helper function to un-highlight the cell when the mouse is done hovering the cell.
+		 * @author Madhur Tandon
 		 */
 		this.setOnMouseExited(event->{
 			this.border.setFill(null);
@@ -295,6 +298,7 @@ public class CoordinateTile extends StackPane {
 		 * Listener function to take appropriate action when mouse is clicked on a particular tile.
 		 * If the move is not valid, it throws an invalid move exception, else calls the move method in the playercontroller class.
 		 * Also uses a timer to not allow actions in case a transition is going on.
+		 * @author Madhur Tandon
 		 */
 		setOnMouseClicked(event -> {
 			if(System.currentTimeMillis() - BoardGUI.startTime < 550) 
@@ -488,6 +492,7 @@ public class CoordinateTile extends StackPane {
 	 * @param i The given X coordinate
 	 * @param j The given Y coordinate
 	 * @return An integer, the calculated critical mass.
+	 * @author Madhur Tandon
 	 */
 	public int getCriticalMass(int i, int j)
 	{
@@ -506,6 +511,7 @@ public class CoordinateTile extends StackPane {
 	}
 	/**
 	 * Renders the sphere on the tile, colors according to the player which has called. Overlaps them in case multiple orbs in same tile.
+	 * @author Madhur Tandon
 	 */
 	public void drawSphere()
 	{

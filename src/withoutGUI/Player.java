@@ -6,15 +6,19 @@ import javafx.scene.paint.Color;
 
 public class Player implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 3L;
 	public int orbCount;
 	public int playerNumber;
 	public String colour;
 	public boolean active;
 	
+	/**
+	 * Initializes the Player with its initial properties, i.e.
+	 * the player number and the initial assigned color.
+	 * @param playerNumber
+	 * @param c
+	 * @author Madhur Tandon
+	 */
 	public Player(int playerNumber, Color c)
 	{
 		this.orbCount = Integer.MIN_VALUE;
