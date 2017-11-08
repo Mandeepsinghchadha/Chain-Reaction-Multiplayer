@@ -62,7 +62,16 @@ public class CoordinateTile extends StackPane {
 	Sphere leftOrb;
 	Sphere aboveOrb;
 	Sphere belowOrb;
-
+	/**
+	 * Initializes the tile with required animation(rotation, translations, parallelsplit). 
+	 * Also coordinates the movements of players in the round robin manner.
+	 * @param x X coordinate of the tile in question
+	 * @param y Y coordinate of the tile in question
+	 * @param m Number of rows of the board
+	 * @param n Number of columns of the board
+	 * @param b The board where the game is being played
+	 * @param squareSize The tile size for different grid sizes in order to fit in the visible workspace window.
+	 */
 	CoordinateTile(int x, int y, int m, int n, BoardGUI b, int squareSize)
 	{
 		this.xCoordinate = x;
@@ -85,7 +94,7 @@ public class CoordinateTile extends StackPane {
 		rotateGroup.setAxis(allAxes[new Random().nextInt(allAxes.length)]);
 		rotateGroup.setAutoReverse(false);
 
-		transRight = new TranslateTransition(Duration.millis(700));
+		transRight = new TranslateTransition(Duration.millis(500));
 		transRight.setToX(squareSize);
 		transRight.setCycleCount(1);
 		transRight.setAutoReverse(false);
@@ -93,7 +102,7 @@ public class CoordinateTile extends StackPane {
 			this.getChildren().remove(this.rightOrb);
 		});
 		
-		transLeft = new TranslateTransition(Duration.millis(700));
+		transLeft = new TranslateTransition(Duration.millis(500));
 		transLeft.setToX(-1*squareSize);
 		transLeft.setCycleCount(1);
 		transLeft.setAutoReverse(false);
@@ -101,7 +110,7 @@ public class CoordinateTile extends StackPane {
 			this.getChildren().remove(this.leftOrb);
 		});
 		
-		transBelow = new TranslateTransition(Duration.millis(700));
+		transBelow = new TranslateTransition(Duration.millis(500));
 		transBelow.setToY(squareSize);
 		transBelow.setCycleCount(1);
 		transBelow.setAutoReverse(false);
@@ -109,7 +118,7 @@ public class CoordinateTile extends StackPane {
 			this.getChildren().remove(this.belowOrb);
 		});
 		
-		transAbove = new TranslateTransition(Duration.millis(700));
+		transAbove = new TranslateTransition(Duration.millis(500));
 		transAbove.setToY(-1*squareSize);
 		transAbove.setCycleCount(1);
 		transAbove.setAutoReverse(false);
@@ -267,20 +276,28 @@ public class CoordinateTile extends StackPane {
 
 		this.setAlignment(Pos.CENTER);
 		this.getChildren().addAll(border);
-		
+		/**
+		 * Helper function to highlight the cell where the mouse is currently hovering.
+		 */
 		this.setOnMouseEntered(event->{
 			if(this.border.getStroke().equals(this.colour))
 			{
 				this.border.setFill(this.colour);
 			}
 		});
-		
+		/**
+		 * Helper function to un-highlight the cell when the mouse is done hovering the cell.
+		 */
 		this.setOnMouseExited(event->{
 			this.border.setFill(null);
 		});
-		
+		/**
+		 * Listener function to take appropriate action when mouse is clicked on a particular tile.
+		 * If the move is not valid, it throws an invalid move exception, else calls the move method in the playercontroller class.
+		 * Also uses a timer to not allow actions in case a transition is going on.
+		 */
 		setOnMouseClicked(event -> {
-			if(System.currentTimeMillis() - BoardGUI.startTime < 770) 
+			if(System.currentTimeMillis() - BoardGUI.startTime < 550) 
 			{
 				return;
 			}
@@ -466,7 +483,12 @@ public class CoordinateTile extends StackPane {
 		});
 		getChildren().add(allOrbs);
 	}
-
+	/**
+	 * Calculates the appropriate critical mass for the cell (2 for corner cell, 3 for sides and 4 otherwise).
+	 * @param i The given X coordinate
+	 * @param j The given Y coordinate
+	 * @return An integer, the calculated critical mass.
+	 */
 	public int getCriticalMass(int i, int j)
 	{
 		if ((i==0 && j==0) || (i==0 && j==this.numberOfColumns-1) || (i==this.numberOfRows-1 && j==0) || (i==this.numberOfRows-1 && j==this.numberOfColumns-1))
@@ -482,7 +504,9 @@ public class CoordinateTile extends StackPane {
 			return 4;
 		}
 	}
-
+	/**
+	 * Renders the sphere on the tile, colors according to the player which has called. Overlaps them in case multiple orbs in same tile.
+	 */
 	public void drawSphere()
 	{
 		if(this.xCoordinate==0 && this.yCoordinate==0)

@@ -17,7 +17,12 @@ public class BoardGUI {
 	public boolean shownPrompt;
 	ArrayList<PlayerController> allPlayers;
 	static Color[] allColours = {Color.RED,Color.GREEN,Color.BLUE,Color.YELLOW,Color.MAGENTA,Color.CYAN,Color.ORANGE,Color.GRAY};
-	
+	/**
+	 * Initializes the board the board with the required dimensions and the number of players.
+	 * @param m The required number of rows
+	 * @param n The required number of columns
+	 * @param numberOfPlayers The required number of players
+	 */
 	BoardGUI(int m, int n, int numberOfPlayers)
 	{
 		this.shownPrompt=true;
@@ -57,7 +62,11 @@ public class BoardGUI {
 			}
 		}
 	}
-	
+	/**
+	 * Function responsible for drawing the board from a given state. Required in case of undo or resume game. 
+	 * @param tb The state to be restored.
+	 * @param resumeSavedGame A flag if the function is invoked for undo or resume.
+	 */
 	public void loadGUIfromState(TileBoard tb, boolean resumeSavedGame)
 	{
 		if(!resumeSavedGame)
@@ -192,7 +201,12 @@ public class BoardGUI {
 			}
 		}
 	}
-	
+	/**
+	 * Helper function for the dfs to check if a given coordinate is a valid coordinate
+	 * @param i The x coordinate
+	 * @param j The y coordinate
+	 * @return Returns tru if given point is valid, false otherwise
+	 */
 	public boolean checkValidCoordinate(int i, int j)
 	{
 		if(i>=0 && i<this.numberOfRows && j>=0 && j<this.numberOfColumns)
@@ -204,7 +218,12 @@ public class BoardGUI {
 			return false;
 		}
 	}
-	
+	/**
+	 * Calculates the orthogonal neighbors (cells which share an edge with the given edge), and returns the list of valid coordinate using the checkValidCoordinate function.
+	 * @param i The X coordinate of the point in question
+	 * @param j The Y coordinate of the point in question
+	 * @return Returns a list of the tiles which are valid neighbors of the cell in question
+	 */
 	public ArrayList<CoordinateTile> getListOfNeighbours(int i, int j)
 	{
 		ArrayList<CoordinateTile> allNeighbours = new ArrayList<CoordinateTile>();
@@ -226,7 +245,11 @@ public class BoardGUI {
 		}
 		return allNeighbours;
 	}
-	
+	/**
+	 * Returns the number of orbs of a particular player in all of the board.
+	 * @param playerStatus The player number we have to query for.
+	 * @return Returns the number of orbs of the player in question.
+	 */
 	public int playerCount(int playerStatus)
 	{
 		int count = 0;
@@ -242,7 +265,10 @@ public class BoardGUI {
 		}
 		return count;
 	}
-	
+	/**
+	 * Function to find the number of empty cells in the board.
+	 * @return Returns the number of cells which are not occupied by any player.
+	 */
 	public int countEmptyCells()
 	{
 		int count = 0;
@@ -258,7 +284,11 @@ public class BoardGUI {
 		}
 		return count;
 	}
-	
+	/**
+	 * Helper function to calculate the number of players still in play
+	 * @param allPlayers An array list of players initially generated
+	 * @return Returns the size of the players still in play, i.e. not yet completely dead.
+	 */
 	public int countAllActivePlayers(ArrayList<PlayerController> allPlayers)
 	{
 		int count = 0;

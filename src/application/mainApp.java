@@ -68,7 +68,7 @@ public class mainApp extends Application{
 	/** 
 	 * Creates the settings menu where user can change colour of players.
 	 * The method uses the java-fx's built in color-picker tool to allow for choosing between
-	 * predefined colours or making a custom colour.
+	 * predefined colors or making a custom color.
 	 */
 	public void createSettingsPage() {
 		GridPane layout = new GridPane();
@@ -443,7 +443,13 @@ public class mainApp extends Application{
 		
 		menu.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
 	}
-	
+	/**
+	 * Creates a scene with the actual gameplay screen where the user interacts with the grid of tiles.
+	 * The scene also provides the functionalities of undo, new game and back to menu.
+	 * @author aayush9
+	 * @param setUndoButtonVisibility Determines if undo button should be visible or not initially (useful when you are resuming a game from serializable interface).
+	 * @return Creates the above mentioned scene and returns to the calling function to set the stage.
+	 */
 	public Parent createContent(boolean setUndoButtonVisibility)
 	{
 		Pane root = new Pane();
@@ -566,7 +572,7 @@ public class mainApp extends Application{
 		
 		undoButton.setOnAction(event->{
 			
-			if(System.currentTimeMillis() - BoardGUI.startTime < 770) 
+			if(System.currentTimeMillis() - BoardGUI.startTime < 550) 
 			{
 				return;
 			}
@@ -613,6 +619,13 @@ public class mainApp extends Application{
 		launch(args);
 	}
 
+	/**
+	 * The function that is first invoked when the application runs, and calls the menu function to set the primary stage.
+	 * It also reads the previous game state, if any, and changes the default settings such that the resume button is available by default.
+	 * @author aayush9
+	 * @param primaryStage Automatically passed to by javaFX
+	 * @throws Exception A generalized exception in case gameState file not found, IOException or NullPointerException 
+	 */
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		primaryStage.setTitle("Chain Reaction");

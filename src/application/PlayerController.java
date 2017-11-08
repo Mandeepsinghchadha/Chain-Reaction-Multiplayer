@@ -12,7 +12,11 @@ public class PlayerController {
 	int playerNumber;
 	Color colour;
 	boolean active;
-	
+	/**
+	 * Initializes the player state giving it the appropriate player index and color of orb.
+	 * @param playerNumber The index player is to be initialized with.
+	 * @param c The color player is to be initialized with.
+	 */
 	PlayerController(int playerNumber, Color c)
 	{
 		this.orbCount = Integer.MIN_VALUE;
@@ -21,7 +25,14 @@ public class PlayerController {
 		this.active = true;
 		this.p = new Player(this.playerNumber,this.colour);
 	}
-	
+	/**
+	 * Adds the orb in case the cell is empty, or doesn't contain enough orbs for explosion. In case of explosion, fills the adjacent neighboring cells calling the parallelsplit animation.
+	 * @param b The board where the game is being played
+	 * @param x The x coordinate from where the move begins (where mouse click has happened)
+	 * @param y The y coordinate from where the move begins (where mouse click has happened)
+	 * @throws IllegalMoveException Throws this exception in case the 
+	 * @throws IOException Calls in case the parallelsplit animation throws IOException
+	 */
 	public void move(BoardGUI b, int x, int y) throws IllegalMoveException, IOException
 	{
 		if((b.board[x][y].playerStatus==this.playerNumber)||(b.board[x][y].playerStatus==0))
@@ -119,7 +130,12 @@ public class PlayerController {
 			throw new IllegalMoveException("Illegal Move!");
 		}
 	}
-	
+	/**
+	 * Finds the adjacent neighboring cells ready for explosion,
+	 * @param allNeighbours The list of all adjacent neighbors.
+	 * @param b Board where the game is currently being played.
+	 * @return Returns the list of neighbors which are going to explode by addition of just 1 orb.
+	 */
 	public ArrayList<CoordinateTile> getAllUnstableNeighbourCells(ArrayList<CoordinateTile> allNeighbours, BoardGUI b)
 	{
 		ArrayList<CoordinateTile> UnstableNeighbours = new ArrayList<CoordinateTile>();
