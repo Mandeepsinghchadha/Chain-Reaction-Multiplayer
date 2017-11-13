@@ -35,7 +35,6 @@ import withoutGUI.gameSave;
 import withoutGUI.gameState;
 
 public class mainApp extends Application{
-	
 	static gameSave resumeGS = new gameSave();
 	static BoardGUI b;
 	int numRows,numCols,numPlayers;
@@ -574,7 +573,7 @@ public class mainApp extends Application{
 		
 		undoButton.setOnAction(event->{
 			
-			if(System.currentTimeMillis() - BoardGUI.startTime < 550) 
+			if(System.currentTimeMillis() - BoardGUI.startTime < 1550) 
 			{
 				return;
 			}

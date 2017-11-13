@@ -7,7 +7,6 @@ import withoutGUI.TileBoard;
 import withoutGUI.TileCell;
 
 public class BoardGUI {
-
 	TileBoard tb;
 	int numberOfRows;
 	int numberOfColumns;
@@ -105,7 +104,7 @@ public class BoardGUI {
 						this.board[i][j].border.setStroke(Color.valueOf(tb.board[i][j].borderColour));
 						for(int k=0;k<tb.board[i][j].value;k+=1)
 						{
-							this.board[i][j].drawSphere();
+							this.board[i][j].drawSphere(false);
 						}
 						this.board[i][j].rotateGroup.play();
 						
@@ -186,7 +185,7 @@ public class BoardGUI {
 					this.board[i][j].border.setStroke(Color.valueOf(tb.board[i][j].borderColour));
 					for(int k=0;k<tb.board[i][j].value;k+=1)
 					{
-						this.board[i][j].drawSphere();
+						this.board[i][j].drawSphere(false);
 					}
 					this.board[i][j].rotateGroup.play();
 					

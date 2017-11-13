@@ -24,7 +24,6 @@ import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 
 public class CoordinateTile extends StackPane {
-	
 	static gameState gs;
 	TileCell t;
 	BoardGUI boardContainer;
@@ -62,6 +61,7 @@ public class CoordinateTile extends StackPane {
 	Sphere leftOrb;
 	Sphere aboveOrb;
 	Sphere belowOrb;
+	Sphere otherOrb;
 	/**
 	 * Initializes the tile with required animation(rotation, translations, parallel split). 
 	 * Also coordinates the movements of players in the round robin manner.
@@ -95,7 +95,7 @@ public class CoordinateTile extends StackPane {
 		rotateGroup.setAxis(allAxes[new Random().nextInt(allAxes.length)]);
 		rotateGroup.setAutoReverse(false);
 
-		transRight = new TranslateTransition(Duration.millis(500));
+		transRight = new TranslateTransition(Duration.millis(1500));
 		transRight.setToX(squareSize);
 		transRight.setCycleCount(1);
 		transRight.setAutoReverse(false);
@@ -103,7 +103,7 @@ public class CoordinateTile extends StackPane {
 			this.getChildren().remove(this.rightOrb);
 		});
 		
-		transLeft = new TranslateTransition(Duration.millis(500));
+		transLeft = new TranslateTransition(Duration.millis(1500));
 		transLeft.setToX(-1*squareSize);
 		transLeft.setCycleCount(1);
 		transLeft.setAutoReverse(false);
@@ -111,7 +111,7 @@ public class CoordinateTile extends StackPane {
 			this.getChildren().remove(this.leftOrb);
 		});
 		
-		transBelow = new TranslateTransition(Duration.millis(500));
+		transBelow = new TranslateTransition(Duration.millis(1500));
 		transBelow.setToY(squareSize);
 		transBelow.setCycleCount(1);
 		transBelow.setAutoReverse(false);
@@ -119,7 +119,7 @@ public class CoordinateTile extends StackPane {
 			this.getChildren().remove(this.belowOrb);
 		});
 		
-		transAbove = new TranslateTransition(Duration.millis(500));
+		transAbove = new TranslateTransition(Duration.millis(1500));
 		transAbove.setToY(-1*squareSize);
 		transAbove.setCycleCount(1);
 		transAbove.setAutoReverse(false);
@@ -155,7 +155,7 @@ public class CoordinateTile extends StackPane {
 				    allNeighbourSpheres[a].setMaterial(material);
 				}
 
-				allNeighbours.get(i).drawSphere();
+				allNeighbours.get(i).drawSphere(false);
 				allNeighbours.get(i).rotateGroup.play();
 			}
 			
@@ -174,6 +174,10 @@ public class CoordinateTile extends StackPane {
 					}
 				}
 			}
+			
+			b.board[x][y].value = b.board[x][y].value % b.board[x][y].criticalMass;
+			b.tb.board[x][y].value=b.board[x][y].value % b.board[x][y].criticalMass;
+			b.board[x][y].t.value = b.board[x][y].value % b.board[x][y].criticalMass;
 			
 			ArrayList<CoordinateTile> NeighbourCellsOfJustMovedCell = b.getListOfNeighbours(x,y);
 			ArrayList<CoordinateTile> NeighbourCellsWhichAreThemselvesUnstable = this.playerContainer.getAllUnstableNeighbourCells(NeighbourCellsOfJustMovedCell,b);
@@ -246,7 +250,7 @@ public class CoordinateTile extends StackPane {
 			
 			if(NeighbourCellsWhichAreThemselvesUnstable.isEmpty())
 			{
-				System.out.println("End of Transition");
+//				System.out.println("End of Transition");
 				try {
 					gs.currentBoard = new TileBoard(this.boardContainer.tb);
 					gs.currentPlayer = currentPlayer;
@@ -256,12 +260,12 @@ public class CoordinateTile extends StackPane {
 					gs.allColours = TileBoard.allColours;
 					mainApp.resumeGS.serialize(gs);
 					
-					System.out.println("Details of Saved Game After Saving are:");
-					System.out.println("CurrentPlayer : "+CoordinateTile.gs.currentPlayer);
-					System.out.println("counterForInitialBorder : "+CoordinateTile.gs.counterForInitialBorder);
-					System.out.println("counterForInitialGamePlay : "+CoordinateTile.gs.counterForInitialGamePlay);
-					System.out.println("init : "+CoordinateTile.gs.init);
-					System.out.println();
+//					System.out.println("Details of Saved Game After Saving are:");
+//					System.out.println("CurrentPlayer : "+CoordinateTile.gs.currentPlayer);
+//					System.out.println("counterForInitialBorder : "+CoordinateTile.gs.counterForInitialBorder);
+//					System.out.println("counterForInitialGamePlay : "+CoordinateTile.gs.counterForInitialGamePlay);
+//					System.out.println("init : "+CoordinateTile.gs.init);
+//					System.out.println();
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -301,7 +305,7 @@ public class CoordinateTile extends StackPane {
 		 * @author Madhur Tandon
 		 */
 		setOnMouseClicked(event -> {
-			if(System.currentTimeMillis() - BoardGUI.startTime < 550) 
+			if(System.currentTimeMillis() - BoardGUI.startTime < 1550) 
 			{
 				return;
 			}
@@ -397,12 +401,12 @@ public class CoordinateTile extends StackPane {
 					gs.allColours = TileBoard.allColours;
 					mainApp.resumeGS.serialize(gs);
 					
-					System.out.println("Details of Saved Game After Saving are:");
-					System.out.println("CurrentPlayer : "+CoordinateTile.gs.currentPlayer);
-					System.out.println("counterForInitialBorder : "+CoordinateTile.gs.counterForInitialBorder);
-					System.out.println("counterForInitialGamePlay : "+CoordinateTile.gs.counterForInitialGamePlay);
-					System.out.println("init : "+CoordinateTile.gs.init);
-					System.out.println();
+//					System.out.println("Details of Saved Game After Saving are:");
+//					System.out.println("CurrentPlayer : "+CoordinateTile.gs.currentPlayer);
+//					System.out.println("counterForInitialBorder : "+CoordinateTile.gs.counterForInitialBorder);
+//					System.out.println("counterForInitialGamePlay : "+CoordinateTile.gs.counterForInitialGamePlay);
+//					System.out.println("init : "+CoordinateTile.gs.init);
+//					System.out.println();
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -473,12 +477,12 @@ public class CoordinateTile extends StackPane {
 					gs.allColours = TileBoard.allColours;
 					mainApp.resumeGS.serialize(gs);
 					
-					System.out.println("Details of Saved Game After Saving are:");
-					System.out.println("CurrentPlayer : "+CoordinateTile.gs.currentPlayer);
-					System.out.println("counterForInitialBorder : "+CoordinateTile.gs.counterForInitialBorder);
-					System.out.println("counterForInitialGamePlay : "+CoordinateTile.gs.counterForInitialGamePlay);
-					System.out.println("init : "+CoordinateTile.gs.init);
-					System.out.println();
+//					System.out.println("Details of Saved Game After Saving are:");
+//					System.out.println("CurrentPlayer : "+CoordinateTile.gs.currentPlayer);
+//					System.out.println("counterForInitialBorder : "+CoordinateTile.gs.counterForInitialBorder);
+//					System.out.println("counterForInitialGamePlay : "+CoordinateTile.gs.counterForInitialGamePlay);
+//					System.out.println("init : "+CoordinateTile.gs.init);
+//					System.out.println();
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -513,246 +517,339 @@ public class CoordinateTile extends StackPane {
 	 * Renders the sphere on the tile, colors according to the player which has called. Overlaps them in case multiple orbs in same tile.
 	 * @author Madhur Tandon
 	 */
-	public void drawSphere()
+	public void drawSphere(boolean extraOrbs)
 	{
-		if(this.xCoordinate==0 && this.yCoordinate==0)
+		if(!extraOrbs)
 		{
-			// Upper left Corner
-			if((this.value+1)%this.criticalMass==1)
+			if(this.xCoordinate==0 && this.yCoordinate==0)
 			{
-				belowOrb = new Sphere();
-				allOrbs.getChildren().add(belowOrb);
-				this.value+=1;
-				this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
-				this.t.value+=1;
+				// Upper left Corner
+				if((this.value+1)%this.criticalMass==1)
+				{
+					belowOrb = new Sphere();
+					allOrbs.getChildren().add(belowOrb);
+					this.value+=1;
+					this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
+					this.t.value+=1;
+				}
+				else
+				{
+					rightOrb = new Sphere();
+					allOrbs.getChildren().add(rightOrb);
+					this.value+=1;
+					this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
+					this.t.value+=1;
+				}
+			}
+			else if(this.xCoordinate==0 && this.yCoordinate==this.numberOfColumns-1)
+			{
+				// Upper Right Corner
+				if((this.value+1)%this.criticalMass==1)
+				{
+					belowOrb = new Sphere();
+					allOrbs.getChildren().add(belowOrb);
+					this.value+=1;
+					this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
+					this.t.value+=1;
+				}
+				else
+				{
+					leftOrb = new Sphere();
+					allOrbs.getChildren().add(leftOrb);
+					this.value+=1;
+					this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
+					this.t.value+=1;
+				}
+			}
+			else if(this.xCoordinate==this.numberOfRows-1 && this.yCoordinate==0)
+			{
+				// Lower Left Corner
+				if((this.value+1)%this.criticalMass==1)
+				{
+					aboveOrb = new Sphere();
+					allOrbs.getChildren().add(aboveOrb);
+					this.value+=1;
+					this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
+					this.t.value+=1;
+				}
+				else
+				{
+					rightOrb = new Sphere();
+					allOrbs.getChildren().add(rightOrb);
+					this.value+=1;
+					this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
+					this.t.value+=1;
+				}
+			}
+			else if(this.xCoordinate==this.numberOfRows-1 && this.yCoordinate==this.numberOfColumns-1)
+			{
+				// Lower Right Corner
+				if((this.value+1)%this.criticalMass==1)
+				{
+					aboveOrb = new Sphere();
+					allOrbs.getChildren().add(aboveOrb);
+					this.value+=1;
+					this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
+					this.t.value+=1;
+				}
+				else
+				{
+					leftOrb = new Sphere();
+					allOrbs.getChildren().add(leftOrb);
+					this.value+=1;
+					this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
+					this.t.value+=1;
+				}
+			}
+			else if(this.xCoordinate==0)
+			{
+				// First Row
+				if((this.value+1)%this.criticalMass==1)
+				{
+					leftOrb = new Sphere();
+					allOrbs.getChildren().add(leftOrb);
+					this.value+=1;
+					this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
+					this.t.value+=1;
+				}
+				else if((this.value+1)%this.criticalMass==2)
+				{
+					rightOrb = new Sphere();
+					rightOrb.setTranslateX(12);
+					rightOrb.setTranslateY(12);
+					allOrbs.getChildren().add(rightOrb);
+					this.value+=1;
+					this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
+					this.t.value+=1;
+				}
+				else
+				{
+					belowOrb = new Sphere();
+					allOrbs.getChildren().add(belowOrb);
+					this.value+=1;
+					this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
+					this.t.value+=1;
+				}
+			}
+			else if(this.xCoordinate==this.numberOfRows-1)
+			{
+				// Last Row
+				if((this.value+1)%this.criticalMass==1)
+				{
+					leftOrb = new Sphere();
+					allOrbs.getChildren().add(leftOrb);
+					this.value+=1;
+					this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
+					this.t.value+=1;
+				}
+				else if((this.value+1)%this.criticalMass==2)
+				{
+					rightOrb = new Sphere();
+					rightOrb.setTranslateX(12);
+					rightOrb.setTranslateY(12);
+					allOrbs.getChildren().add(rightOrb);
+					this.value+=1;
+					this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
+					this.t.value+=1;
+				}
+				else
+				{
+					aboveOrb = new Sphere();
+					allOrbs.getChildren().add(aboveOrb);
+					this.value+=1;
+					this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
+					this.t.value+=1;
+				}
+			}
+			else if(this.yCoordinate==0)
+			{
+				// First Column
+				if((this.value+1)%this.criticalMass==1)
+				{
+					aboveOrb = new Sphere();
+					allOrbs.getChildren().add(aboveOrb);
+					this.value+=1;
+					this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
+					this.t.value+=1;
+				}
+				else if((this.value+1)%this.criticalMass==2)
+				{
+					belowOrb = new Sphere();
+					belowOrb.setTranslateX(12);
+					belowOrb.setTranslateY(12);
+					allOrbs.getChildren().add(belowOrb);
+					this.value+=1;
+					this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
+					this.t.value+=1;
+				}
+				else
+				{
+					rightOrb = new Sphere();
+					allOrbs.getChildren().add(rightOrb);
+					this.value+=1;
+					this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
+					this.t.value+=1;
+				}
+			}
+			else if(this.yCoordinate==this.numberOfColumns-1)
+			{
+				// Last Column
+				if((this.value+1)%this.criticalMass==1)
+				{
+					aboveOrb = new Sphere();
+					allOrbs.getChildren().add(aboveOrb);
+					this.value+=1;
+					this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
+					this.t.value+=1;
+				}
+				else if((this.value+1)%this.criticalMass==2)
+				{
+					belowOrb = new Sphere();
+					belowOrb.setTranslateX(12);
+					belowOrb.setTranslateY(12);
+					allOrbs.getChildren().add(belowOrb);
+					this.value+=1;
+					this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
+					this.t.value+=1;
+				}
+				else
+				{
+					leftOrb = new Sphere();
+					allOrbs.getChildren().add(leftOrb);
+					this.value+=1;
+					this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
+					this.t.value+=1;
+				}
 			}
 			else
 			{
-				rightOrb = new Sphere();
-				allOrbs.getChildren().add(rightOrb);
-				this.value+=1;
-				this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
-				this.t.value+=1;
+				// Middle of the grid
+				if((this.value+1)%this.criticalMass==1)
+				{
+					aboveOrb = new Sphere();
+					allOrbs.getChildren().add(aboveOrb);
+					this.value+=1;
+					this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
+					this.t.value+=1;
+				}
+				else if((this.value+1)%this.criticalMass==2)
+				{
+					belowOrb = new Sphere();
+					belowOrb.setTranslateX(12);
+					belowOrb.setTranslateY(12);
+					allOrbs.getChildren().add(belowOrb);
+					this.value+=1;
+					this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
+					this.t.value+=1;
+				}
+				else if((this.value+1)%this.criticalMass==3)
+				{
+					leftOrb = new Sphere();
+					leftOrb.setTranslateX(-6);
+					leftOrb.setTranslateY(12);
+					allOrbs.getChildren().add(leftOrb);
+					this.value+=1;
+					this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
+					this.t.value+=1;
+				}
+				else
+				{
+					rightOrb = new Sphere();
+					allOrbs.getChildren().add(rightOrb);
+					this.value+=1;
+					this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
+					this.t.value+=1;
+				}
 			}
 		}
-		else if(this.xCoordinate==0 && this.yCoordinate==this.numberOfColumns-1)
+	else
 		{
-			// Upper Right Corner
-			if((this.value+1)%this.criticalMass==1)
+			if(this.criticalMass==2)
 			{
-				belowOrb = new Sphere();
-				allOrbs.getChildren().add(belowOrb);
-				this.value+=1;
-				this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
-				this.t.value+=1;
+				if((this.value+1)%this.criticalMass==1)
+				{
+					otherOrb = new Sphere();
+					allOrbs.getChildren().add(otherOrb);
+					this.value+=1;
+					this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
+					this.t.value+=1;
+				}
+				else
+				{
+					otherOrb = new Sphere();
+					allOrbs.getChildren().add(otherOrb);
+					this.value+=1;
+					this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
+					this.t.value+=1;
+				}
 			}
-			else
+			else if(this.criticalMass==3)
 			{
-				leftOrb = new Sphere();
-				allOrbs.getChildren().add(leftOrb);
-				this.value+=1;
-				this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
-				this.t.value+=1;
+				if((this.value+1)%this.criticalMass==1)
+				{
+					otherOrb = new Sphere();
+					allOrbs.getChildren().add(otherOrb);
+					this.value+=1;
+					this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
+					this.t.value+=1;
+				}
+				else if((this.value+1)%this.criticalMass==2)
+				{
+					otherOrb = new Sphere();
+					otherOrb.setTranslateX(12);
+					otherOrb.setTranslateY(12);
+					allOrbs.getChildren().add(otherOrb);
+					this.value+=1;
+					this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
+					this.t.value+=1;
+				}
+				else
+				{
+					otherOrb = new Sphere();
+					allOrbs.getChildren().add(otherOrb);
+					this.value+=1;
+					this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
+					this.t.value+=1;
+				}
 			}
-		}
-		else if(this.xCoordinate==this.numberOfRows-1 && this.yCoordinate==0)
-		{
-			// Lower Left Corner
-			if((this.value+1)%this.criticalMass==1)
+			else if(this.criticalMass==4)
 			{
-				aboveOrb = new Sphere();
-				allOrbs.getChildren().add(aboveOrb);
-				this.value+=1;
-				this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
-				this.t.value+=1;
-			}
-			else
-			{
-				rightOrb = new Sphere();
-				allOrbs.getChildren().add(rightOrb);
-				this.value+=1;
-				this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
-				this.t.value+=1;
-			}
-		}
-		else if(this.xCoordinate==this.numberOfRows-1 && this.yCoordinate==this.numberOfColumns-1)
-		{
-			// Lower Right Corner
-			if((this.value+1)%this.criticalMass==1)
-			{
-				aboveOrb = new Sphere();
-				allOrbs.getChildren().add(aboveOrb);
-				this.value+=1;
-				this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
-				this.t.value+=1;
-			}
-			else
-			{
-				leftOrb = new Sphere();
-				allOrbs.getChildren().add(leftOrb);
-				this.value+=1;
-				this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
-				this.t.value+=1;
-			}
-		}
-		else if(this.xCoordinate==0)
-		{
-			// First Row
-			if((this.value+1)%this.criticalMass==1)
-			{
-				leftOrb = new Sphere();
-				allOrbs.getChildren().add(leftOrb);
-				this.value+=1;
-				this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
-				this.t.value+=1;
-			}
-			else if((this.value+1)%this.criticalMass==2)
-			{
-				rightOrb = new Sphere();
-				rightOrb.setTranslateX(12);
-				rightOrb.setTranslateY(12);
-				allOrbs.getChildren().add(rightOrb);
-				this.value+=1;
-				this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
-				this.t.value+=1;
-			}
-			else
-			{
-				belowOrb = new Sphere();
-				allOrbs.getChildren().add(belowOrb);
-				this.value+=1;
-				this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
-				this.t.value+=1;
-			}
-		}
-		else if(this.xCoordinate==this.numberOfRows-1)
-		{
-			// Last Row
-			if((this.value+1)%this.criticalMass==1)
-			{
-				leftOrb = new Sphere();
-				allOrbs.getChildren().add(leftOrb);
-				this.value+=1;
-				this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
-				this.t.value+=1;
-			}
-			else if((this.value+1)%this.criticalMass==2)
-			{
-				rightOrb = new Sphere();
-				rightOrb.setTranslateX(12);
-				rightOrb.setTranslateY(12);
-				allOrbs.getChildren().add(rightOrb);
-				this.value+=1;
-				this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
-				this.t.value+=1;
-			}
-			else
-			{
-				aboveOrb = new Sphere();
-				allOrbs.getChildren().add(aboveOrb);
-				this.value+=1;
-				this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
-				this.t.value+=1;
-			}
-		}
-		else if(this.yCoordinate==0)
-		{
-			// First Column
-			if((this.value+1)%this.criticalMass==1)
-			{
-				aboveOrb = new Sphere();
-				allOrbs.getChildren().add(aboveOrb);
-				this.value+=1;
-				this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
-				this.t.value+=1;
-			}
-			else if((this.value+1)%this.criticalMass==2)
-			{
-				belowOrb = new Sphere();
-				belowOrb.setTranslateX(12);
-				belowOrb.setTranslateY(12);
-				allOrbs.getChildren().add(belowOrb);
-				this.value+=1;
-				this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
-				this.t.value+=1;
-			}
-			else
-			{
-				rightOrb = new Sphere();
-				allOrbs.getChildren().add(rightOrb);
-				this.value+=1;
-				this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
-				this.t.value+=1;
-			}
-		}
-		else if(this.yCoordinate==this.numberOfColumns-1)
-		{
-			// Last Column
-			if((this.value+1)%this.criticalMass==1)
-			{
-				aboveOrb = new Sphere();
-				allOrbs.getChildren().add(aboveOrb);
-				this.value+=1;
-				this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
-				this.t.value+=1;
-			}
-			else if((this.value+1)%this.criticalMass==2)
-			{
-				belowOrb = new Sphere();
-				belowOrb.setTranslateX(12);
-				belowOrb.setTranslateY(12);
-				allOrbs.getChildren().add(belowOrb);
-				this.value+=1;
-				this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
-				this.t.value+=1;
-			}
-			else
-			{
-				leftOrb = new Sphere();
-				allOrbs.getChildren().add(leftOrb);
-				this.value+=1;
-				this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
-				this.t.value+=1;
-			}
-		}
-		else
-		{
-			// Middle of the grid
-			if((this.value+1)%this.criticalMass==1)
-			{
-				aboveOrb = new Sphere();
-				allOrbs.getChildren().add(aboveOrb);
-				this.value+=1;
-				this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
-				this.t.value+=1;
-			}
-			else if((this.value+1)%this.criticalMass==2)
-			{
-				belowOrb = new Sphere();
-				belowOrb.setTranslateX(12);
-				belowOrb.setTranslateY(12);
-				allOrbs.getChildren().add(belowOrb);
-				this.value+=1;
-				this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
-				this.t.value+=1;
-			}
-			else if((this.value+1)%this.criticalMass==3)
-			{
-				leftOrb = new Sphere();
-				leftOrb.setTranslateX(-6);
-				leftOrb.setTranslateY(12);
-				allOrbs.getChildren().add(leftOrb);
-				this.value+=1;
-				this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
-				this.t.value+=1;
-			}
-			else
-			{
-				rightOrb = new Sphere();
-				allOrbs.getChildren().add(rightOrb);
-				this.value+=1;
-				this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
-				this.t.value+=1;
+				if((this.value+1)%this.criticalMass==1)
+				{
+					otherOrb = new Sphere();
+					allOrbs.getChildren().add(otherOrb);
+					this.value+=1;
+					this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
+					this.t.value+=1;
+				}
+				else if((this.value+1)%this.criticalMass==2)
+				{
+					otherOrb = new Sphere();
+					otherOrb.setTranslateX(12);
+					otherOrb.setTranslateY(12);
+					allOrbs.getChildren().add(otherOrb);
+					this.value+=1;
+					this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
+					this.t.value+=1;
+				}
+				else if((this.value+1)%this.criticalMass==3)
+				{
+					otherOrb = new Sphere();
+					otherOrb.setTranslateX(-6);
+					otherOrb.setTranslateY(12);
+					allOrbs.getChildren().add(otherOrb);
+					this.value+=1;
+					this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
+					this.t.value+=1;
+				}
+				else
+				{
+					otherOrb = new Sphere();
+					allOrbs.getChildren().add(otherOrb);
+					this.value+=1;
+					this.boardContainer.tb.board[this.xCoordinate][this.yCoordinate].value+=1;
+					this.t.value+=1;
+				}
 			}
 		}
 
@@ -778,6 +875,11 @@ public class CoordinateTile extends StackPane {
 	  {
 		  belowOrb.setRadius(10);
 		  belowOrb.setMaterial(material);
+	  }
+	  if(otherOrb!=null)
+	  {
+		  otherOrb.setRadius(10);
+		  otherOrb.setMaterial(material);
 	  }
 	}
 }
