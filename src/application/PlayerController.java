@@ -37,8 +37,10 @@ public class PlayerController {
 	 */
 	public void move(BoardGUI b, int x, int y) throws IllegalMoveException, IOException
 	{
+		System.out.println("Value "+b.board[6][2].value);
 		if((b.board[x][y].playerStatus==this.playerNumber)||(b.board[x][y].playerStatus==0))
 		{
+			
 			b.board[x][y].playerContainer = this;
 			
 			b.board[x][y].playerStatus = this.playerNumber;
@@ -49,24 +51,34 @@ public class PlayerController {
 			b.board[x][y].t.colour = b.board[x][y].colour.toString();
 			b.tb.board[x][y].colour = b.board[x][y].colour.toString();
 			
-			b.board[x][y].getChildren().remove(b.board[x][y].rightOrb);
-			b.board[x][y].getChildren().remove(b.board[x][y].leftOrb);
-			b.board[x][y].getChildren().remove(b.board[x][y].aboveOrb);
-			b.board[x][y].getChildren().remove(b.board[x][y].belowOrb);
-			
-			b.board[x][y].drawSphere();
-			b.board[x][y].rotateGroup.play();
-			
-			if(b.board[x][y].value>=b.board[x][y].criticalMass)
+			if(b.board[x][y].value<b.board[x][y].criticalMass)
 			{
-				b.board[x][y].value = 0;
-				b.tb.board[x][y].value=0;
-				b.board[x][y].t.value = 0;
+				b.board[x][y].getChildren().remove(b.board[x][y].rightOrb);
+				b.board[x][y].getChildren().remove(b.board[x][y].leftOrb);
+				b.board[x][y].getChildren().remove(b.board[x][y].aboveOrb);
+				b.board[x][y].getChildren().remove(b.board[x][y].belowOrb);
 				
+				b.board[x][y].drawSphere(false);
+				b.board[x][y].rotateGroup.play();
+			}
+			int numberOfExtraOrbs = b.board[x][y].value % b.board[x][y].criticalMass;
+			
+			if(b.board[x][y].value==b.board[x][y].criticalMass)
+			{
 				b.board[x][y].playerStatus = 0;
 				b.tb.board[x][y].playerStatus=0;
 				b.board[x][y].t.playerStatus = 0;
-				
+			}
+			
+			if(b.board[x][y].value>b.board[x][y].criticalMass)
+			{	
+				b.board[x][y].value = 0;
+				b.tb.board[x][y].value=0;
+				b.board[x][y].t.value = 0;
+			}	
+			
+			if(b.board[x][y].value>=b.board[x][y].criticalMass)
+			{	
 				b.board[x][y].rotateGroup.stop();
 				
 				b.board[x][y].getChildren().remove(b.board[x][y].rightOrb);
@@ -74,7 +86,14 @@ public class PlayerController {
 				b.board[x][y].getChildren().remove(b.board[x][y].aboveOrb);
 				b.board[x][y].getChildren().remove(b.board[x][y].belowOrb);
 				b.board[x][y].allOrbs.getChildren().clear();
-
+				
+				for(int i=0;i<numberOfExtraOrbs;i+=1)
+				{
+					System.out.println(b.board[x][y].value);
+					b.board[x][y].drawSphere(true);
+					System.out.println(b.board[x][y].value);
+				}
+				
 				if(b.board[x][y].rightOrb!=null)
 				{
 					b.board[x][y].rightOrb.setTranslateX(0);
@@ -104,28 +123,26 @@ public class PlayerController {
 					b.board[x][y].transBelow.setNode(b.board[x][y].belowOrb);
 				}
 				
-				if(b.board[x][y].transAbove.getNode()!=null)
+				if(b.board[x][y].transAbove.getNode()!=null && !b.board[x][y].parallelSplit.getChildren().contains(b.board[x][y].transAbove))
 				{
 					b.board[x][y].parallelSplit.getChildren().add(b.board[x][y].transAbove);
 				}
-				if(b.board[x][y].transBelow.getNode()!=null)
+				if(b.board[x][y].transBelow.getNode()!=null && !b.board[x][y].parallelSplit.getChildren().contains(b.board[x][y].transBelow))
 				{
 					b.board[x][y].parallelSplit.getChildren().add(b.board[x][y].transBelow);
 				}
-				if(b.board[x][y].transLeft.getNode()!=null)
+				if(b.board[x][y].transLeft.getNode()!=null && !b.board[x][y].parallelSplit.getChildren().contains(b.board[x][y].transLeft))
 				{
 					b.board[x][y].parallelSplit.getChildren().add(b.board[x][y].transLeft);
 				}
-				if(b.board[x][y].transRight.getNode()!=null)
+				if(b.board[x][y].transRight.getNode()!=null && !b.board[x][y].parallelSplit.getChildren().contains(b.board[x][y].transRight))
 				{
 					b.board[x][y].parallelSplit.getChildren().add(b.board[x][y].transRight);
 				}
 				b.board[x][y].parallelSplit.play();
+				
 			}
-			else
-			{
-				return;
-			}	
+			
 		}
 		else
 		{

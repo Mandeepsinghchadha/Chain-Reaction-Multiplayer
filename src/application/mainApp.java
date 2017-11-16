@@ -3,6 +3,8 @@ package application;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.function.UnaryOperator;
+
+import Networking.Network;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -37,12 +39,16 @@ import withoutGUI.gameState;
 public class mainApp extends Application{
 	
 	static gameSave resumeGS = new gameSave();
-	static BoardGUI b;
-	int numRows,numCols,numPlayers;
+	public static BoardGUI b;
+	static int numRows,numCols,numPlayers;
 	static Scene menu, game, settingsPage;
 	static Stage window;
 	public static Button undoButton;
 	public static Button resumeButton;
+	
+	public Thread thread;
+	
+	static Network network;
 	
 	/** 
 	 * Shows the win alert box once some player has won.
@@ -162,6 +168,7 @@ public class mainApp extends Application{
 		playButton.setAlignment(Pos.CENTER);
 		
 		playButton.setOnAction(event -> {
+			network.send("ololololol");
 			mainApp.b = new BoardGUI(numRows,numCols,numPlayers);
 			CoordinateTile.init = true;
 			TileCell.init = true;
@@ -578,7 +585,7 @@ public class mainApp extends Application{
 			{
 				return;
 			}
-			
+			network.send("undo");
 			if(!CoordinateTile.gs.allStates.isEmpty())
 			{
 				TileBoard previousState = CoordinateTile.gs.loadState();
@@ -616,7 +623,40 @@ public class mainApp extends Application{
 
 		return ret;
 	}
-
+	public static void undoHandle(){
+		
+		if(System.currentTimeMillis() - BoardGUI.startTime < 550) 
+		{
+			return;
+		}
+		if(!CoordinateTile.gs.allStates.isEmpty())
+		{
+			TileBoard previousState = CoordinateTile.gs.loadState();
+			CoordinateTile.gs.currentBoard = new TileBoard(previousState);
+			
+			b.loadGUIfromState(previousState,false);
+			
+			CoordinateTile.gs.currentPlayer = CoordinateTile.currentPlayer;
+			CoordinateTile.gs.counterForInitialBorder = CoordinateTile.counterForInitialBorder;
+			CoordinateTile.gs.counterForInitialGamePlay = CoordinateTile.counterForInitialGamePlay;
+			CoordinateTile.gs.init = CoordinateTile.init; 
+			CoordinateTile.gs.allColours = TileBoard.allColours;
+			
+			try {
+				resumeGS.serialize(CoordinateTile.gs);
+				
+				System.out.println("Details of Saved Game After Saving are:");
+				System.out.println("CurrentPlayer : "+CoordinateTile.gs.currentPlayer);
+				System.out.println("counterForInitialBorder : "+CoordinateTile.gs.counterForInitialBorder);
+				System.out.println("counterForInitialGamePlay : "+CoordinateTile.gs.counterForInitialGamePlay);
+				System.out.println("init : "+CoordinateTile.gs.init);
+				System.out.println();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
 	public static void main(String[] args) {
 		launch(args);
 	}
@@ -633,6 +673,16 @@ public class mainApp extends Application{
 		primaryStage.setTitle("Chain Reaction");
 		mainApp.window=primaryStage;
 		
+		network=new Network();
+		
+		thread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				network.init();
+			}
+		});
+		thread.setDaemon(true);
+		thread.start();
 		numRows=9;
 		numCols=6;
 		numPlayers=2;
