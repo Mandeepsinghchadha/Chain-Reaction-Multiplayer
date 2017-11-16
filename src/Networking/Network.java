@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
@@ -13,7 +15,7 @@ import application.mainApp;
 import javafx.application.Platform;
 
 public class Network {
-	private String ip = "localhost";
+	public String ip = "localhost";
 	private int port = 4242;
 	
 	private Socket socket;
@@ -21,7 +23,9 @@ public class Network {
 	private DataInputStream dis;
 	int errors=0;
 	private boolean accepted = false;
-	
+	boolean isServer=false;
+	private List<Thread> threads = new ArrayList<Thread>();
+	private List<Connection> connections = new ArrayList<Connection>();
 	private ServerSocket serverSocket;
 	private Scanner in;
 	public boolean readyToAccept=true;
@@ -29,13 +33,12 @@ public class Network {
 	public void init() {
 		in = new Scanner(System.in);
 		//System.out.println("Input IP");
-		ip = "127.0.0.1";//in.nextLine();
-		boolean isServer=false;
+		//ip = "192.168.48.138";//in.nextLine();
 		if (!connect()) {
 			isServer=true;
 			initializeServer();
 		}
-		if(isServer) {
+		if(isServer){
 				new Thread(new Runnable() {
 				@Override
 				public void run() {
@@ -47,8 +50,9 @@ public class Network {
 		}
 		new Thread(new Runnable() {
 			@Override
-			public void run() {
+			public void run(){
 				while(true) {
+					//System.out.println(accepted);
 					recieve();
 				}
 			}
@@ -82,10 +86,11 @@ public class Network {
 		Socket socket = null;
 		try {
 			socket = serverSocket.accept();
-			
-			dos = new DataOutputStream(socket.getOutputStream());
-			dis = new DataInputStream(socket.getInputStream());
-			accepted = true;
+			Connection new_connection=new Connection(socket,this,threads.size());
+			connections.add(new_connection);
+			Thread thread=new Thread(new_connection);
+			threads.add(thread);
+			thread.start();
 			System.out.println("CLIENT HAS REQUESTED TO JOIN, AND WE HAVE ACCEPTED");
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -93,12 +98,13 @@ public class Network {
 	}
 	private void  recieve() {
 		if(!accepted) {
-			acceptConnections();
+			
 		}
+		else if(isServer) return;
 		else if(errors<10) {
 			try {
 				String res = dis.readUTF();
-				
+				System.out.println(res);
 				if(res.charAt(0)=='m') {
 					StringTokenizer st=new StringTokenizer(res);
 					st.nextToken();
@@ -132,12 +138,56 @@ public class Network {
 	}
 	
 	public void send(String s) {
-		if(!accepted) return;
-		try {
-			dos.writeUTF(s);
-			dos.flush();
-		} catch (IOException e) {
-			System.out.println("Data not sent...");
+		if(isServer) {
+			recievefromAll(s,-1);
+		}
+		else if(!accepted) return;
+		else {
+			try {
+				dos.writeUTF(s);
+				dos.flush();
+			System.out.println("Sent.");
+			} catch (IOException e) {
+				System.out.println("Data not sent...");
+			}
+		}
+	}
+	
+	public void recievefromAll(String s, int ignore) {
+		if(s.charAt(0)=='m') {
+			StringTokenizer st=new StringTokenizer(s);
+			st.nextToken();
+			int x=Integer.parseInt(st.nextToken());
+			int y=Integer.parseInt(st.nextToken());
+			mainApp.b.board[x][y].pleaseSend=false;
+			Platform.runLater(new Runnable() {
+			    @Override
+			    public void run() {
+			    		mainApp.b.board[x][y].handle();
+			    }
+			});
+			
+			//mainApp.b.board[x][y].drawSphere(false);
+			mainApp.b.board[x][y].pleaseSend=true;
+		}
+		if(s.charAt(0)=='u') {
+			System.out.println("olol");
+			Platform.runLater(new Runnable() {
+			    @Override
+			    public void run() {
+			    	mainApp.undoHandle();
+			    }
+			});
+		}
+		for(int i=0;i<threads.size();++i) if(i!=ignore){
+			//DataOutputStream dos=threads.get(i).dos;
+			try {
+				connections.get(i).dos.writeUTF(s);
+				connections.get(i).dos.flush();
+			System.out.println("Sent.");
+			} catch (IOException e) {
+				System.out.println("Data not sent...");
+			}
 		}
 	}
 	

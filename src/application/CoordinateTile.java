@@ -97,7 +97,7 @@ public class CoordinateTile extends StackPane {
 		rotateGroup.setAxis(allAxes[new Random().nextInt(allAxes.length)]);
 		rotateGroup.setAutoReverse(false);
 
-		transRight = new TranslateTransition(Duration.millis(1500));
+		transRight = new TranslateTransition(Duration.millis(500));
 		transRight.setToX(squareSize);
 		transRight.setCycleCount(1);
 		transRight.setAutoReverse(false);
@@ -105,7 +105,7 @@ public class CoordinateTile extends StackPane {
 			this.getChildren().remove(this.rightOrb);
 		});
 		
-		transLeft = new TranslateTransition(Duration.millis(1500));
+		transLeft = new TranslateTransition(Duration.millis(500));
 		transLeft.setToX(-1*squareSize);
 		transLeft.setCycleCount(1);
 		transLeft.setAutoReverse(false);
@@ -113,7 +113,7 @@ public class CoordinateTile extends StackPane {
 			this.getChildren().remove(this.leftOrb);
 		});
 		
-		transBelow = new TranslateTransition(Duration.millis(1500));
+		transBelow = new TranslateTransition(Duration.millis(500));
 		transBelow.setToY(squareSize);
 		transBelow.setCycleCount(1);
 		transBelow.setAutoReverse(false);
@@ -121,7 +121,7 @@ public class CoordinateTile extends StackPane {
 			this.getChildren().remove(this.belowOrb);
 		});
 		
-		transAbove = new TranslateTransition(Duration.millis(1500));
+		transAbove = new TranslateTransition(Duration.millis(500));
 		transAbove.setToY(-1*squareSize);
 		transAbove.setCycleCount(1);
 		transAbove.setAutoReverse(false);
@@ -313,7 +313,7 @@ public class CoordinateTile extends StackPane {
 			if(pleaseSend) mainApp.network.send("move "+this.xCoordinate+" "+this.yCoordinate);
 			System.out.println("Moved");
 			
-			if(System.currentTimeMillis() - BoardGUI.startTime < 1550) 
+			if(System.currentTimeMillis() - BoardGUI.startTime < 550) 
 			{
 				return;
 			}
@@ -503,7 +503,7 @@ public class CoordinateTile extends StackPane {
 		mainApp.network.readyToAccept=false;
 		BoardGUI b=boardContainer;
 		
-		if(System.currentTimeMillis() - BoardGUI.startTime < 1550) 
+		if(System.currentTimeMillis() - BoardGUI.startTime < 550) 
 		{
 			return;
 		}

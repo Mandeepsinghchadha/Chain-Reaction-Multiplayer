@@ -168,7 +168,7 @@ public class mainApp extends Application{
 		playButton.setAlignment(Pos.CENTER);
 		
 		playButton.setOnAction(event -> {
-			network.send("ololololol");
+			
 			mainApp.b = new BoardGUI(numRows,numCols,numPlayers);
 			CoordinateTile.init = true;
 			TileCell.init = true;
@@ -251,6 +251,8 @@ public class mainApp extends Application{
 		radiobox.getChildren().addAll(small,large);
 		
 		TextField players=new TextField(""+numPlayers+"");
+		TextField ip=new TextField(""+"127.0.0.1"+"");
+		ip.setAlignment(Pos.CENTER);
 		players.setAlignment(Pos.CENTER);
 		players.textProperty().addListener((observable, oldValue, newValue) -> {
 			try {
@@ -276,7 +278,13 @@ public class mainApp extends Application{
 				System.out.println("Invalid value");
 			}
 		});
-		
+		ip.textProperty().addListener((observable, oldValue, newValue) -> {
+			try {
+				network.ip=newValue;
+			} catch(java.lang.NumberFormatException e) {
+				System.out.println("Invalid value");
+			}
+		});
 		Button minusButton = new Button("-");
 		minusButton.setOnAction(event -> {
 			if(Integer.parseInt(players.getText())>2) {
@@ -337,6 +345,7 @@ public class mainApp extends Application{
 		GridPane.setHalignment(gridsize, HPos.CENTER);
 		GridPane.setHalignment(numPlayersLabel, HPos.CENTER);
 		GridPane.setHalignment(players, HPos.CENTER);
+		GridPane.setHalignment(ip, HPos.CENTER);
 		GridPane.setHalignment(radiobox, HPos.CENTER);
 		radiobox.setAlignment(Pos.CENTER);
 		layout.setVgap(3);
@@ -405,12 +414,14 @@ public class mainApp extends Application{
 	    });
 		
 	    layout.add(gridsize, 6, 2);
-		layout.add(resumeButton,6,26);
+		layout.add(resumeButton,6,31);
 		layout.add(playButton,6,36);
 		layout.add(settingsButton,6,42);
 		players.setMaxWidth(60);
+		ip.setMaxWidth(130);
 		layout.add(radiobox, 6, 4);
 		layout.add(numPlayersLabel, 6, 12);
+		layout.add(ip, 6, 26);
 		
 		HBox numPlayerControl=new HBox();
 		numPlayerControl.setSpacing(0);
