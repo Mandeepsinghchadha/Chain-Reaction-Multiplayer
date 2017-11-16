@@ -317,6 +317,11 @@ public class CoordinateTile extends StackPane {
 			{
 				return;
 			}
+			if(System.currentTimeMillis() - BoardGUI.coordinateStartTime < 5) 
+			{
+				return;
+			}
+			BoardGUI.coordinateStartTime=System.currentTimeMillis();
 			
 			if(counterForInitialGamePlay>=this.boardContainer.numberOfPlayers)
 			{
@@ -502,12 +507,11 @@ public class CoordinateTile extends StackPane {
 	public void handle(){
 		mainApp.network.readyToAccept=false;
 		BoardGUI b=boardContainer;
-		
-		if(System.currentTimeMillis() - BoardGUI.startTime < 550) 
+		if(System.currentTimeMillis() - BoardGUI.coordinateStartTime < 5) 
 		{
 			return;
 		}
-		
+		BoardGUI.coordinateStartTime=System.currentTimeMillis();
 		if(counterForInitialGamePlay>=this.boardContainer.numberOfPlayers)
 		{
 			counterForInitialGamePlay+=1;

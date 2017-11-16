@@ -10,7 +10,7 @@ public class BoardGUI {
 	TileBoard tb;
 	int numberOfRows;
 	int numberOfColumns;
-	public static long startTime;
+	public static long startTime,coordinateStartTime;
 	public CoordinateTile[][] board;
 	int numberOfPlayers;
 	public boolean shownPrompt;

@@ -53,7 +53,7 @@ public class Network {
 			public void run(){
 				while(true) {
 					//System.out.println(accepted);
-					recieve();
+					if(accepted) recieve();
 				}
 			}
 		}).start();
@@ -97,10 +97,7 @@ public class Network {
 		}
 	}
 	private void  recieve() {
-		if(!accepted) {
-			
-		}
-		else if(isServer) return;
+		if(isServer) return;
 		else if(errors<10) {
 			try {
 				String res = dis.readUTF();
