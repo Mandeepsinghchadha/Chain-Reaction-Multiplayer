@@ -318,7 +318,7 @@ public class CoordinateTile extends StackPane {
 			{
 				return;
 			}
-			if(System.currentTimeMillis() - BoardGUI.coordinateStartTime < 42) 
+			if(System.currentTimeMillis() - BoardGUI.coordinateStartTime < 100) 
 			{
 				return;
 			}
@@ -526,7 +526,7 @@ public class CoordinateTile extends StackPane {
 	public void handle(){
 		mainApp.network.readyToAccept=false;
 		BoardGUI b=boardContainer;
-		if(System.currentTimeMillis() - BoardGUI.coordinateStartTime < 42) 
+		if(System.currentTimeMillis() - BoardGUI.coordinateStartTime < 100) 
 		{
 			return;
 		}

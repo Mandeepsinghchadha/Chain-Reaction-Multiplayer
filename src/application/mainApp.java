@@ -51,12 +51,26 @@ public class mainApp extends Application{
 	static Scene settingsPage;
 	public static Stage window;
 	public volatile static Button undoButton;
-	public static Button resumeButton;
+	public static Button resumeButton, doneButton;
+	static boolean allColoursSame = false;
 	static String netip;
 	public Thread thread;
 	static boolean isNetwork;
 	static Network network;
 	
+	
+	public static void showSameColourBox() throws IOException{
+		Alert alert = new Alert(AlertType.INFORMATION);
+		alert.setTitle("Same Colour!");
+		alert.setHeaderText(null);
+		alert.setContentText("Two Players cannot have same colours");
+		alert.setOnHidden(evt -> {
+			allColoursSame = false;
+			doneButton.setDisable(true);
+			window.setScene(settingsPage);
+		});
+		alert.show();
+	}
 	/** 
 	 * Shows the win alert box once some player has won.
 	 * Pressing the OK button thereafter takes the user back to the menu and resets the state of the game.
@@ -117,6 +131,29 @@ public class mainApp extends Application{
 		        			
 		        			BoardGUI.allColours[idx] = Color.color(( colourPicker.getValue().getRed()),( colourPicker.getValue().getGreen()), (colourPicker.getValue().getBlue()));
 		        			TileBoard.allColours[idx] = BoardGUI.allColours[idx].toString();
+		        			
+		        			for(int j=0;j<TileBoard.allColours.length;j+=1)
+		        			{
+		        				for(int k=j+1;k<TileBoard.allColours.length;k+=1)
+		        				{
+		        					if(TileBoard.allColours[j].equals(TileBoard.allColours[k]))
+		        					{
+		        						allColoursSame = true;
+		        						try {
+											showSameColourBox();
+										} catch (IOException e) {
+											// TODO Auto-generated catch block
+											e.printStackTrace();
+										}
+		        						break;
+		        					}
+		        				}
+		        			}
+		        			
+		        			if(!allColoursSame)
+		        			{
+		        				doneButton.setDisable(false);
+		        			}
 		        });
 				grid.setVgap(3);
 				grid.setHgap(10);
@@ -136,7 +173,7 @@ public class mainApp extends Application{
 			row.setAlignment(Pos.CENTER);
 			layout.add(row,6,12+4*i);
 		}
-		Button doneButton = new Button("Done");
+		doneButton = new Button("Done");
 		GridPane.setHalignment(doneButton, HPos.CENTER);
 		doneButton.setAlignment(Pos.CENTER);
 		
@@ -152,11 +189,12 @@ public class mainApp extends Application{
 		resetAllColorsButton.setOnAction(event -> {
 			BoardGUI.allColours = new Color[]{Color.RED,Color.GREEN,Color.BLUE,Color.YELLOW,Color.MAGENTA,Color.CYAN,Color.ORANGE,Color.GRAY};
 			TileBoard.allColours = new String[] {Color.RED.toString(),Color.GREEN.toString(),Color.BLUE.toString(),Color.YELLOW.toString(),Color.MAGENTA.toString(),Color.CYAN.toString(),Color.ORANGE.toString(),Color.GRAY.toString()};
+			allColoursSame = false;
 			window.setScene(menu);
 		});
 		layout.add(resetAllColorsButton,6,52);
 		
-		settingsPage=new Scene(layout,640,520);
+		settingsPage=new Scene(layout,640,580);
 		settingsPage.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
 	}
 	
@@ -495,7 +533,7 @@ public class mainApp extends Application{
     			System.out.println("Error retriieving logo");
     		}
     		
-		menu=new Scene(layout,640,520);
+		menu=new Scene(layout,640,580);
 		
 		menu.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
 	}
@@ -733,9 +771,9 @@ public class mainApp extends Application{
 		primaryStage.setTitle("Chain Reaction");
 		mainApp.window = primaryStage;
 		
-		netip = "10.0.0.5";
-		//netip = InetAddress.getLocalHost().toString();
-		//netip = netip.substring(netip.lastIndexOf("/")+1,netip.length());
+//		netip = "10.0.0.5";
+		netip = InetAddress.getLocalHost().toString();
+		netip = netip.substring(netip.lastIndexOf("/")+1,netip.length());
 		
 		numRows = 9;
 		numCols = 6;
