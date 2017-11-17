@@ -310,19 +310,26 @@ public class CoordinateTile extends StackPane {
 		setOnMouseClicked(event -> {
 			mainApp.network.readyToAccept=false;
 			
-			if(pleaseSend) mainApp.network.send("move "+this.xCoordinate+" "+this.yCoordinate);
-			
 			if(System.currentTimeMillis() - BoardGUI.startTime < 550) 
 			{
 				return;
 			}
-			if(System.currentTimeMillis() - BoardGUI.coordinateStartTime < 30) 
+			if(System.currentTimeMillis() - BoardGUI.coordinateStartTime < 40) 
 			{
 				return;
 			}
+			if(counterForInitialGamePlay<this.boardContainer.numberOfPlayers){
+				if(mainApp.isNetwork && counterForInitialGamePlay+1!=boardContainer.networkPlayerNumber)
+					return;
+			}
+			else {
+				System.out.println(currentPlayer+1);
+				if(mainApp.isNetwork && currentPlayer+1!=boardContainer.networkPlayerNumber)
+					return;
+				
+			}
 			BoardGUI.coordinateStartTime=System.currentTimeMillis();
-			System.out.println("Moved");
-			
+			if(mainApp.isNetwork) mainApp.network.send("move "+this.xCoordinate+" "+this.yCoordinate);
 			if(counterForInitialGamePlay>=this.boardContainer.numberOfPlayers)
 			{
 				counterForInitialGamePlay+=1;
@@ -337,7 +344,6 @@ public class CoordinateTile extends StackPane {
 						}
 					}
 
-					
 					CoordinateTile.gs.saveState(new TileBoard(this.boardContainer.tb));
 					try
 					{
@@ -427,6 +433,10 @@ public class CoordinateTile extends StackPane {
 			}
 			else
 			{
+				if(mainApp.isNetwork) {
+					System.out.println(counterForInitialGamePlay);
+					if(counterForInitialGamePlay+1!=boardContainer.networkPlayerNumber) return;
+				}
 				if(counterForInitialGamePlay<this.boardContainer.numberOfPlayers)
 				{
 					CoordinateTile.gs.saveState(new TileBoard(this.boardContainer.tb));
@@ -507,12 +517,12 @@ public class CoordinateTile extends StackPane {
 	public void handle(){
 		mainApp.network.readyToAccept=false;
 		BoardGUI b=boardContainer;
-		if(System.currentTimeMillis() - BoardGUI.coordinateStartTime < 30) 
+		if(System.currentTimeMillis() - BoardGUI.coordinateStartTime < 40) 
 		{
 			return;
 		}
 		BoardGUI.coordinateStartTime=System.currentTimeMillis();
-		System.out.println("olol");
+		
 		if(counterForInitialGamePlay>=this.boardContainer.numberOfPlayers)
 		{
 			counterForInitialGamePlay+=1;

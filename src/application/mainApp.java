@@ -2,6 +2,7 @@ package application;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.function.UnaryOperator;
 
 import Networking.Network;
@@ -22,13 +23,17 @@ import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.control.TextFormatter.Change;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import withoutGUI.TileBoard;
@@ -43,11 +48,11 @@ public class mainApp extends Application{
 	static int numRows,numCols,numPlayers;
 	static Scene menu, game, settingsPage;
 	static Stage window;
-	public static Button undoButton;
+	public volatile static Button undoButton;
 	public static Button resumeButton;
-	
+	static String netip;
 	public Thread thread;
-	
+	static boolean isNetwork;
 	static Network network;
 	
 	/** 
@@ -87,7 +92,7 @@ public class mainApp extends Application{
 		GridPane.setHalignment(heading, HPos.CENTER);
 		heading.setAlignment(Pos.CENTER);
 		layout.add(heading,6,6);
-		for(int i=1;i<=this.numPlayers;++i) {
+		for(int i=1;i<=mainApp.numPlayers;++i) {
 			HBox row = new HBox();
 			GridPane.setHalignment(row, HPos.CENTER);
 			row.setSpacing(80);
@@ -162,11 +167,16 @@ public class mainApp extends Application{
 	public void createMenu(){
 		
 		Button playButton = new Button("New Game");
+		Button networkButton = new Button("Network Play");
 		resumeButton = new Button("Resume");
+		undoButton = new Button("Resume");
 		Button settingsButton = new Button("Settings");
 		
 		playButton.setAlignment(Pos.CENTER);
-		
+		networkButton.setAlignment(Pos.CENTER);
+		HBox play=new HBox();
+		play.setSpacing(5);
+		play.getChildren().addAll(playButton,networkButton);
 		playButton.setOnAction(event -> {
 			
 			mainApp.b = new BoardGUI(numRows,numCols,numPlayers);
@@ -183,7 +193,28 @@ public class mainApp extends Application{
 			
 			CoordinateTile.counterForInitialBorder = 0;
 			TileCell.counterForInitialBorder = 0;
+			isNetwork=false;
+			game=new Scene(this.createContent(true));
+			window.setScene(game);
+		});
+		
+		networkButton.setOnAction(event -> {
+
+			mainApp.b = new BoardGUI(numRows,numCols,numPlayers);
+			CoordinateTile.init = true;
+			TileCell.init = true;
+			CoordinateTile.gs = new gameState(mainApp.b.tb);
+			undoButton.setDisable(true);
 			
+			CoordinateTile.currentPlayer = 0;
+			TileCell.currentPlayer = 0;
+			
+			CoordinateTile.counterForInitialGamePlay = 0;
+			TileCell.counterForInitialGamePlay = 0;
+			
+			CoordinateTile.counterForInitialBorder = 0;
+			TileCell.counterForInitialBorder = 0;
+			isNetwork=true;
 			game=new Scene(this.createContent(true));
 			window.setScene(game);
 		});
@@ -251,7 +282,7 @@ public class mainApp extends Application{
 		radiobox.getChildren().addAll(small,large);
 		
 		TextField players=new TextField(""+numPlayers+"");
-		TextField ip=new TextField(""+"127.0.0.1"+"");
+		TextField ip=new TextField(""+netip+"");
 		ip.setAlignment(Pos.CENTER);
 		players.setAlignment(Pos.CENTER);
 		players.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -280,7 +311,7 @@ public class mainApp extends Application{
 		});
 		ip.textProperty().addListener((observable, oldValue, newValue) -> {
 			try {
-				network.ip=newValue;
+				netip=newValue;
 			} catch(java.lang.NumberFormatException e) {
 				System.out.println("Invalid value");
 			}
@@ -341,13 +372,14 @@ public class mainApp extends Application{
 		GridPane layout = new GridPane();
 		GridPane.setHalignment(settingsButton, HPos.CENTER);
 		GridPane.setHalignment(resumeButton, HPos.CENTER);
-		GridPane.setHalignment(playButton, HPos.CENTER);
+		//GridPane.setHalignment(playButton, HPos.CENTER);
 		GridPane.setHalignment(gridsize, HPos.CENTER);
 		GridPane.setHalignment(numPlayersLabel, HPos.CENTER);
 		GridPane.setHalignment(players, HPos.CENTER);
 		GridPane.setHalignment(ip, HPos.CENTER);
 		GridPane.setHalignment(radiobox, HPos.CENTER);
 		radiobox.setAlignment(Pos.CENTER);
+		play.setAlignment(Pos.CENTER);
 		layout.setVgap(3);
 	    layout.setHgap(10);
 	    layout.setPadding(new Insets(10, 10, 10, 10));
@@ -415,10 +447,11 @@ public class mainApp extends Application{
 		
 	    layout.add(gridsize, 6, 2);
 		layout.add(resumeButton,6,31);
-		layout.add(playButton,6,36);
+		//layout.add(playButton,6,36);
 		layout.add(settingsButton,6,42);
 		players.setMaxWidth(60);
-		ip.setMaxWidth(130);
+		ip.setMaxWidth(150);
+		layout.add(play, 6, 36);
 		layout.add(radiobox, 6, 4);
 		layout.add(numPlayersLabel, 6, 12);
 		layout.add(ip, 6, 26);
@@ -472,6 +505,18 @@ public class mainApp extends Application{
 	 */
 	public Parent createContent(boolean setUndoButtonVisibility)
 	{
+		if(isNetwork) {
+			network = new Network();
+			network.ip = netip;
+			thread = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					network.init();
+				}
+			});
+			thread.setDaemon(true);
+			thread.start();
+		}
 		Pane root = new Pane();
 		
 		if(b.numberOfRows==9)
@@ -549,6 +594,7 @@ public class mainApp extends Application{
 		});
 		Button newGameButton = new Button("New Game");
 		newGameButton.setOnAction(event -> {
+			
 			mainApp.b = new BoardGUI(numRows,numCols,numPlayers);
 			CoordinateTile.init = true;
 			TileCell.init = true;
@@ -596,7 +642,7 @@ public class mainApp extends Application{
 			{
 				return;
 			}
-			network.send("undo");
+			if(isNetwork) network.send("undo");
 			if(!CoordinateTile.gs.allStates.isEmpty())
 			{
 				TileBoard previousState = CoordinateTile.gs.loadState();
@@ -682,21 +728,15 @@ public class mainApp extends Application{
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		primaryStage.setTitle("Chain Reaction");
-		mainApp.window=primaryStage;
+		mainApp.window = primaryStage;
 		
-		network=new Network();
+		//netip = "10.0.0.4";
+		netip = InetAddress.getLocalHost().toString();
+		netip = netip.substring(netip.lastIndexOf("/")+1,netip.length());
 		
-		thread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				network.init();
-			}
-		});
-		thread.setDaemon(true);
-		thread.start();
-		numRows=9;
-		numCols=6;
-		numPlayers=2;
+		numRows = 9;
+		numCols = 6;
+		numPlayers = 2;
 		
 		try {
 			gameState lastState = resumeGS.deserialize();
@@ -709,13 +749,8 @@ public class mainApp extends Application{
 			System.out.println("No State Loaded");
 		}
 		
-		
 		this.createMenu();
 		primaryStage.setScene(menu);
 		primaryStage.show();
-		mainApp.b = new BoardGUI(numRows,numCols,numPlayers);
-		game=new Scene(this.createContent(true));
 	}
-
 }
-

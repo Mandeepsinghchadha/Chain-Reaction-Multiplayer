@@ -11,6 +11,7 @@ public class BoardGUI {
 	int numberOfRows;
 	int numberOfColumns;
 	public static long startTime,coordinateStartTime;
+	public int networkPlayerNumber;
 	public CoordinateTile[][] board;
 	int numberOfPlayers;
 	public boolean shownPrompt;
@@ -25,6 +26,7 @@ public class BoardGUI {
 	 */
 	BoardGUI(int m, int n, int numberOfPlayers)
 	{
+		this.networkPlayerNumber=-1;
 		this.shownPrompt=true;
 		this.numberOfRows = m;
 		this.numberOfColumns = n;
@@ -311,5 +313,4 @@ public class BoardGUI {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 	}
-
 }

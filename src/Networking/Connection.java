@@ -24,7 +24,9 @@ class Connection implements Runnable{
 		try {
 			dos = new DataOutputStream(conn.getOutputStream());
 			dis = new DataInputStream(conn.getInputStream());
-			System.out.println("CLIENT HAS REQUESTED TO JOIN, AND WE HAVE ACCEPTED");
+			System.out.println("CLIENT ACCEPTED...");
+			int siz=_idx+2;
+			send("init "+siz);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -32,20 +34,18 @@ class Connection implements Runnable{
 
 	@Override
 	public void run() {
-		while(true) {
+		while(errors<10) {
 			recieve();
 		}
 	}
 	private void  recieve() {
-		if(errors<10) {
-			try {
-				String res = dis.readUTF();
-				System.out.println(res);
-				network.recievefromAll(res,this.idx);
-			} catch (IOException e) {
-				//e.printStackTrace();
-				++errors;
-			}
+		try {
+			String res = dis.readUTF();
+			System.out.println(res);
+			network.receivefromAll(res,this.idx);
+		} catch (IOException e) {
+			//e.printStackTrace();
+			++errors;
 		}
 	}
 	

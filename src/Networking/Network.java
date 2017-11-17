@@ -18,24 +18,39 @@ public class Network {
 	public String ip = "localhost";
 	private int port = 4242;
 	
-	private Socket socket;
+	private static Socket socket;
 	private DataOutputStream dos;
 	private DataInputStream dis;
-	int errors=0;
-	private boolean accepted = false;
+	int errors;
+	public volatile static boolean accepted, readyToAccept,wasServer=false;
 	boolean isServer=false;
-	private List<Thread> threads = new ArrayList<Thread>();
-	private List<Connection> connections = new ArrayList<Connection>();
-	private ServerSocket serverSocket;
-	private Scanner in;
-	public boolean readyToAccept=true;
-	public Network() {}
+	private static List<Thread> threads = new ArrayList<Thread>();
+	public static List<Connection> connections = new ArrayList<Connection>();
+	public static ServerSocket serverSocket;
+	
+	public Network() {
+		socket=new Socket();
+		readyToAccept=false;
+		accepted=false;
+		threads.clear();
+		threads = new ArrayList<Thread>();
+		connections.clear();
+		connections = new ArrayList<Connection>();
+		errors=0;
+		if(serverSocket!=null) {
+			try {
+				serverSocket.close();
+		System.out.println("Socket closed.");
+			} catch (IOException e) {}
+		}
+	}
 	public void init() {
-		in = new Scanner(System.in);
-		//System.out.println("Input IP");
-		//ip = "192.168.48.138";//in.nextLine();
-		if (!connect()) {
+		//ip = "192.168.48.138";
+		if (!connect() || wasServer) {
 			isServer=true;
+			wasServer=true;
+			readyToAccept=true;
+			mainApp.b.networkPlayerNumber=1;
 			initializeServer();
 		}
 		if(isServer){
@@ -43,7 +58,11 @@ public class Network {
 				@Override
 				public void run() {
 					while(true) {
-						acceptConnections();
+						if(readyToAccept)
+							acceptConnections();
+						else {
+							break;
+						}
 					}
 				}
 			}).start();
@@ -53,10 +72,12 @@ public class Network {
 			public void run(){
 				while(true) {
 					//System.out.println(accepted);
-					if(accepted) recieve();
+					if(accepted) receive();
+					else return;
 				}
 			}
 		}).start();
+		
 	}
 	
 	private boolean connect() {
@@ -82,7 +103,6 @@ public class Network {
 		}
 	}
 	private void acceptConnections() {
-		if(!readyToAccept) return;
 		Socket socket = null;
 		try {
 			socket = serverSocket.accept();
@@ -91,12 +111,11 @@ public class Network {
 			Thread thread=new Thread(new_connection);
 			threads.add(thread);
 			thread.start();
-			System.out.println("CLIENT HAS REQUESTED TO JOIN, AND WE HAVE ACCEPTED");
 		} catch (IOException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
-	private void  recieve() {
+	private void  receive() {
 		if(isServer) return;
 		else if(errors<10) {
 			try {
@@ -118,14 +137,18 @@ public class Network {
 					//mainApp.b.board[x][y].drawSphere(false);
 					mainApp.b.board[x][y].pleaseSend=true;
 				}
-				if(res.charAt(0)=='u') {
-					System.out.println("olol");
+				else if(res.charAt(0)=='u') {
 					Platform.runLater(new Runnable() {
 					    @Override
 					    public void run() {
 					    	mainApp.undoHandle();
 					    }
 					});
+				}
+				else if(res.charAt(0)=='i') {
+					StringTokenizer st=new StringTokenizer(res);
+					st.nextToken();
+					mainApp.b.networkPlayerNumber=Integer.parseInt(st.nextToken());
 				}
 			} catch (IOException e) {
 				//e.printStackTrace();
@@ -136,7 +159,7 @@ public class Network {
 	
 	public void send(String s) {
 		if(isServer) {
-			recievefromAll(s,-1);
+			receivefromAll(s,-1);
 		}
 		else if(!accepted) return;
 		else {
@@ -150,7 +173,7 @@ public class Network {
 		}
 	}
 	
-	public void recievefromAll(String s, int ignore) {
+	public void receivefromAll(String s, int ignore) {
 		if(s.charAt(0)=='m') {
 			StringTokenizer st=new StringTokenizer(s);
 			st.nextToken();
@@ -168,7 +191,6 @@ public class Network {
 			mainApp.b.board[x][y].pleaseSend=true;
 		}
 		if(s.charAt(0)=='u') {
-			System.out.println("olol");
 			Platform.runLater(new Runnable() {
 			    @Override
 			    public void run() {
