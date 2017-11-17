@@ -18,7 +18,7 @@ public class PlayerController {
 	 * @param c The color player is to be initialized with.
 	 * @author Madhur Tandon
 	 */
-	PlayerController(int playerNumber, Color c)
+	public PlayerController(int playerNumber, Color c)
 	{
 		this.orbCount = Integer.MIN_VALUE;
 		this.playerNumber = playerNumber;

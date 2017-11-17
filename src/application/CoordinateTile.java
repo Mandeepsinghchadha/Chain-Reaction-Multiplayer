@@ -3,6 +3,8 @@ package application;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
+
+import Networking.Network;
 import javafx.util.Duration;
 import withoutGUI.TileBoard;
 import withoutGUI.TileCell;
@@ -308,7 +310,9 @@ public class CoordinateTile extends StackPane {
 		 * @author Madhur Tandon
 		 */
 		setOnMouseClicked(event -> {
-			mainApp.network.readyToAccept=false;
+			if(mainApp.isNetwork) {
+				mainApp.network.readyToAccept=false;
+			}
 			
 			if(System.currentTimeMillis() - BoardGUI.startTime < 550) 
 			{

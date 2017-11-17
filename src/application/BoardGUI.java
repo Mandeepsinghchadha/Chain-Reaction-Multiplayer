@@ -13,10 +13,10 @@ public class BoardGUI {
 	public static long startTime,coordinateStartTime;
 	public int networkPlayerNumber;
 	public CoordinateTile[][] board;
-	int numberOfPlayers;
+	public int numberOfPlayers;
 	public boolean shownPrompt;
-	ArrayList<PlayerController> allPlayers;
-	static Color[] allColours = {Color.RED,Color.GREEN,Color.BLUE,Color.YELLOW,Color.MAGENTA,Color.CYAN,Color.ORANGE,Color.GRAY};
+	public static ArrayList<PlayerController> allPlayers;
+	public static Color[] allColours = {Color.RED,Color.GREEN,Color.BLUE,Color.YELLOW,Color.MAGENTA,Color.CYAN,Color.ORANGE,Color.GRAY};
 	/**
 	 * Initializes the board the board with the required dimensions and the number of players.
 	 * @param m The required number of rows
@@ -24,7 +24,7 @@ public class BoardGUI {
 	 * @param numberOfPlayers The required number of players
 	 * @author Madhur Tandon
 	 */
-	BoardGUI(int m, int n, int numberOfPlayers)
+	public BoardGUI(int m, int n, int numberOfPlayers)
 	{
 		this.networkPlayerNumber=-1;
 		this.shownPrompt=true;

@@ -11,25 +11,29 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
+import application.BoardGUI;
+import application.PlayerController;
 import application.mainApp;
 import javafx.application.Platform;
+import javafx.scene.Scene;
 
 public class Network {
 	public String ip = "localhost";
 	private int port = 4242;
-	
+	public mainApp app;
 	private static Socket socket;
-	private DataOutputStream dos;
+	private static DataOutputStream dos;
 	private DataInputStream dis;
 	int errors;
-	public volatile static boolean accepted, readyToAccept,wasServer=false;
-	boolean isServer=false;
+	public volatile static boolean accepted, readyToAccept;
+	static boolean isServer=false;
 	private static List<Thread> threads = new ArrayList<Thread>();
 	public static List<Connection> connections = new ArrayList<Connection>();
-	public static ServerSocket serverSocket;
+	public volatile static ServerSocket serverSocket,serverSocketCopy;
 	
-	public Network() {
+	public Network( mainApp _app) {
 		socket=new Socket();
+		app=_app;
 		readyToAccept=false;
 		accepted=false;
 		threads.clear();
@@ -45,10 +49,8 @@ public class Network {
 		}
 	}
 	public void init() {
-		//ip = "192.168.48.138";
-		if (!connect() || wasServer) {
+		if (!connect()) {
 			isServer=true;
-			wasServer=true;
 			readyToAccept=true;
 			mainApp.b.networkPlayerNumber=1;
 			initializeServer();
@@ -76,8 +78,7 @@ public class Network {
 					else return;
 				}
 			}
-		}).start();
-		
+		}).start();	
 	}
 	
 	private boolean connect() {
@@ -106,12 +107,14 @@ public class Network {
 		Socket socket = null;
 		try {
 			socket = serverSocket.accept();
+			if(!readyToAccept) return;
 			Connection new_connection=new Connection(socket,this,threads.size());
 			connections.add(new_connection);
 			Thread thread=new Thread(new_connection);
 			threads.add(thread);
 			thread.start();
 		} catch (IOException e) {
+			System.out.println("Stopped Accepting Conenctions");
 			//e.printStackTrace();
 		}
 	}
@@ -134,8 +137,6 @@ public class Network {
 					    }
 					});
 					
-					//mainApp.b.board[x][y].drawSphere(false);
-					mainApp.b.board[x][y].pleaseSend=true;
 				}
 				else if(res.charAt(0)=='u') {
 					Platform.runLater(new Runnable() {
@@ -148,7 +149,13 @@ public class Network {
 				else if(res.charAt(0)=='i') {
 					StringTokenizer st=new StringTokenizer(res);
 					st.nextToken();
-					mainApp.b.networkPlayerNumber=Integer.parseInt(st.nextToken());
+					int siz=Integer.parseInt(st.nextToken());
+					if(siz>mainApp.numPlayers) {
+						mainApp.b.allPlayers.add(new PlayerController(siz,BoardGUI.allColours[siz-1]));
+						mainApp.numPlayers=siz;
+						mainApp.b.numberOfPlayers=siz;
+					}
+					if(mainApp.b.networkPlayerNumber==-1) mainApp.b.networkPlayerNumber=siz;
 				}
 			} catch (IOException e) {
 				//e.printStackTrace();
@@ -157,7 +164,7 @@ public class Network {
 		}
 	}
 	
-	public void send(String s) {
+	public static void send(String s) {
 		if(isServer) {
 			receivefromAll(s,-1);
 		}
@@ -166,14 +173,14 @@ public class Network {
 			try {
 				dos.writeUTF(s);
 				dos.flush();
-			System.out.println("Sent.");
+			System.out.println("Sent "+s);
 			} catch (IOException e) {
 				System.out.println("Data not sent...");
 			}
 		}
 	}
 	
-	public void receivefromAll(String s, int ignore) {
+	public static void receivefromAll(String s, int ignore) {
 		if(s.charAt(0)=='m') {
 			StringTokenizer st=new StringTokenizer(s);
 			st.nextToken();
@@ -186,9 +193,6 @@ public class Network {
 			    		mainApp.b.board[x][y].handle();
 			    }
 			});
-			
-			//mainApp.b.board[x][y].drawSphere(false);
-			mainApp.b.board[x][y].pleaseSend=true;
 		}
 		if(s.charAt(0)=='u') {
 			Platform.runLater(new Runnable() {

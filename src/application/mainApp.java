@@ -45,9 +45,11 @@ public class mainApp extends Application{
 	
 	static gameSave resumeGS = new gameSave();
 	public static BoardGUI b;
-	static int numRows,numCols,numPlayers;
-	static Scene menu, game, settingsPage;
-	static Stage window;
+	public static int numRows,numCols,numPlayers;
+	static Scene menu;
+	public static Scene game;
+	static Scene settingsPage;
+	public static Stage window;
 	public volatile static Button undoButton;
 	public static Button resumeButton;
 	static String netip;
@@ -200,6 +202,7 @@ public class mainApp extends Application{
 		
 		networkButton.setOnAction(event -> {
 
+			numPlayers=2;
 			mainApp.b = new BoardGUI(numRows,numCols,numPlayers);
 			CoordinateTile.init = true;
 			TileCell.init = true;
@@ -506,7 +509,7 @@ public class mainApp extends Application{
 	public Parent createContent(boolean setUndoButtonVisibility)
 	{
 		if(isNetwork) {
-			network = new Network();
+			network = new Network(this);
 			network.ip = netip;
 			thread = new Thread(new Runnable() {
 				@Override
@@ -730,9 +733,9 @@ public class mainApp extends Application{
 		primaryStage.setTitle("Chain Reaction");
 		mainApp.window = primaryStage;
 		
-		//netip = "10.0.0.4";
-		netip = InetAddress.getLocalHost().toString();
-		netip = netip.substring(netip.lastIndexOf("/")+1,netip.length());
+		netip = "10.0.0.4";
+		//netip = InetAddress.getLocalHost().toString();
+		//netip = netip.substring(netip.lastIndexOf("/")+1,netip.length());
 		
 		numRows = 9;
 		numCols = 6;
