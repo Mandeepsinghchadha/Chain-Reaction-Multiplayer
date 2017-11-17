@@ -733,7 +733,7 @@ public class mainApp extends Application{
 		primaryStage.setTitle("Chain Reaction");
 		mainApp.window = primaryStage;
 		
-		netip = "10.0.0.4";
+		netip = "10.0.0.5";
 		//netip = InetAddress.getLocalHost().toString();
 		//netip = netip.substring(netip.lastIndexOf("/")+1,netip.length());
 		

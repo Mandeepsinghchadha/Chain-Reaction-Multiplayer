@@ -34,8 +34,8 @@ public class CoordinateTile extends StackPane {
 	public boolean pleaseSend=true;
 	
 	public static boolean init = true;
-	public static int currentPlayer = 0;
-	public static int counterForInitialGamePlay = 0;
+	public volatile static int currentPlayer = 0;
+	public volatile static int counterForInitialGamePlay = 0;
 	public static int counterForInitialBorder = 0;
 	
 	public int xCoordinate;
@@ -166,16 +166,16 @@ public class CoordinateTile extends StackPane {
 			
 			for(int j=0;j<b.numberOfPlayers;j+=1)
 			{
-				if(b.allPlayers.get(j).active)
+				if(BoardGUI.allPlayers.get(j).active)
 				{
-					b.allPlayers.get(j).orbCount = b.playerCount(j+1);
-					b.allPlayers.get(j).p.orbCount = b.allPlayers.get(j).orbCount;
-					b.tb.allPlayers.get(j).orbCount = b.allPlayers.get(j).orbCount;
-					if(b.allPlayers.get(j).orbCount==0)
+					BoardGUI.allPlayers.get(j).orbCount = b.playerCount(j+1);
+					BoardGUI.allPlayers.get(j).p.orbCount = BoardGUI.allPlayers.get(j).orbCount;
+					b.tb.allPlayers.get(j).orbCount = BoardGUI.allPlayers.get(j).orbCount;
+					if(BoardGUI.allPlayers.get(j).orbCount==0)
 					{
-						b.allPlayers.get(j).active=false;
+						BoardGUI.allPlayers.get(j).active=false;
 						b.tb.allPlayers.get(j).active = false;
-						b.allPlayers.get(j).p.active = false;
+						BoardGUI.allPlayers.get(j).p.active = false;
 					}
 				}
 			}
@@ -333,15 +333,15 @@ public class CoordinateTile extends StackPane {
 				
 			}
 			BoardGUI.coordinateStartTime=System.currentTimeMillis();
-			if(mainApp.isNetwork) mainApp.network.send("move "+this.xCoordinate+" "+this.yCoordinate);
+			if(mainApp.isNetwork) Network.send("move "+this.xCoordinate+" "+this.yCoordinate);
 			if(counterForInitialGamePlay>=this.boardContainer.numberOfPlayers)
 			{
 				counterForInitialGamePlay+=1;
 				if(this.boardContainer.countAllActivePlayers(this.boardContainer.allPlayers)>1)
 				{
-					if(!b.allPlayers.get(currentPlayer).active)
+					if(!BoardGUI.allPlayers.get(currentPlayer).active)
 					{
-						while(!b.allPlayers.get(currentPlayer).active)
+						while(!BoardGUI.allPlayers.get(currentPlayer).active)
 						{
 							currentPlayer = (currentPlayer + 1) % this.boardContainer.numberOfPlayers;
 							TileCell.currentPlayer = (TileCell.currentPlayer + 1) % this.boardContainer.numberOfPlayers;

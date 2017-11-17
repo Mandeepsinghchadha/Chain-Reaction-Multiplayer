@@ -37,6 +37,7 @@ public class PlayerController {
 	 */
 	public void move(BoardGUI b, int x, int y) throws IllegalMoveException, IOException
 	{
+		System.out.println("Player Number: "+this.playerNumber);
 		if((b.board[x][y].playerStatus==this.playerNumber)||(b.board[x][y].playerStatus==0))
 		{
 			b.board[x][y].playerContainer = this;

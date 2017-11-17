@@ -7,11 +7,11 @@ import withoutGUI.TileBoard;
 import withoutGUI.TileCell;
 
 public class BoardGUI {
-	TileBoard tb;
+	public TileBoard tb;
 	int numberOfRows;
 	int numberOfColumns;
-	public static long startTime,coordinateStartTime;
-	public int networkPlayerNumber;
+	public static long startTime=0,coordinateStartTime;
+	public volatile int networkPlayerNumber;
 	public CoordinateTile[][] board;
 	public int numberOfPlayers;
 	public boolean shownPrompt;
