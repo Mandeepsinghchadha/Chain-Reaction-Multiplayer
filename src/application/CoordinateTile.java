@@ -318,9 +318,13 @@ public class CoordinateTile extends StackPane {
 			{
 				return;
 			}
-			if(System.currentTimeMillis() - BoardGUI.coordinateStartTime < 40) 
+			if(System.currentTimeMillis() - BoardGUI.coordinateStartTime < 42) 
 			{
 				return;
+			}
+			while(!b.allPlayers.get(currentPlayer).active)
+			{
+				currentPlayer = (currentPlayer + 1) % this.boardContainer.numberOfPlayers;
 			}
 			if(counterForInitialGamePlay<this.boardContainer.numberOfPlayers){
 				if(mainApp.isNetwork && counterForInitialGamePlay+1!=boardContainer.networkPlayerNumber)
@@ -415,6 +419,7 @@ public class CoordinateTile extends StackPane {
 						}
 					}
 				}
+				currentPlayer=p;
 				try {
 					gs.currentBoard = new TileBoard(this.boardContainer.tb);
 					gs.currentPlayer = currentPlayer;
@@ -521,7 +526,7 @@ public class CoordinateTile extends StackPane {
 	public void handle(){
 		mainApp.network.readyToAccept=false;
 		BoardGUI b=boardContainer;
-		if(System.currentTimeMillis() - BoardGUI.coordinateStartTime < 40) 
+		if(System.currentTimeMillis() - BoardGUI.coordinateStartTime < 42) 
 		{
 			return;
 		}
@@ -609,6 +614,7 @@ public class CoordinateTile extends StackPane {
 					}
 				}
 			}
+			currentPlayer=p;
 			try {
 				gs.currentBoard = new TileBoard(this.boardContainer.tb);
 				gs.currentPlayer = currentPlayer;
