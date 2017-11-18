@@ -15,8 +15,8 @@ public class Player implements Serializable {
 	/**
 	 * Initializes the Player with its initial properties, i.e.
 	 * the player number and the initial assigned color.
-	 * @param playerNumber
-	 * @param c
+	 * @param playerNumber The index of the player in question
+	 * @param c The player's orb color
 	 * @author Madhur Tandon
 	 */
 	public Player(int playerNumber, Color c)
