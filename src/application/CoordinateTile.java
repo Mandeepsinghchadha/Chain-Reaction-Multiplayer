@@ -552,7 +552,7 @@ public class CoordinateTile extends StackPane {
 				{
 					this.boardContainer.allPlayers.get(currentPlayer).move(this.boardContainer, this.xCoordinate, this.yCoordinate);
 					this.boardContainer.tb.undoOnce = true;
-					mainApp.undoButton.setDisable(false);
+					mainApp.undoButton.setDisable(true);
 				}
 				catch (IllegalMoveException e){
 					currentPlayer = (((currentPlayer - 1) % this.boardContainer.numberOfPlayers) + this.boardContainer.numberOfPlayers) % this.boardContainer.numberOfPlayers;
@@ -644,7 +644,7 @@ public class CoordinateTile extends StackPane {
 				{
 					this.boardContainer.allPlayers.get(counterForInitialGamePlay).move(this.boardContainer, this.xCoordinate, this.yCoordinate);
 					this.boardContainer.tb.undoOnce = true;
-					mainApp.undoButton.setDisable(false);
+					mainApp.undoButton.setDisable(true);
 				}
 				catch (IllegalMoveException e)
 				{

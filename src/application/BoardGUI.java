@@ -100,10 +100,9 @@ public class BoardGUI {
 				{
 					for(int j=0;j<tb.numberOfColumns;j+=1)
 					{
-						
-						this.board[i][j].colour = Color.valueOf(tb.board[i][j].colour);
+						this.board[i][j].colour = CoordinateTile.counterForInitialGamePlay==1?allColours[0]:Color.valueOf(tb.board[i][j].colour);
 						this.board[i][j].playerStatus = tb.board[i][j].playerStatus;
-						this.board[i][j].border.setStroke(Color.valueOf(tb.board[i][j].borderColour));
+						this.board[i][j].border.setStroke(CoordinateTile.counterForInitialGamePlay==1?allColours[0]:Color.valueOf(tb.board[i][j].borderColour));
 						for(int k=0;k<tb.board[i][j].value;k+=1)
 						{
 							this.board[i][j].drawSphere(false);
@@ -181,7 +180,6 @@ public class BoardGUI {
 			{
 				for(int j=0;j<tb.numberOfColumns;j+=1)
 				{
-					
 					this.board[i][j].colour = Color.valueOf(tb.board[i][j].colour);
 					this.board[i][j].playerStatus = tb.board[i][j].playerStatus;
 					this.board[i][j].border.setStroke(Color.valueOf(tb.board[i][j].borderColour));
