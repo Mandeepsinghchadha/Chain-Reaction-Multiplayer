@@ -58,8 +58,11 @@ public class mainApp extends Application{
 	static boolean isNetwork;
 	static Network network;
 	
-	
-	public static void showSameColourBox() throws IOException{
+	/** 
+	 * Shows an alert box incase multiple players have same orb colour, and disable the go back to menu functionality
+	 * @author Madhur Tandon
+	 */
+	public static void showSameColourBox(){
 		Alert alert = new Alert(AlertType.INFORMATION);
 		alert.setTitle("Same Colour!");
 		alert.setHeaderText(null);
@@ -76,7 +79,7 @@ public class mainApp extends Application{
 	 * Pressing the OK button thereafter takes the user back to the menu and resets the state of the game.
 	 * @author aayush9
 	 * @param x Player who won
-	 * @throws IOException In case serialization fails
+	 * @throws IOException Incase serialization fails
 	 */
 	public static void showWinAlertBox(int x) throws IOException{
 		b.tb.lastGameCompleted = true;
@@ -139,12 +142,7 @@ public class mainApp extends Application{
 		        					if(TileBoard.allColours[j].equals(TileBoard.allColours[k]))
 		        					{
 		        						allColoursSame = true;
-		        						try {
-											showSameColourBox();
-										} catch (IOException e) {
-											// TODO Auto-generated catch block
-											e.printStackTrace();
-										}
+		        						showSameColourBox();
 		        						break;
 		        					}
 		        				}
@@ -592,7 +590,6 @@ public class mainApp extends Application{
 		menubar.setPadding(new Insets(10));
 		Button backButton = new Button("Back to Menu");
 		backButton.setOnAction(event -> {
-			
 			try {
 				
 				CoordinateTile.gs.currentBoard = new TileBoard(mainApp.b.tb);
@@ -629,13 +626,14 @@ public class mainApp extends Application{
 				// TODO Auto-generated catch block
 				resumeButton.setDisable(true);
 			}
-			
+			window.setTitle("Chain Reaction");
 			this.createMenu();
 			window.setScene(menu);
 		});
 		Button newGameButton = new Button("New Game");
 		newGameButton.setOnAction(event -> {
-			
+			isNetwork=false;
+			window.setTitle("Chain Reaction");
 			mainApp.b = new BoardGUI(numRows,numCols,numPlayers);
 			CoordinateTile.init = true;
 			TileCell.init = true;

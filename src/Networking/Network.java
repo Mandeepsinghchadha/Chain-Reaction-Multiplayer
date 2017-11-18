@@ -62,6 +62,13 @@ public class Network {
 			isServer=true;
 			readyToAccept=true;
 			mainApp.b.networkPlayerNumber=1;
+			Platform.runLater(new Runnable() {
+			    @Override
+			    public synchronized void run() {
+			    		mainApp.window.setTitle("Chain Reaction (Player 1)");
+			    }
+			});
+			
 			initializeServer();
 		}
 		if(isServer){
@@ -183,7 +190,15 @@ public class Network {
 						mainApp.b.numberOfPlayers=siz;
 						mainApp.b.tb = new TileBoard(mainApp.numRows,mainApp.numCols,siz);
 					}
-					if(mainApp.b.networkPlayerNumber==-1) mainApp.b.networkPlayerNumber=siz;
+					if(mainApp.b.networkPlayerNumber==-1) {
+						mainApp.b.networkPlayerNumber=siz;
+						Platform.runLater(new Runnable() {
+						    @Override
+						    public synchronized void run() {
+						    		mainApp.window.setTitle("Chain Reaction (Player "+siz+")");
+						    }
+						});
+					}
 				}
 			} catch (IOException e) {
 				//e.printStackTrace();
