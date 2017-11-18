@@ -310,6 +310,9 @@ public class CoordinateTile extends StackPane {
 		 * @author Madhur Tandon
 		 */
 		setOnMouseClicked(event -> {
+			if(Network.isServer && Network.connections.size()==0) {
+				return;
+			}
 			if(mainApp.isNetwork) {
 				mainApp.network.readyToAccept=false;
 			}

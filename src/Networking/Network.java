@@ -27,7 +27,7 @@ public class Network {
 	private DataInputStream dis;
 	int errors;
 	public volatile static boolean accepted, readyToAccept;
-	static boolean isServer=false;
+	public static boolean isServer=false;
 	private static List<Thread> threads = new ArrayList<Thread>();
 	public static List<Connection> connections = new ArrayList<Connection>();
 	public volatile static ServerSocket serverSocket,serverSocketCopy;
