@@ -2,7 +2,10 @@ package application;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.function.UnaryOperator;
+
+import Networking.Network;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -20,13 +23,17 @@ import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.control.TextFormatter.Change;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import withoutGUI.TileBoard;
@@ -36,19 +43,42 @@ import withoutGUI.gameState;
 
 public class mainApp extends Application{
 	static gameSave resumeGS = new gameSave();
-	static BoardGUI b;
-	int numRows,numCols,numPlayers;
-	static Scene menu, game, settingsPage;
-	static Stage window;
-	public static Button undoButton;
-	public static Button resumeButton;
+	public static BoardGUI b;
+	public static int numRows,numCols,numPlayers;
+	static Scene menu;
+	public static Scene game;
+	static Scene settingsPage;
+	public static Stage window;
+	public volatile static Button undoButton;
+	public static Button resumeButton, doneButton;
+	static boolean allColoursSame = false;
+	static String netip;
+	public Thread thread;
+	static boolean isNetwork;
+	static Network network;
 	
+	/** 
+	 * Shows an alert box incase multiple players have same orb colour, and disable the go back to menu functionality
+	 * @author Madhur Tandon
+	 */
+	public static void showSameColourBox(){
+		Alert alert = new Alert(AlertType.INFORMATION);
+		alert.setTitle("Same Colour!");
+		alert.setHeaderText(null);
+		alert.setContentText("Two Players cannot have same colours");
+		alert.setOnHidden(evt -> {
+			allColoursSame = false;
+			doneButton.setDisable(true);
+			window.setScene(settingsPage);
+		});
+		alert.show();
+	}
 	/** 
 	 * Shows the win alert box once some player has won.
 	 * Pressing the OK button thereafter takes the user back to the menu and resets the state of the game.
 	 * @author aayush9
 	 * @param x Player who won
-	 * @throws IOException In case serialization fails
+	 * @throws IOException Incase serialization fails
 	 */
 	public static void showWinAlertBox(int x) throws IOException{
 		b.tb.lastGameCompleted = true;
@@ -80,7 +110,7 @@ public class mainApp extends Application{
 		GridPane.setHalignment(heading, HPos.CENTER);
 		heading.setAlignment(Pos.CENTER);
 		layout.add(heading,6,6);
-		for(int i=1;i<=this.numPlayers;++i) {
+		for(int i=1;i<=mainApp.numPlayers;++i) {
 			HBox row = new HBox();
 			GridPane.setHalignment(row, HPos.CENTER);
 			row.setSpacing(80);
@@ -103,6 +133,24 @@ public class mainApp extends Application{
 		        			
 		        			BoardGUI.allColours[idx] = Color.color(( colourPicker.getValue().getRed()),( colourPicker.getValue().getGreen()), (colourPicker.getValue().getBlue()));
 		        			TileBoard.allColours[idx] = BoardGUI.allColours[idx].toString();
+		        			
+		        			for(int j=0;j<TileBoard.allColours.length;j+=1)
+		        			{
+		        				for(int k=j+1;k<TileBoard.allColours.length;k+=1)
+		        				{
+		        					if(TileBoard.allColours[j].equals(TileBoard.allColours[k]))
+		        					{
+		        						allColoursSame = true;
+		        						showSameColourBox();
+		        						break;
+		        					}
+		        				}
+		        			}
+		        			
+		        			if(!allColoursSame)
+		        			{
+		        				doneButton.setDisable(false);
+		        			}
 		        });
 				grid.setVgap(3);
 				grid.setHgap(10);
@@ -122,7 +170,7 @@ public class mainApp extends Application{
 			row.setAlignment(Pos.CENTER);
 			layout.add(row,6,12+4*i);
 		}
-		Button doneButton = new Button("Done");
+		doneButton = new Button("Done");
 		GridPane.setHalignment(doneButton, HPos.CENTER);
 		doneButton.setAlignment(Pos.CENTER);
 		
@@ -138,11 +186,12 @@ public class mainApp extends Application{
 		resetAllColorsButton.setOnAction(event -> {
 			BoardGUI.allColours = new Color[]{Color.RED,Color.GREEN,Color.BLUE,Color.YELLOW,Color.MAGENTA,Color.CYAN,Color.ORANGE,Color.GRAY};
 			TileBoard.allColours = new String[] {Color.RED.toString(),Color.GREEN.toString(),Color.BLUE.toString(),Color.YELLOW.toString(),Color.MAGENTA.toString(),Color.CYAN.toString(),Color.ORANGE.toString(),Color.GRAY.toString()};
+			allColoursSame = false;
 			window.setScene(menu);
 		});
 		layout.add(resetAllColorsButton,6,52);
 		
-		settingsPage=new Scene(layout,640,520);
+		settingsPage=new Scene(layout,640,580);
 		settingsPage.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
 	}
 	
@@ -155,12 +204,18 @@ public class mainApp extends Application{
 	public void createMenu(){
 		
 		Button playButton = new Button("New Game");
+		Button networkButton = new Button("Network Play");
 		resumeButton = new Button("Resume");
+		undoButton = new Button("Resume");
 		Button settingsButton = new Button("Settings");
 		
 		playButton.setAlignment(Pos.CENTER);
-		
+		networkButton.setAlignment(Pos.CENTER);
+		HBox play=new HBox();
+		play.setSpacing(5);
+		play.getChildren().addAll(playButton,networkButton);
 		playButton.setOnAction(event -> {
+			
 			mainApp.b = new BoardGUI(numRows,numCols,numPlayers);
 			CoordinateTile.init = true;
 			TileCell.init = true;
@@ -175,7 +230,29 @@ public class mainApp extends Application{
 			
 			CoordinateTile.counterForInitialBorder = 0;
 			TileCell.counterForInitialBorder = 0;
+			isNetwork=false;
+			game=new Scene(this.createContent(true));
+			window.setScene(game);
+		});
+		
+		networkButton.setOnAction(event -> {
+
+			numPlayers=2;
+			mainApp.b = new BoardGUI(numRows,numCols,numPlayers);
+			CoordinateTile.init = true;
+			TileCell.init = true;
+			CoordinateTile.gs = new gameState(mainApp.b.tb);
+			undoButton.setDisable(true);
 			
+			CoordinateTile.currentPlayer = 0;
+			TileCell.currentPlayer = 0;
+			
+			CoordinateTile.counterForInitialGamePlay = 0;
+			TileCell.counterForInitialGamePlay = 0;
+			
+			CoordinateTile.counterForInitialBorder = 0;
+			TileCell.counterForInitialBorder = 0;
+			isNetwork=true;
 			game=new Scene(this.createContent(true));
 			window.setScene(game);
 		});
@@ -243,6 +320,8 @@ public class mainApp extends Application{
 		radiobox.getChildren().addAll(small,large);
 		
 		TextField players=new TextField(""+numPlayers+"");
+		TextField ip=new TextField(""+netip+"");
+		ip.setAlignment(Pos.CENTER);
 		players.setAlignment(Pos.CENTER);
 		players.textProperty().addListener((observable, oldValue, newValue) -> {
 			try {
@@ -268,7 +347,13 @@ public class mainApp extends Application{
 				System.out.println("Invalid value");
 			}
 		});
-		
+		ip.textProperty().addListener((observable, oldValue, newValue) -> {
+			try {
+				netip=newValue;
+			} catch(java.lang.NumberFormatException e) {
+				System.out.println("Invalid value");
+			}
+		});
 		Button minusButton = new Button("-");
 		minusButton.setOnAction(event -> {
 			if(Integer.parseInt(players.getText())>2) {
@@ -325,12 +410,14 @@ public class mainApp extends Application{
 		GridPane layout = new GridPane();
 		GridPane.setHalignment(settingsButton, HPos.CENTER);
 		GridPane.setHalignment(resumeButton, HPos.CENTER);
-		GridPane.setHalignment(playButton, HPos.CENTER);
+		//GridPane.setHalignment(playButton, HPos.CENTER);
 		GridPane.setHalignment(gridsize, HPos.CENTER);
 		GridPane.setHalignment(numPlayersLabel, HPos.CENTER);
 		GridPane.setHalignment(players, HPos.CENTER);
+		GridPane.setHalignment(ip, HPos.CENTER);
 		GridPane.setHalignment(radiobox, HPos.CENTER);
 		radiobox.setAlignment(Pos.CENTER);
+		play.setAlignment(Pos.CENTER);
 		layout.setVgap(3);
 	    layout.setHgap(10);
 	    layout.setPadding(new Insets(10, 10, 10, 10));
@@ -397,12 +484,15 @@ public class mainApp extends Application{
 	    });
 		
 	    layout.add(gridsize, 6, 2);
-		layout.add(resumeButton,6,26);
-		layout.add(playButton,6,36);
+		layout.add(resumeButton,6,31);
+		//layout.add(playButton,6,36);
 		layout.add(settingsButton,6,42);
 		players.setMaxWidth(60);
+		ip.setMaxWidth(150);
+		layout.add(play, 6, 36);
 		layout.add(radiobox, 6, 4);
 		layout.add(numPlayersLabel, 6, 12);
+		layout.add(ip, 6, 26);
 		
 		HBox numPlayerControl=new HBox();
 		numPlayerControl.setSpacing(0);
@@ -440,7 +530,7 @@ public class mainApp extends Application{
     			System.out.println("Error retriieving logo");
     		}
     		
-		menu=new Scene(layout,640,520);
+		menu=new Scene(layout,640,580);
 		
 		menu.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
 	}
@@ -453,6 +543,18 @@ public class mainApp extends Application{
 	 */
 	public Parent createContent(boolean setUndoButtonVisibility)
 	{
+		if(isNetwork) {
+			network = new Network(this);
+			network.ip = netip;
+			thread = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					network.init();
+				}
+			});
+			thread.setDaemon(true);
+			thread.start();
+		}
 		Pane root = new Pane();
 		
 		if(b.numberOfRows==9)
@@ -487,7 +589,6 @@ public class mainApp extends Application{
 		menubar.setPadding(new Insets(10));
 		Button backButton = new Button("Back to Menu");
 		backButton.setOnAction(event -> {
-			
 			try {
 				
 				CoordinateTile.gs.currentBoard = new TileBoard(mainApp.b.tb);
@@ -524,12 +625,14 @@ public class mainApp extends Application{
 				// TODO Auto-generated catch block
 				resumeButton.setDisable(true);
 			}
-			
+			window.setTitle("Chain Reaction");
 			this.createMenu();
 			window.setScene(menu);
 		});
 		Button newGameButton = new Button("New Game");
 		newGameButton.setOnAction(event -> {
+			isNetwork=false;
+			window.setTitle("Chain Reaction");
 			mainApp.b = new BoardGUI(numRows,numCols,numPlayers);
 			CoordinateTile.init = true;
 			TileCell.init = true;
@@ -577,7 +680,7 @@ public class mainApp extends Application{
 			{
 				return;
 			}
-			
+			if(isNetwork) network.send("undo");
 			if(!CoordinateTile.gs.allStates.isEmpty())
 			{
 				TileBoard previousState = CoordinateTile.gs.loadState();
@@ -615,7 +718,40 @@ public class mainApp extends Application{
 
 		return ret;
 	}
-
+	public static void undoHandle(){
+		
+		if(System.currentTimeMillis() - BoardGUI.startTime < 550) 
+		{
+			return;
+		}
+		if(!CoordinateTile.gs.allStates.isEmpty())
+		{
+			TileBoard previousState = CoordinateTile.gs.loadState();
+			CoordinateTile.gs.currentBoard = new TileBoard(previousState);
+			
+			b.loadGUIfromState(previousState,false);
+			
+			CoordinateTile.gs.currentPlayer = CoordinateTile.currentPlayer;
+			CoordinateTile.gs.counterForInitialBorder = CoordinateTile.counterForInitialBorder;
+			CoordinateTile.gs.counterForInitialGamePlay = CoordinateTile.counterForInitialGamePlay;
+			CoordinateTile.gs.init = CoordinateTile.init; 
+			CoordinateTile.gs.allColours = TileBoard.allColours;
+			
+			try {
+				resumeGS.serialize(CoordinateTile.gs);
+				
+				System.out.println("Details of Saved Game After Saving are:");
+				System.out.println("CurrentPlayer : "+CoordinateTile.gs.currentPlayer);
+				System.out.println("counterForInitialBorder : "+CoordinateTile.gs.counterForInitialBorder);
+				System.out.println("counterForInitialGamePlay : "+CoordinateTile.gs.counterForInitialGamePlay);
+				System.out.println("init : "+CoordinateTile.gs.init);
+				System.out.println();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
 	public static void main(String[] args) {
 		launch(args);
 	}
@@ -630,11 +766,15 @@ public class mainApp extends Application{
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		primaryStage.setTitle("Chain Reaction");
-		mainApp.window=primaryStage;
+		mainApp.window = primaryStage;
 		
-		numRows=9;
-		numCols=6;
-		numPlayers=2;
+//		netip = "10.0.0.5";
+		netip = InetAddress.getLocalHost().toString();
+		netip = netip.substring(netip.lastIndexOf("/")+1,netip.length());
+		
+		numRows = 9;
+		numCols = 6;
+		numPlayers = 2;
 		
 		try {
 			gameState lastState = resumeGS.deserialize();
@@ -647,13 +787,8 @@ public class mainApp extends Application{
 			System.out.println("No State Loaded");
 		}
 		
-		
 		this.createMenu();
 		primaryStage.setScene(menu);
 		primaryStage.show();
-		mainApp.b = new BoardGUI(numRows,numCols,numPlayers);
-		game=new Scene(this.createContent(true));
 	}
-
 }
-

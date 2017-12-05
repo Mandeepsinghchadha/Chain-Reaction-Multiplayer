@@ -18,7 +18,7 @@ public class PlayerController {
 	 * @param c The color player is to be initialized with.
 	 * @author Madhur Tandon
 	 */
-	PlayerController(int playerNumber, Color c)
+	public PlayerController(int playerNumber, Color c)
 	{
 		this.orbCount = Integer.MIN_VALUE;
 		this.playerNumber = playerNumber;
@@ -37,6 +37,7 @@ public class PlayerController {
 	 */
 	public void move(BoardGUI b, int x, int y) throws IllegalMoveException, IOException
 	{
+		System.out.println("Player Number: "+this.playerNumber);
 		if((b.board[x][y].playerStatus==this.playerNumber)||(b.board[x][y].playerStatus==0))
 		{
 			

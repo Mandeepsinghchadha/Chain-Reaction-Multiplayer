@@ -7,15 +7,16 @@ import withoutGUI.TileBoard;
 import withoutGUI.TileCell;
 
 public class BoardGUI {
-	TileBoard tb;
+	public TileBoard tb;
 	int numberOfRows;
 	int numberOfColumns;
-	public static long startTime;
-	CoordinateTile[][] board;
-	int numberOfPlayers;
+	public static long startTime=0,coordinateStartTime;
+	public volatile int networkPlayerNumber;
+	public CoordinateTile[][] board;
+	public int numberOfPlayers;
 	public boolean shownPrompt;
-	ArrayList<PlayerController> allPlayers;
-	static Color[] allColours = {Color.RED,Color.GREEN,Color.BLUE,Color.YELLOW,Color.MAGENTA,Color.CYAN,Color.ORANGE,Color.GRAY};
+	public static ArrayList<PlayerController> allPlayers;
+	public static Color[] allColours = {Color.RED,Color.GREEN,Color.BLUE,Color.YELLOW,Color.MAGENTA,Color.CYAN,Color.ORANGE,Color.GRAY};
 	/**
 	 * Initializes the board the board with the required dimensions and the number of players.
 	 * @param m The required number of rows
@@ -23,15 +24,16 @@ public class BoardGUI {
 	 * @param numberOfPlayers The required number of players
 	 * @author Madhur Tandon
 	 */
-	BoardGUI(int m, int n, int numberOfPlayers)
+	public BoardGUI(int m, int n, int numberOfPlayers)
 	{
+		this.networkPlayerNumber=-1;
 		this.shownPrompt=true;
 		this.numberOfRows = m;
 		this.numberOfColumns = n;
 		this.numberOfPlayers = numberOfPlayers;
 		board = new CoordinateTile[this.numberOfRows][this.numberOfColumns];
 		this.tb = new TileBoard(this.numberOfRows,this.numberOfColumns,this.numberOfPlayers);
-		
+
 		for(int i=0;i<this.numberOfRows;i+=1)
 		{
 			for(int j=0;j<this.numberOfColumns;j+=1)
@@ -46,14 +48,14 @@ public class BoardGUI {
 				}
 			}
 		}
-		
+
 		this.allPlayers = new ArrayList<PlayerController>();
 		for(int i=0;i<numberOfPlayers;i+=1)
 		{
 			PlayerController p = new PlayerController(i+1,allColours[i]);
 			allPlayers.add(p);
 		}
-		
+
 		for(int i=0;i<tb.numberOfRows;i+=1)
 		{
 			for(int j=0;j<tb.numberOfColumns;j+=1)
@@ -63,7 +65,7 @@ public class BoardGUI {
 		}
 	}
 	/**
-	 * Function responsible for drawing the board from a given state. Required in case of undo or resume game. 
+	 * Function responsible for drawing the board from a given state. Required in case of undo or resume game.
 	 * @param tb The state to be restored.
 	 * @param resumeSavedGame A flag if the function is invoked for undo or resume.
 	 * @author Madhur Tandon
@@ -90,7 +92,7 @@ public class BoardGUI {
 						this.board[i][j].colour = allColours[0];
 					}
 				}
-				
+
 				/*
 				 * Designs Board According to State
 				 */
@@ -98,27 +100,26 @@ public class BoardGUI {
 				{
 					for(int j=0;j<tb.numberOfColumns;j+=1)
 					{
-						
-						this.board[i][j].colour = Color.valueOf(tb.board[i][j].colour);
+						this.board[i][j].colour = CoordinateTile.counterForInitialGamePlay==1?allColours[0]:Color.valueOf(tb.board[i][j].colour);
 						this.board[i][j].playerStatus = tb.board[i][j].playerStatus;
-						this.board[i][j].border.setStroke(Color.valueOf(tb.board[i][j].borderColour));
+						this.board[i][j].border.setStroke(CoordinateTile.counterForInitialGamePlay==1?allColours[0]:Color.valueOf(tb.board[i][j].borderColour));
 						for(int k=0;k<tb.board[i][j].value;k+=1)
 						{
 							this.board[i][j].drawSphere(false);
 						}
 						this.board[i][j].rotateGroup.play();
-						
+
 						this.tb.board[i][j].colour = this.board[i][j].colour.toString();
 						this.tb.board[i][j].playerStatus = this.board[i][j].playerStatus;
 						this.tb.board[i][j].value = this.board[i][j].value;
 						this.tb.board[i][j].borderColour = tb.board[i][j].borderColour;
 					}
 				}
-				
+
 				if(!CoordinateTile.init && CoordinateTile.counterForInitialGamePlay>this.numberOfPlayers)
 				{
 					CoordinateTile.currentPlayer = (((CoordinateTile.currentPlayer - 1) % this.numberOfPlayers) + this.numberOfPlayers) % this.numberOfPlayers;
-				
+
 					for(int i=0;i<this.numberOfPlayers;i+=1)
 					{
 						if(this.playerCount(i+1)>0)
@@ -137,7 +138,7 @@ public class BoardGUI {
 					TileCell.counterForInitialGamePlay-=1;
 					CoordinateTile.counterForInitialBorder = (CoordinateTile.counterForInitialBorder - 1);
 					TileCell.counterForInitialBorder-=1;
-					
+
 					if(this.playerCount(CoordinateTile.counterForInitialGamePlay+1)<=0)
 					{
 						this.allPlayers.get(CoordinateTile.counterForInitialGamePlay).orbCount = -2147483648;
@@ -151,7 +152,7 @@ public class BoardGUI {
 						TileCell.counterForInitialBorder+=1;
 					}
 				}
-				
+
 				this.tb.undoOnce = false;
 				mainApp.undoButton.setDisable(true);
 			}
@@ -171,7 +172,7 @@ public class BoardGUI {
 					this.board[i][j].colour = allColours[0];
 				}
 			}
-			
+
 			/*
 			 * Designs Board According to State
 			 */
@@ -179,7 +180,6 @@ public class BoardGUI {
 			{
 				for(int j=0;j<tb.numberOfColumns;j+=1)
 				{
-					
 					this.board[i][j].colour = Color.valueOf(tb.board[i][j].colour);
 					this.board[i][j].playerStatus = tb.board[i][j].playerStatus;
 					this.board[i][j].border.setStroke(Color.valueOf(tb.board[i][j].borderColour));
@@ -188,14 +188,14 @@ public class BoardGUI {
 						this.board[i][j].drawSphere(false);
 					}
 					this.board[i][j].rotateGroup.play();
-					
+
 					this.tb.board[i][j].colour = this.board[i][j].colour.toString();
 					this.tb.board[i][j].playerStatus = this.board[i][j].playerStatus;
 					this.tb.board[i][j].value = this.board[i][j].value;
 					this.tb.board[i][j].borderColour = tb.board[i][j].borderColour;
 				}
 			}
-			
+
 			for(int i=0;i<this.numberOfPlayers;i+=1)
 			{
 				this.allPlayers.get(i).active = tb.allPlayers.get(i).active;
@@ -307,9 +307,8 @@ public class BoardGUI {
 		}
 		return count;
 	}
-	
+
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 	}
-
 }

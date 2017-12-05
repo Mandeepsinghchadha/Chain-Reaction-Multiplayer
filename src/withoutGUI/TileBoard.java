@@ -53,7 +53,7 @@ public class TileBoard implements Serializable {
 	/**
 	 * A copy constructor which creates a new object with the
 	 * properties of the passed in TileBoard Object.
-	 * @param tb
+	 * @param tb The TileBoard object to be cloned into the current one
 	 * @author Madhur Tandon
 	 */
 	public TileBoard(TileBoard tb) {

@@ -14,8 +14,8 @@ public class gameSave implements Serializable{
 	/**
 	 * Serializes the gameState given by ``gs`` and writes it to
 	 * a file named ``gameState.db``.
-	 * @param gs
-	 * @throws IOException
+	 * @param gs The game state to be serialized
+	 * @throws IOException In case errors arise while writing to file
 	 * @author Madhur Tandon
 	 */
 	public void serialize(gameState gs) throws IOException
@@ -36,8 +36,8 @@ public class gameSave implements Serializable{
 	 * Reads the gameState stored in the file "gameState.db" and returns
 	 * the gameState object which can be used for Resume operation.
 	 * @return gameState object used to restore the game
-	 * @throws IOException
-	 * @throws ClassNotFoundException
+	 * @throws IOException IOException In case errors arise while reading from file
+	 * @throws ClassNotFoundException Incase of mismatch between saved class and class in the code
 	 * @author Madhur Tandon
 	 */
 	public gameState deserialize() throws IOException, ClassNotFoundException

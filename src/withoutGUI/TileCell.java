@@ -47,7 +47,7 @@ public class TileCell implements Serializable {
 	/**
 	 * A copy constructor which creates a new object with
 	 * properties of the passed in TileCell object.
-	 * @param tc
+	 * @param tc The TileCell object to be cloned into the current one 
 	 * @author Madhur Tandon
 	 */
 	public TileCell(TileCell tc) {
